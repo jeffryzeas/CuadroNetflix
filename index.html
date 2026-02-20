@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factus ERP - JS Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        [v-cloak] { display: none; }
+        .spinner { border-top-color: #3b82f6; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+    <div id="app" class="min-h-screen">
+        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center p-4 bg-slate-900">
+            <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-blue-600 p-8 text-center">
+                    <h1 class="text-3xl font-bold text-white">Factus ERP</h1>
+                    <p class="text-blue-100 mt-2">Acceso mediante JavaScript</p>
+                </div>
+                <div class="p-8">
+                    <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200">
+                        {{ error }}
+                    </div>
+                    <form @submit.prevent="login" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                            <input v-model="auth.email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+                            <input v-model="auth.password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg active:scale-95">
+                            Entrar al Sistema
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div v-else class="min-h-screen flex flex-col md:flex-row">
+            <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0">
+                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
+                    <span class="font-bold text-white text-lg tracking-tight">FACTUS JS</span>
+                </div>
+                <div class="p-4 flex-1">
+                    <nav class="space-y-1">
+                        <button @click="page = 'dashboard'" :class="navClass('dashboard')">Inicio</button>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2 px-4">Documentos</p>
+                        <button @click="fetchData('v1/bills', 'facturas')" :class="navClass('facturas')">Facturas</button>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2 px-4">Catálogos API</p>
+                        <button @click="fetchData('v1/taxes', 'tributos')" :class="navClass('tributos')">Tributos</button>
+                        <button @click="fetchData('v1/municipalities', 'municipios')" :class="navClass('municipios')">Municipios</button>
+                    </nav>
+                </div>
+                <div class="p-4 border-t border-slate-800">
+                    <button @click="logout" class="w-full py-2 text-red-400 hover:bg-red-900/20 rounded-lg border border-red-900/50 transition">Cerrar Sesión</button>
+                </div>
+            </aside>
+
+            <main class="flex-1 flex flex-col min-w-0">
+                <header class="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
+                    <h2 class="text-xl font-bold text-slate-800 capitalize">{{ page }}</h2>
+                    <div class="flex items-center gap-4">
+                        <div v-if="loading" class="w-5 h-5 border-2 border-gray-200 spinner rounded-full"></div>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">API Online</span>
+                    </div>
+                </header>
+
+                <div class="p-8 overflow-auto">
+                    <div v-if="page === 'dashboard'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl border shadow-sm">
+                            <h3 class="font-bold mb-4 text-blue-600">Estado del Cliente</h3>
+                            <ul class="text-sm space-y-2">
+                                <li><strong>Tecnología:</strong> Vue.js (CDN) + Tailwind</li>
+                                <li><strong>Persistencia:</strong> LocalStorage</li>
+                                <li><strong>Modo:</strong> Sandbox Factus</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div v-else class="bg-white rounded-xl shadow-sm border overflow-hidden">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-50 border-b">
+                                <tr>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">ID / Referencia</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Nombre / Detalle</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr v-for="item in apiData" :key="item.id" class="hover:bg-blue-50/30 transition">
+                                    <td class="px-6 py-4 font-mono text-blue-600">{{ item.id || item.number }}</td>
+                                    <td class="px-6 py-4">{{ item.name || item.nombre || 'Sin nombre' }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button @click="viewDetail(item)" class="text-xs font-bold text-slate-400 hover:text-blue-600">JSON</button>
+                                    </td>
+                                </tr>
+                                <tr v-if="apiData.length === 0">
+                                    <td colspan="3" class="p-12 text-center text-slate-400 italic">No hay registros cargados.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    isLoggedIn: false,
+                    page: 'dashboard',
+                    loading: false,
+                    error: null,
+                    auth: { email: 'jz300703@gmail.com', password: '' },
+                    apiData: [],
+                    config: {
+                        url: 'https://api-sandbox.factus.com.co',
+                        client_id: '9de9ec14-5684-48b5-baa3-9a87fc8c3c42',
+                        client_secret: 'bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS',
+                        username: 'sandbox@factus.com.co',
+                        password: 'sandbox2024%'
+                    }
+                }
+            },
+            mounted() {
+                if (localStorage.getItem('factus_session')) this.isLoggedIn = true;
+            },
+            methods: {
+                login() {
+                    if (this.auth.email === 'jz300703@gmail.com' && this.auth.password === 'admin123') {
+                        this.isLoggedIn = true;
+                        localStorage.setItem('factus_session', 'true');
+                        this.error = null;
+                    } else {
+                        this.error = "Contraseña incorrecta (Usa: admin123)";
+                    }
+                },
+                logout() {
+                    localStorage.removeItem('factus_session');
+                    localStorage.removeItem('factus_token');
+                    location.reload();
+                },
+                async getToken() {
+                    const saved = JSON.parse(localStorage.getItem('factus_token'));
+                    if (saved && Date.now() < saved.expiry) return saved.token;
+
+                    const response = await fetch(`${this.config.url}/oauth/token`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                        body: JSON.stringify({
+                            grant_type: 'password',
+                            client_id: this.config.id,
+                            client_secret: this.config.client_secret,
+                            username: this.config.username,
+                            password: this.config.password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    const tokenData = { token: data.access_token, expiry: Date.now() + (3600 * 1000) };
+                    localStorage.setItem('factus_token', JSON.stringify(tokenData));
+                    return data.access_token;
+                },
+                async fetchData(endpoint, pageName) {
+                    this.loading = true;
+                    this.page = pageName;
+                    try {
+                        const token = await this.getToken();
+                        const response = await fetch(`${this.config.url}/${endpoint}`, {
+                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                        });
+                        const result = await response.json();
+                        this.apiData = result.data || [];
+                    } catch (err) {
+                        this.error = "Error al conectar con la API";
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                navClass(p) {
+                    return `w-full text-left px-4 py-2.5 rounded-lg transition-all ${this.page === p ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-slate-800'}`;
+                },
+                viewDetail(item) {
+                    alert(JSON.stringify(item, null, 2));
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
