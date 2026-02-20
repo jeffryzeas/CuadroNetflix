@@ -3,199 +3,410 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factus ERP - JS Edition</title>
+    <title>Factus ERP - Sistema de Gestión</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
         [v-cloak] { display: none; }
-        .spinner { border-top-color: #3b82f6; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-[#f8fafc] text-slate-900">
 
-    <div id="app" class="min-h-screen">
-        <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center p-4 bg-slate-900">
-            <div class="bg-white max-w-md w-full rounded-2xl shadow-2xl overflow-hidden">
+<div id="app" v-cloak>
+    <!-- LOGIN INTERFACE -->
+    <div v-if="!session.isLoggedIn" class="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+        <div class="w-full max-w-[400px] animate-in fade-in zoom-in duration-500">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden">
                 <div class="bg-blue-600 p-8 text-center">
-                    <h1 class="text-3xl font-bold text-white">Factus ERP</h1>
-                    <p class="text-blue-100 mt-2">Acceso mediante JavaScript</p>
-                </div>
-                <div class="p-8">
-                    <div v-if="error" class="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200">
-                        {{ error }}
+                    <div class="bg-white/20 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-md">
+                        <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
                     </div>
-                    <form @submit.prevent="login" class="space-y-5">
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Factus ERP</h1>
+                    <p class="text-blue-100 text-sm mt-1">Control de Facturación Electrónica</p>
+                </div>
+                
+                <div class="p-8">
+                    <div v-if="ui.error" class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 text-sm rounded-r-lg">
+                        {{ ui.error }}
+                    </div>
+
+                    <form @submit.prevent="handleLogin" class="space-y-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-                            <input v-model="auth.email" type="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Usuario Admin</label>
+                            <div class="relative">
+                                <i data-lucide="mail" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+                                <input v-model="form.email" type="email" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none" placeholder="jz300703@gmail.com">
+                            </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                            <input v-model="auth.password" type="password" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Contraseña</label>
+                            <div class="relative">
+                                <i data-lucide="lock" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
+                                <input v-model="form.password" type="password" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all outline-none" placeholder="••••••••">
+                            </div>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-all shadow-lg active:scale-95">
-                            Entrar al Sistema
+                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-200 active:scale-[0.98]">
+                            Iniciar Sesión
                         </button>
                     </form>
                 </div>
             </div>
+            <p class="text-center text-slate-500 text-xs mt-8">© 2024 Factus System · Conexión vía API Sandbox</p>
         </div>
+    </div>
 
-        <div v-else class="min-h-screen flex flex-col md:flex-row">
-            <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col shrink-0">
-                <div class="h-16 flex items-center px-6 border-b border-slate-800 bg-slate-950">
-                    <span class="font-bold text-white text-lg tracking-tight">FACTUS JS</span>
-                </div>
-                <div class="p-4 flex-1">
-                    <nav class="space-y-1">
-                        <button @click="page = 'dashboard'" :class="navClass('dashboard')">Inicio</button>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2 px-4">Documentos</p>
-                        <button @click="fetchData('v1/bills', 'facturas')" :class="navClass('facturas')">Facturas</button>
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-6 mb-2 px-4">Catálogos API</p>
-                        <button @click="fetchData('v1/taxes', 'tributos')" :class="navClass('tributos')">Tributos</button>
-                        <button @click="fetchData('v1/municipalities', 'municipios')" :class="navClass('municipios')">Municipios</button>
-                    </nav>
-                </div>
-                <div class="p-4 border-t border-slate-800">
-                    <button @click="logout" class="w-full py-2 text-red-400 hover:bg-red-900/20 rounded-lg border border-red-900/50 transition">Cerrar Sesión</button>
-                </div>
-            </aside>
-
-            <main class="flex-1 flex flex-col min-w-0">
-                <header class="h-16 bg-white border-b flex items-center justify-between px-8 shadow-sm">
-                    <h2 class="text-xl font-bold text-slate-800 capitalize">{{ page }}</h2>
-                    <div class="flex items-center gap-4">
-                        <div v-if="loading" class="w-5 h-5 border-2 border-gray-200 spinner rounded-full"></div>
-                        <span class="text-xs font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">API Online</span>
+    <!-- MAIN DASHBOARD -->
+    <div v-else class="min-h-screen flex flex-col md:flex-row">
+        <!-- SIDEBAR -->
+        <aside class="w-full md:w-72 bg-slate-900 flex flex-col shrink-0">
+            <div class="p-8 border-b border-slate-800/50">
+                <div class="flex items-center gap-3">
+                    <div class="bg-blue-600 p-2 rounded-lg">
+                        <i data-lucide="layout-grid" class="text-white w-5 h-5"></i>
                     </div>
-                </header>
+                    <span class="font-bold text-white text-xl tracking-tight">Factus ERP</span>
+                </div>
+            </div>
 
-                <div class="p-8 overflow-auto">
-                    <div v-if="page === 'dashboard'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-xl border shadow-sm">
-                            <h3 class="font-bold mb-4 text-blue-600">Estado del Cliente</h3>
-                            <ul class="text-sm space-y-2">
-                                <li><strong>Tecnología:</strong> Vue.js (CDN) + Tailwind</li>
-                                <li><strong>Persistencia:</strong> LocalStorage</li>
-                                <li><strong>Modo:</strong> Sandbox Factus</li>
-                            </ul>
+            <nav class="flex-1 p-6 space-y-8 overflow-y-auto custom-scrollbar">
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">General</h3>
+                    <div class="space-y-1">
+                        <button @click="currentTab = 'dashboard'" :class="navBtnClass('dashboard')">
+                            <i data-lucide="home" class="w-4 h-4"></i> Panel de Inicio
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">Ventas</h3>
+                    <div class="space-y-1">
+                        <button @click="fetchApiData('v1/bills', 'facturas')" :class="navBtnClass('facturas')">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> Facturas (Bills)
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 px-2">Configuración</h3>
+                    <div class="space-y-1">
+                        <button @click="fetchApiData('v1/taxes', 'tributos')" :class="navBtnClass('tributos')">
+                            <i data-lucide="percent" class="w-4 h-4"></i> Tributos
+                        </button>
+                        <button @click="fetchApiData('v1/municipalities', 'municipios')" :class="navBtnClass('municipios')">
+                            <i data-lucide="map-pin" class="w-4 h-4"></i> Municipios
+                        </button>
+                        <button @click="fetchApiData('v1/countries', 'paises')" :class="navBtnClass('paises')">
+                            <i data-lucide="globe" class="w-4 h-4"></i> Países
+                        </button>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="p-6 bg-slate-950/50 border-t border-slate-800">
+                <div class="flex items-center gap-3 mb-4 px-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                        JZ
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-bold text-white truncate">{{ session.user }}</p>
+                        <p class="text-[10px] text-slate-500">Administrador</p>
+                    </div>
+                </div>
+                <button @click="handleLogout" class="w-full flex items-center justify-center gap-2 py-2.5 text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-sm font-medium border border-red-500/20">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- TOP HEADER -->
+            <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-slate-800 capitalize">{{ currentTab }}</h2>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-xs font-semibold text-slate-600">Servidor Sandbox Conectado</span>
+                    </div>
+                    <button v-if="currentTab !== 'dashboard'" @click="refreshCurrent" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500">
+                        <i data-lucide="rotate-cw" :class="{'animate-spin': ui.loading}" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN VIEW AREA -->
+            <div class="flex-1 overflow-y-auto p-10 custom-scrollbar">
+                
+                <!-- DASHBOARD VIEW -->
+                <div v-if="currentTab === 'dashboard'" class="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <div class="mb-10">
+                        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Bienvenido de nuevo 👋</h1>
+                        <p class="text-slate-500 mt-2">Este es el resumen del sistema Factus ERP versión JavaScript.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm col-span-2">
+                            <h3 class="font-bold text-lg mb-6 flex items-center gap-2">
+                                <i data-lucide="info" class="w-5 h-5 text-blue-600"></i> Información Técnica
+                            </h3>
+                            <div class="grid grid-cols-2 gap-8">
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Motor</p>
+                                    <p class="text-sm font-medium">Vue.js 3 (Standalone)</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Almacenamiento</p>
+                                    <p class="text-sm font-medium">LocalStorage API</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Protocolo API</p>
+                                    <p class="text-sm font-medium">HTTPS / Bearer Auth</p>
+                                </div>
+                                <div class="space-y-1">
+                                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Entorno</p>
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+                                        Modo Sandbox
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-600 p-8 rounded-3xl shadow-xl shadow-blue-200 relative overflow-hidden group">
+                            <div class="relative z-10">
+                                <h3 class="text-white font-bold text-lg mb-4">Estado de API</h3>
+                                <p class="text-blue-100 text-sm leading-relaxed mb-6">El sistema está configurado para consumir los servicios de Factus Colombia bajo los estándares de la DIAN.</p>
+                                <div class="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                                    <p class="text-[10px] text-blue-200 font-bold uppercase tracking-widest mb-1">Endpoints Activos</p>
+                                    <p class="text-white font-mono text-xs truncate">api-sandbox.factus.com.co</p>
+                                </div>
+                            </div>
+                            <i data-lucide="zap" class="absolute -right-4 -bottom-4 w-32 h-32 text-white/10 group-hover:rotate-12 transition-transform duration-700"></i>
                         </div>
                     </div>
+                </div>
 
-                    <div v-else class="bg-white rounded-xl shadow-sm border overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 border-b">
+                <!-- TABLE VIEW (FACTURAS, MUNICPIOS, ETC) -->
+                <div v-else class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in duration-500">
+                    <div v-if="ui.loading" class="p-20 text-center">
+                        <div class="inline-block w-12 h-12 border-4 border-slate-100 border-t-blue-600 rounded-full animate-spin"></div>
+                        <p class="mt-4 text-slate-500 font-medium">Consultando API Factus...</p>
+                    </div>
+
+                    <div v-else-if="apiResponse.length > 0" class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50/50 border-b border-slate-100">
                                 <tr>
-                                    <th class="px-6 py-4 font-semibold text-slate-600">ID / Referencia</th>
-                                    <th class="px-6 py-4 font-semibold text-slate-600">Nombre / Detalle</th>
-                                    <th class="px-6 py-4 font-semibold text-slate-600 text-right">Acción</th>
+                                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">ID / Identificador</th>
+                                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest">Descripción / Nombre</th>
+                                    <th class="px-8 py-5 text-xs font-bold text-slate-400 uppercase tracking-widest text-right">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y">
-                                <tr v-for="item in apiData" :key="item.id" class="hover:bg-blue-50/30 transition">
-                                    <td class="px-6 py-4 font-mono text-blue-600">{{ item.id || item.number }}</td>
-                                    <td class="px-6 py-4">{{ item.name || item.nombre || 'Sin nombre' }}</td>
-                                    <td class="px-6 py-4 text-right">
-                                        <button @click="viewDetail(item)" class="text-xs font-bold text-slate-400 hover:text-blue-600">JSON</button>
+                            <tbody class="divide-y divide-slate-50">
+                                <tr v-for="item in apiResponse" :key="item.id || item.code" class="hover:bg-slate-50/80 transition-colors group">
+                                    <td class="px-8 py-5 font-mono text-xs font-bold text-blue-600">
+                                        {{ item.id || item.number || item.code || 'N/A' }}
                                     </td>
-                                </tr>
-                                <tr v-if="apiData.length === 0">
-                                    <td colspan="3" class="p-12 text-center text-slate-400 italic">No hay registros cargados.</td>
+                                    <td class="px-8 py-5">
+                                        <p class="text-sm font-semibold text-slate-700">{{ item.name || item.nombre || item.full_name || 'Registro sin nombre' }}</p>
+                                        <p v-if="item.municipality" class="text-[10px] text-slate-400 mt-0.5">{{ item.municipality }}</p>
+                                    </td>
+                                    <td class="px-8 py-5 text-right">
+                                        <button @click="showRaw(item)" class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-600 tracking-tighter transition-colors">
+                                            Detalle JSON
+                                        </button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+
+                    <div v-else class="p-20 text-center">
+                        <div class="bg-slate-50 w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 text-slate-300">
+                            <i data-lucide="database-zap" class="w-10 h-10"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-slate-800">No se encontraron datos</h4>
+                        <p class="text-slate-500 mt-1 max-w-xs mx-auto">Este endpoint de la API no devolvió información en este momento.</p>
+                    </div>
                 </div>
-            </main>
-        </div>
+
+            </div>
+        </main>
     </div>
 
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script>
-        const { createApp } = Vue;
+    <!-- MODAL PARA JSON -->
+    <div v-if="ui.modalOpen" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-6" @click.self="ui.modalOpen = false">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in duration-200">
+            <div class="p-6 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="font-bold text-slate-800">Datos Crudos (Raw Data)</h3>
+                <button @click="ui.modalOpen = false" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-5 h-5 text-slate-400"></i>
+                </button>
+            </div>
+            <div class="p-8 bg-slate-950">
+                <pre class="text-blue-400 font-mono text-xs overflow-auto max-h-[400px] custom-scrollbar">{{ ui.selectedData }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
 
-        createApp({
-            data() {
-                return {
-                    isLoggedIn: false,
-                    page: 'dashboard',
-                    loading: false,
-                    error: null,
-                    auth: { email: 'jz300703@gmail.com', password: '' },
-                    apiData: [],
-                    config: {
-                        url: 'https://api-sandbox.factus.com.co',
-                        client_id: '9de9ec14-5684-48b5-baa3-9a87fc8c3c42',
-                        client_secret: 'bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS',
-                        username: 'sandbox@factus.com.co',
-                        password: 'sandbox2024%'
-                    }
-                }
-            },
-            mounted() {
-                if (localStorage.getItem('factus_session')) this.isLoggedIn = true;
-            },
-            methods: {
-                login() {
-                    if (this.auth.email === 'jz300703@gmail.com' && this.auth.password === 'admin123') {
-                        this.isLoggedIn = true;
-                        localStorage.setItem('factus_session', 'true');
-                        this.error = null;
-                    } else {
-                        this.error = "Contraseña incorrecta (Usa: admin123)";
-                    }
-                },
-                logout() {
-                    localStorage.removeItem('factus_session');
-                    localStorage.removeItem('factus_token');
-                    location.reload();
-                },
-                async getToken() {
-                    const saved = JSON.parse(localStorage.getItem('factus_token'));
-                    if (saved && Date.now() < saved.expiry) return saved.token;
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+const { createApp } = Vue;
 
-                    const response = await fetch(`${this.config.url}/oauth/token`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                        body: JSON.stringify({
-                            grant_type: 'password',
-                            client_id: this.config.id,
-                            client_secret: this.config.client_secret,
-                            username: this.config.username,
-                            password: this.config.password
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    const tokenData = { token: data.access_token, expiry: Date.now() + (3600 * 1000) };
-                    localStorage.setItem('factus_token', JSON.stringify(tokenData));
-                    return data.access_token;
-                },
-                async fetchData(endpoint, pageName) {
-                    this.loading = true;
-                    this.page = pageName;
-                    try {
-                        const token = await this.getToken();
-                        const response = await fetch(`${this.config.url}/${endpoint}`, {
-                            headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                        });
-                        const result = await response.json();
-                        this.apiData = result.data || [];
-                    } catch (err) {
-                        this.error = "Error al conectar con la API";
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-                navClass(p) {
-                    return `w-full text-left px-4 py-2.5 rounded-lg transition-all ${this.page === p ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-slate-800'}`;
-                },
-                viewDetail(item) {
-                    alert(JSON.stringify(item, null, 2));
-                }
+createApp({
+    data() {
+        return {
+            // Configuración según tu script original
+            config: {
+                apiUrl: 'https://api-sandbox.factus.com.co',
+                clientId: '9de9ec14-5684-48b5-baa3-9a87fc8c3c42',
+                clientSecret: 'bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS',
+                apiUser: 'sandbox@factus.com.co',
+                apiPass: 'sandbox2024%'
+            },
+            session: {
+                isLoggedIn: false,
+                user: 'jz300703@gmail.com',
+                adminPass: 'admin123'
+            },
+            form: {
+                email: 'jz300703@gmail.com',
+                password: ''
+            },
+            currentTab: 'dashboard',
+            lastEndpoint: '',
+            apiResponse: [],
+            ui: {
+                loading: false,
+                error: null,
+                modalOpen: false,
+                selectedData: null
             }
-        }).mount('#app');
-    </script>
+        }
+    },
+    mounted() {
+        this.checkSession();
+        this.initIcons();
+    },
+    updated() {
+        this.initIcons();
+    },
+    methods: {
+        initIcons() {
+            lucide.createIcons();
+        },
+        checkSession() {
+            const saved = localStorage.getItem('factus_erp_session');
+            if (saved) {
+                this.session.isLoggedIn = true;
+            }
+        },
+        handleLogin() {
+            if (this.form.email === this.session.user && this.form.password === this.session.adminPass) {
+                this.session.isLoggedIn = true;
+                localStorage.setItem('factus_erp_session', 'active');
+                this.ui.error = null;
+            } else {
+                this.ui.error = "Credenciales de acceso local incorrectas.";
+            }
+        },
+        handleLogout() {
+            localStorage.removeItem('factus_erp_session');
+            localStorage.removeItem('factus_api_token');
+            this.session.isLoggedIn = false;
+            location.reload();
+        },
+        async getApiToken() {
+            const savedToken = JSON.parse(localStorage.getItem('factus_api_token'));
+            
+            // Si hay token y no ha expirado (usamos 2 horas de margen)
+            if (savedToken && Date.now() < savedToken.expiresAt) {
+                return savedToken.token;
+            }
+
+            try {
+                const response = await fetch(`${this.config.apiUrl}/oauth/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        grant_type: 'password',
+                        client_id: this.config.clientId,
+                        client_secret: this.config.clientSecret,
+                        username: this.config.apiUser,
+                        password: this.config.apiPass
+                    })
+                });
+
+                if (!response.ok) throw new Error("Fallo al obtener token de Factus");
+                
+                const data = await response.json();
+                const tokenData = {
+                    token: data.access_token,
+                    expiresAt: Date.now() + (data.expires_in * 1000)
+                };
+                
+                localStorage.setItem('factus_api_token', JSON.stringify(tokenData));
+                return data.access_token;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        },
+        async fetchApiData(endpoint, tabName) {
+            this.currentTab = tabName;
+            this.lastEndpoint = endpoint;
+            this.ui.loading = true;
+            this.ui.error = null;
+
+            try {
+                const token = await this.getApiToken();
+                if (!token) throw new Error("No se pudo autenticar con la API de Factus");
+
+                const response = await fetch(`${this.config.apiUrl}/${endpoint}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+                // Según la documentación de Factus, la mayoría de respuestas vienen en un objeto { data: [] }
+                this.apiResponse = result.data || result;
+                
+            } catch (err) {
+                this.ui.error = err.message;
+                this.apiResponse = [];
+            } finally {
+                this.ui.loading = false;
+            }
+        },
+        refreshCurrent() {
+            if (this.lastEndpoint) {
+                this.fetchApiData(this.lastEndpoint, this.currentTab);
+            }
+        },
+        navBtnClass(tab) {
+            const base = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ";
+            const active = "bg-blue-600 text-white shadow-lg shadow-blue-900/20";
+            const inactive = "text-slate-400 hover:text-white hover:bg-slate-800";
+            return base + (this.currentTab === tab ? active : inactive);
+        },
+        showRaw(item) {
+            this.ui.selectedData = JSON.stringify(item, null, 4);
+            this.ui.modalOpen = true;
+        }
+    }
+}).mount('#app');
+</script>
+
 </body>
 </html>
+
