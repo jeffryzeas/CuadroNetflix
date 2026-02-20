@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factus ERP - Sistema Autónomo</title>
+    <title>Factus ERP - Corrección Crítica</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -21,27 +21,27 @@
     <!-- LOGIN SEGURO -->
     <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-slate-950 p-6">
         <div class="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-10 text-center">
+            <div class="bg-gradient-to-br from-blue-900 to-slate-900 p-10 text-center">
                 <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="lock" class="text-white w-8 h-8"></i>
+                    <i data-lucide="shield-check" class="text-white w-8 h-8"></i>
                 </div>
-                <h1 class="text-2xl font-black text-white">Acceso al Sistema</h1>
-                <p class="text-slate-400 text-xs mt-2 uppercase tracking-widest font-bold">Credenciales de Seguridad</p>
+                <h1 class="text-2xl font-black text-white">Factus Pro</h1>
+                <p class="text-slate-400 text-[10px] mt-2 uppercase tracking-[0.2em] font-bold">Ingreso Administrativo</p>
             </div>
             <div class="p-10 space-y-6">
                 <div v-if="loginError" class="p-3 bg-red-50 border border-red-100 text-red-600 text-[10px] font-bold rounded-lg uppercase">
                     {{ loginError }}
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase">Usuario de Acceso</label>
-                    <input v-model="login.user" type="email" class="w-full mt-1 px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="ejemplo@correo.com">
+                    <label class="text-[10px] font-black text-slate-400 uppercase">Usuario</label>
+                    <input v-model="login.user" type="email" class="w-full mt-1 px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="Correo electrónico">
                 </div>
                 <div>
                     <label class="text-[10px] font-black text-slate-400 uppercase">Contraseña</label>
                     <input v-model="login.pass" type="password" class="w-full mt-1 px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="••••••••">
                 </div>
                 <button @click="handleLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl transition-all shadow-xl shadow-blue-200">
-                    INICIAR SESIÓN
+                    ENTRAR AL PANEL
                 </button>
             </div>
         </div>
@@ -49,7 +49,7 @@
 
     <!-- APP PRINCIPAL -->
     <div v-else class="min-h-screen flex flex-col md:flex-row">
-        <!-- BARRA LATERAL -->
+        <!-- SIDEBAR -->
         <aside class="w-full md:w-64 bg-slate-900 flex flex-col shrink-0 text-slate-300">
             <div class="p-6 flex items-center gap-3 border-b border-slate-800">
                 <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="zap" class="text-white w-5 h-5"></i></div>
@@ -57,18 +57,18 @@
             </div>
             <nav class="flex-1 p-4 space-y-1">
                 <button @click="currentTab = 'historial'" :class="navBtnClass('historial')">
-                    <i data-lucide="clock" class="w-4 h-4"></i> Historial de Facturas
+                    <i data-lucide="clock" class="w-4 h-4"></i> Historial Facturas
                 </button>
                 <button @click="currentTab = 'crear'" :class="navBtnClass('crear')">
-                    <i data-lucide="plus-square" class="w-4 h-4"></i> Crear Nueva Factura
+                    <i data-lucide="plus-square" class="w-4 h-4"></i> Crear Factura
                 </button>
                 <button @click="currentTab = 'notas'" :class="navBtnClass('notas')">
-                    <i data-lucide="file-minus" class="w-4 h-4"></i> Notas Crédito/Débito
+                    <i data-lucide="file-minus" class="w-4 h-4"></i> Notas Crédito
                 </button>
             </nav>
             <div class="p-6 border-t border-slate-800">
                 <button @click="isLoggedIn = false" class="flex items-center gap-2 text-xs font-bold text-red-400 hover:text-red-300">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> SALIR DEL SISTEMA
+                    <i data-lucide="log-out" class="w-4 h-4"></i> CERRAR SESIÓN
                 </button>
             </div>
         </aside>
@@ -76,125 +76,122 @@
         <!-- CONTENIDO -->
         <main class="flex-1 h-screen overflow-hidden flex flex-col">
             <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
-                <h2 class="font-black text-slate-800 uppercase text-sm tracking-widest">{{ currentTab }}</h2>
-                <div class="flex items-center gap-4 text-[10px] font-bold text-slate-400">
-                    <span class="bg-green-100 text-green-600 px-3 py-1 rounded-full border border-green-200">API CONNECTED</span>
-                    <span class="bg-slate-100 px-3 py-1 rounded-full uppercase">ID: {{ login.user }}</span>
+                <h2 class="font-black text-slate-800 uppercase text-xs tracking-widest">{{ currentTab.replace('_', ' ') }}</h2>
+                <div class="flex items-center gap-3">
+                    <span class="bg-blue-50 text-blue-600 text-[10px] font-black px-3 py-1 rounded-full border border-blue-100 uppercase">Modo Sandbox</span>
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
                 
-                <!-- HISTORIAL -->
+                <!-- LISTADO (HISTORIAL Y NOTAS) -->
                 <div v-if="currentTab === 'historial' || currentTab === 'notas'" class="animate-in fade-in duration-500">
                     <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
                         <table class="w-full text-left">
                             <thead class="bg-slate-50 border-b border-slate-100">
                                 <tr>
                                     <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Referencia</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Cliente</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Estado</th>
-                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-right">Documentos</th>
+                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Receptor</th>
+                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase">Fecha</th>
+                                    <th class="px-6 py-4 text-[10px] font-black text-slate-400 uppercase text-right">Opciones</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-50">
-                                <tr v-for="item in dataList" :key="item.number" class="hover:bg-slate-50 transition-colors">
+                                <tr v-for="item in dataList" :key="item.number" class="hover:bg-blue-50/30 transition-colors group">
                                     <td class="px-6 py-4 font-mono text-xs font-bold text-blue-600">{{ item.number }}</td>
                                     <td class="px-6 py-4">
-                                        <p class="text-sm font-bold text-slate-700">{{ item.customer?.names || 'Cargando...' }}</p>
-                                        <p class="text-[10px] text-slate-400">{{ item.customer?.identification }}</p>
+                                        <p class="text-xs font-bold text-slate-700">{{ item.customer?.names || 'Sin nombre' }}</p>
+                                        <p class="text-[9px] text-slate-400">{{ item.customer?.identification }}</p>
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <span :class="item.status == 1 ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'" class="text-[9px] font-black px-2 py-0.5 rounded uppercase">
-                                            {{ item.status == 1 ? 'Validado' : 'Pendiente' }}
-                                        </span>
-                                    </td>
+                                    <td class="px-6 py-4 text-[10px] text-slate-500">{{ item.created_at || '---' }}</td>
                                     <td class="px-6 py-4 text-right">
                                         <div class="flex justify-end gap-2">
-                                            <button @click="downloadFile(item.number, 'pdf')" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                                            <button @click="downloadFile(item.number, 'pdf')" class="p-2.5 bg-white border border-slate-200 text-red-500 rounded-xl hover:bg-red-50 transition-all shadow-sm" title="Descargar PDF">
                                                 <i data-lucide="file-text" class="w-4 h-4"></i>
                                             </button>
-                                            <button @click="downloadFile(item.number, 'xml')" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm">
-                                                <i data-lucide="code-2" class="w-4 h-4"></i>
+                                            <button @click="downloadFile(item.number, 'xml')" class="p-2.5 bg-white border border-slate-200 text-blue-500 rounded-xl hover:bg-blue-50 transition-all shadow-sm" title="Descargar XML">
+                                                <i data-lucide="code" class="w-4 h-4"></i>
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-if="loading" class="p-10 text-center text-slate-400 text-xs font-bold uppercase animate-pulse">Sincronizando con Factus...</div>
-                        <div v-if="!loading && dataList.length === 0" class="p-20 text-center text-slate-400">No hay registros disponibles.</div>
+                        <div v-if="loading" class="p-20 text-center">
+                            <div class="w-10 h-10 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mx-auto mb-4"></div>
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Consultando Factus...</span>
+                        </div>
+                        <div v-if="!loading && dataList.length === 0" class="p-20 text-center text-slate-400 text-xs">No se encontraron documentos registrados.</div>
                     </div>
                 </div>
 
-                <!-- FORMULARIO INTEGRADO (CREAR AL VUELO) -->
-                <div v-if="currentTab === 'crear'" class="max-w-4xl mx-auto animate-in slide-in-from-bottom-4 duration-500">
-                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl p-10">
-                        <div class="mb-8">
-                            <h3 class="text-xl font-black text-slate-800">Nueva Factura DIAN</h3>
-                            <p class="text-xs text-slate-400 mt-1">Crea cliente, productos y factura en un solo paso.</p>
-                        </div>
-
-                        <!-- SECCIÓN CLIENTE -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 bg-slate-50 p-6 rounded-3xl border border-slate-100">
-                            <div class="md:col-span-2 text-[10px] font-black text-blue-600 uppercase tracking-widest border-b pb-2 mb-2">Información del Cliente</div>
+                <!-- FORMULARIO CREAR FACTURA -->
+                <div v-if="currentTab === 'crear'" class="max-w-4xl mx-auto animate-in slide-in-from-bottom-6">
+                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-2xl p-10">
+                        <h3 class="text-xl font-black text-slate-900 mb-8 flex items-center gap-3">
+                            <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">1</span>
+                            Datos del Cliente
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
                             <div>
-                                <label class="text-[10px] font-bold text-slate-500">Nombre Completo / Razón Social</label>
-                                <input v-model="newInvoice.customer_name" class="w-full mt-1 p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Nombre Completo</label>
+                                <input v-model="newDoc.customer_name" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="Juan Perez">
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-slate-500">Número de Identificación (NIT/Cédula)</label>
-                                <input v-model="newInvoice.customer_id" class="w-full mt-1 p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Identificación (NIT/CC)</label>
+                                <input v-model="newDoc.customer_id" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="12345678">
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-slate-500">Correo Electrónico (Recepción DIAN)</label>
-                                <input v-model="newInvoice.customer_email" class="w-full mt-1 p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-blue-500">
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Correo Electrónico</label>
+                                <input v-model="newDoc.customer_email" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500 transition-all" placeholder="correo@ejemplo.com">
                             </div>
                             <div>
-                                <label class="text-[10px] font-bold text-slate-500">Municipio</label>
-                                <select v-model="newInvoice.municipality" class="w-full mt-1 p-3 rounded-xl border border-slate-200 outline-none">
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-2 block">Municipio</label>
+                                <select v-model="newDoc.municipality" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none">
                                     <option value="149">Bogotá, D.C.</option>
                                     <option value="1">Medellín</option>
+                                    <option value="1011">Cali</option>
                                 </select>
                             </div>
                         </div>
 
-                        <!-- SECCIÓN PRODUCTOS -->
-                        <div class="space-y-4 mb-10">
-                            <div class="flex justify-between items-center text-[10px] font-black text-blue-600 uppercase tracking-widest border-b pb-2">
-                                <span>Ítems de Factura</span>
-                                <button @click="addItem" class="bg-slate-200 text-slate-700 px-3 py-1 rounded-lg hover:bg-slate-300 transition-all">+ Agregar Línea</button>
+                        <h3 class="text-xl font-black text-slate-900 mb-8 flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <span class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm">2</span>
+                                Productos / Servicios
                             </div>
-                            <div v-for="(item, idx) in newInvoice.items" :key="idx" class="grid grid-cols-12 gap-3 items-end bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                                <div class="col-span-6">
-                                    <label class="text-[9px] font-bold text-slate-400">Descripción del Producto</label>
-                                    <input v-model="item.name" placeholder="Ej: Consultoría técnica" class="w-full p-2 border border-slate-200 rounded-lg text-sm">
+                            <button @click="addItem" class="text-[10px] font-black bg-slate-900 text-white px-4 py-2 rounded-xl hover:bg-black uppercase tracking-widest">+ Añadir</button>
+                        </h3>
+
+                        <div class="space-y-4 mb-12">
+                            <div v-for="(item, idx) in newDoc.items" :key="idx" class="grid grid-cols-12 gap-4 items-end bg-slate-50/50 p-6 rounded-3xl border border-slate-100">
+                                <div class="col-span-12 md:col-span-6">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">Descripción</label>
+                                    <input v-model="item.name" class="w-full mt-1 p-3 bg-white border border-slate-200 rounded-xl text-sm outline-none">
                                 </div>
-                                <div class="col-span-2">
-                                    <label class="text-[9px] font-bold text-slate-400">Cant.</label>
-                                    <input v-model.number="item.quantity" type="number" class="w-full p-2 border border-slate-200 rounded-lg text-sm text-center">
+                                <div class="col-span-4 md:col-span-2">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">Cant.</label>
+                                    <input v-model.number="item.quantity" type="number" class="w-full mt-1 p-3 bg-white border border-slate-200 rounded-xl text-sm text-center outline-none">
                                 </div>
-                                <div class="col-span-3">
-                                    <label class="text-[9px] font-bold text-slate-400">Precio Unitario</label>
-                                    <input v-model.number="item.price" type="number" class="w-full p-2 border border-slate-200 rounded-lg text-sm">
+                                <div class="col-span-6 md:col-span-3">
+                                    <label class="text-[9px] font-black text-slate-400 uppercase">Precio Unit.</label>
+                                    <input v-model.number="item.price" type="number" class="w-full mt-1 p-3 bg-white border border-slate-200 rounded-xl text-sm outline-none">
                                 </div>
-                                <div class="col-span-1">
-                                    <button @click="removeItem(idx)" class="text-red-400 hover:text-red-600 mb-2">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                                <div class="col-span-2 md:col-span-1 text-center">
+                                    <button @click="removeItem(idx)" class="text-red-400 hover:text-red-600 mb-3"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- ACCIÓN FINAL -->
-                        <div class="flex flex-col md:flex-row items-center justify-between gap-6 border-t pt-8">
-                            <div class="text-left">
-                                <p class="text-[10px] font-black text-slate-400 uppercase">Total Estimado (Inc. IVA 19%)</p>
-                                <p class="text-4xl font-black text-slate-900">{{ formatPrice(totalInvoice) }}</p>
+                        <div class="bg-slate-900 rounded-[2rem] p-8 text-white flex flex-col md:flex-row justify-between items-center gap-8 shadow-2xl">
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total con IVA (19%)</p>
+                                <p class="text-5xl font-black">{{ formatPrice(totalInvoice) }}</p>
                             </div>
-                            <button @click="submitInvoice" :disabled="loading" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-12 py-5 rounded-3xl shadow-2xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-50">
-                                <span v-if="!loading">EMITIR FACTURA ELECTRÓNICA</span>
-                                <span v-else class="flex items-center gap-2"><i data-lucide="refresh-cw" class="w-4 h-4 animate-spin"></i> PROCESANDO...</span>
+                            <button @click="submitInvoice" :disabled="loading" class="bg-blue-600 hover:bg-blue-500 px-12 py-5 rounded-2xl font-black text-sm tracking-widest shadow-xl shadow-blue-900/40 disabled:opacity-50 transition-all flex items-center gap-3">
+                                <span v-if="!loading">ENVIAR A VALIDACIÓN DIAN</span>
+                                <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                             </button>
                         </div>
                     </div>
@@ -204,14 +201,12 @@
         </main>
     </div>
 
-    <!-- NOTIFICACIÓN TIPO TOAST -->
-    <div v-if="toast.show" class="fixed bottom-10 right-10 bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-right-full duration-300 z-[200]">
-        <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-            <i data-lucide="check" class="w-4 h-4"></i>
-        </div>
+    <!-- TOAST NOTIFICACION -->
+    <div v-if="toast.show" class="fixed bottom-10 right-10 bg-white border border-slate-200 p-5 rounded-2xl shadow-2xl flex items-center gap-4 animate-in slide-in-from-right-full z-[100]">
+        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white"><i data-lucide="bell" class="w-5 h-5"></i></div>
         <div>
-            <p class="text-[10px] font-black uppercase text-blue-400">Notificación</p>
-            <p class="text-xs font-bold">{{ toast.msg }}</p>
+            <p class="text-[10px] font-black text-blue-600 uppercase">Aviso del Sistema</p>
+            <p class="text-xs font-bold text-slate-800">{{ toast.msg }}</p>
         </div>
     </div>
 </div>
@@ -223,8 +218,7 @@ const { createApp } = Vue;
 createApp({
     data() {
         return {
-            // CREDENCIALES API FACTUS (HARDCODED PARA EL PROCESO)
-            apiConfig: {
+            api: {
                 url: 'https://api-sandbox.factus.com.co',
                 id: '9de9ec14-5684-48b5-baa3-9a87fc8c3c42',
                 secret: 'bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS',
@@ -237,7 +231,7 @@ createApp({
             currentTab: 'historial',
             loading: false,
             dataList: [],
-            newInvoice: {
+            newDoc: {
                 customer_name: '',
                 customer_id: '',
                 customer_email: '',
@@ -248,175 +242,144 @@ createApp({
         }
     },
     watch: {
-        currentTab(newTab) {
-            if (newTab === 'historial' || newTab === 'notas') {
-                this.loadData();
-            }
-        }
+        currentTab(v) { if(v === 'historial' || v === 'notas') this.loadData(); }
     },
     computed: {
         totalInvoice() {
-            return this.newInvoice.items.reduce((acc, item) => acc + (item.quantity * item.price * 1.19), 0);
+            return this.newDoc.items.reduce((acc, i) => acc + (i.quantity * i.price * 1.19), 0);
         }
     },
-    mounted() {
-        lucide.createIcons();
-    },
-    updated() {
-        lucide.createIcons();
-    },
+    mounted() { lucide.createIcons(); },
+    updated() { lucide.createIcons(); },
     methods: {
         handleLogin() {
-            // Validación local simulada (puedes cambiar admin/admin123)
-            if (this.login.user === 'admin@factus.com' && this.login.pass === 'admin123') {
+            if(this.login.user && this.login.pass) {
                 this.isLoggedIn = true;
                 this.loadData();
             } else {
-                this.loginError = "ACCESO DENEGADO. REVISE USUARIO Y CONTRASEÑA.";
+                this.loginError = "Por favor ingrese usuario y contraseña.";
             }
         },
         async getToken() {
-            // Simulador de archivo temporal de token en memoria (localStorage)
-            const stored = JSON.parse(localStorage.getItem('factus_cache_token'));
-            if (stored && Date.now() < stored.expiry) return stored.access_token;
+            const cache = JSON.parse(localStorage.getItem('factus_token_v2'));
+            if(cache && Date.now() < cache.exp) return cache.token;
 
             try {
-                const res = await fetch(`${this.apiConfig.url}/oauth/token`, {
+                const res = await fetch(`${this.api.url}/oauth/token`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         grant_type: 'password',
-                        client_id: this.apiConfig.id,
-                        client_secret: this.apiConfig.secret,
-                        username: this.apiConfig.u,
-                        password: this.apiConfig.p
+                        client_id: this.api.id,
+                        client_secret: this.api.secret,
+                        username: this.api.u,
+                        password: this.api.p
                     })
                 });
-                const data = await res.json();
-                const cache = { 
-                    access_token: data.access_token, 
-                    expiry: Date.now() + (data.expires_in * 1000) 
-                };
-                localStorage.setItem('factus_cache_token', JSON.stringify(cache));
-                return data.access_token;
-            } catch (e) {
-                console.error("TOKEN ERROR", e);
-                return null;
-            }
+                const d = await res.json();
+                const obj = { token: d.access_token, exp: Date.now() + (d.expires_in * 1000) };
+                localStorage.setItem('factus_token_v2', JSON.stringify(obj));
+                return d.access_token;
+            } catch(e) { return null; }
         },
         async loadData() {
             this.loading = true;
-            const endpoint = this.currentTab === 'notas' ? 'v1/credit-notes' : 'v1/bills';
+            this.dataList = [];
             try {
                 const token = await this.getToken();
-                const res = await fetch(`${this.apiConfig.url}/${endpoint}`, {
+                const path = this.currentTab === 'notas' ? 'v1/credit-notes' : 'v1/bills';
+                const res = await fetch(`${this.api.url}/${path}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
-                const result = await res.json();
-                this.dataList = result.data?.data || result.data || [];
-            } catch (e) {
-                console.error(e);
-            } finally {
-                this.loading = false;
-            }
+                const d = await res.json();
+                this.dataList = d.data?.data || d.data || [];
+            } catch(e) { console.error(e); }
+            finally { this.loading = false; }
         },
         async downloadFile(number, type) {
-            this.showToast(`Preparando descarga de ${type.toUpperCase()}...`);
+            this.showToast(`Generando ${type.toUpperCase()}...`);
             try {
                 const token = await this.getToken();
-                const res = await fetch(`${this.apiConfig.url}/v1/bills/download-file/${number}/${type}`, {
+                // Factus usa la misma ruta base para descargar facturas y notas en sandbox generalmente
+                const res = await fetch(`${this.api.url}/v1/bills/download-file/${number}/${type}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
-                const result = await res.json();
-                if (result.data?.file_path) {
-                    window.open(result.data.file_path, '_blank');
+                const d = await res.json();
+                if(d.data?.file_path) {
+                    window.open(d.data.file_path, '_blank');
                 } else {
-                    this.showToast("Error al generar el archivo.");
+                    this.showToast("No se pudo obtener el archivo.");
                 }
-            } catch (e) {
-                this.showToast("Error de conexión con la API.");
-            }
+            } catch(e) { this.showToast("Error de conexión API."); }
         },
-        addItem() {
-            this.newInvoice.items.push({ name: '', quantity: 1, price: 0 });
-        },
-        removeItem(idx) {
-            this.newInvoice.items.splice(idx, 1);
-        },
+        addItem() { this.newDoc.items.push({ name: '', quantity: 1, price: 0 }); },
+        removeItem(idx) { this.newDoc.items.splice(idx, 1); },
         async submitInvoice() {
+            if(!this.newDoc.customer_id || this.newDoc.items.some(i => !i.name)) {
+                return alert("Complete todos los campos del cliente y productos.");
+            }
             this.loading = true;
             try {
                 const token = await this.getToken();
-                
-                // CONSTRUCCIÓN DEL OBJETO SEGÚN DOCS DE FACTUS
                 const payload = {
-                    "numbering_range_id": 8, // ID de rango sandbox
-                    "reference_code": "INV-" + Date.now(),
+                    "numbering_range_id": 8,
+                    "reference_code": "FAC-" + Date.now(),
                     "customer": {
-                        "identification": this.newInvoice.customer_id,
-                        "names": this.newInvoice.customer_name,
-                        "email": this.newInvoice.customer_email,
-                        "municipality_id": this.newInvoice.municipality,
-                        "identification_document_id": 3, // Cédula de ciudadanía
-                        "type_document_identification_id": 1, // Persona Natural
-                        "type_organization_id": 2, // Persona Natural
-                        "type_regime_id": 2 // No responsable de IVA
+                        "identification": this.newDoc.customer_id,
+                        "names": this.newDoc.customer_name,
+                        "email": this.newDoc.customer_email,
+                        "municipality_id": this.newDoc.municipality,
+                        "identification_document_id": 3,
+                        "type_document_identification_id": 1,
+                        "type_organization_id": 2,
+                        "type_regime_id": 2
                     },
-                    "payment_form": "1", // Contado
-                    "payment_method_id": "10", // Efectivo
-                    "items": this.newInvoice.items.map(i => ({
-                        "code_reference": "REF-" + Math.floor(Math.random() * 1000),
+                    "payment_form": "1",
+                    "payment_method_id": "10",
+                    "items": this.newDoc.items.map(i => ({
+                        "code_reference": "P-" + Math.floor(Math.random()*999),
                         "name": i.name,
                         "quantity": i.quantity,
                         "discount_rate": 0,
                         "price": i.price,
                         "tax_rate": "19.00",
-                        "unit_measure_id": 70, // Unidad
+                        "unit_measure_id": 70,
                         "standard_code_id": 1,
                         "is_excluded": 0,
-                        "tribute_id": 1 // IVA
+                        "tribute_id": 1
                     }))
                 };
 
-                const res = await fetch(`${this.apiConfig.url}/v1/bills`, {
+                // ERROR ANTERIOR: La ruta de creación debe ser /validate para procesar el POST
+                const res = await fetch(`${this.api.url}/v1/bills/validate`, {
                     method: 'POST',
                     headers: { 
                         'Authorization': `Bearer ${token}`, 
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json' 
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
                 });
 
-                const data = await res.json();
-                if (data.status === 'OK' || data.data) {
-                    this.showToast("Factura Emitida y Validada por la DIAN");
+                const d = await res.json();
+                if(d.status === 'OK' || d.data) {
+                    this.showToast("¡Factura validada por la DIAN con éxito!");
                     this.currentTab = 'historial';
                 } else {
-                    alert("Error API: " + JSON.stringify(data.errors || data.message));
+                    alert("Error Factus: " + (d.message || JSON.stringify(d.errors)));
                 }
-            } catch (e) {
-                alert("Error crítico de red.");
-            } finally {
-                this.loading = false;
-            }
+            } catch(e) { alert("Error de red."); }
+            finally { this.loading = false; }
         },
-        showToast(msg) {
-            this.toast.msg = msg;
-            this.toast.show = true;
-            setTimeout(() => this.toast.show = false, 3000);
-        },
-        formatPrice(val) {
-            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(val);
-        },
-        navBtnClass(tab) {
-            const base = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ";
-            return base + (this.currentTab === tab ? "bg-blue-600 text-white shadow-lg shadow-blue-900/40" : "text-slate-400 hover:text-white hover:bg-slate-800");
+        showToast(m) { this.toast.msg = m; this.toast.show = true; setTimeout(() => this.toast.show = false, 4000); },
+        formatPrice(v) { return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(v); },
+        navBtnClass(t) {
+            const b = "w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl text-[10px] font-black transition-all uppercase tracking-widest ";
+            return b + (this.currentTab === t ? "bg-blue-600 text-white shadow-lg" : "text-slate-400 hover:text-white hover:bg-slate-800");
         }
     }
 }).mount('#app');
 </script>
-
 </body>
 </html>
 
