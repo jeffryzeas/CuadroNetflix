@@ -3,156 +3,122 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Factus ERP - Enterprise Dashboard</title>
+    <title>Factus ERP - Professional Suite</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #f1f5f9; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; color: #1e293b; }
         [v-cloak] { display: none; }
-        .invoice-paper {
+        
+        /* Estilo de Factura Imprimible */
+        .invoice-canvas {
             width: 210mm;
             min-height: 297mm;
-            padding: 20mm;
-            margin: auto;
+            padding: 15mm;
+            margin: 2rem auto;
             background: white;
-            box-shadow: 0 0 50px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            position: relative;
         }
+
         @media print {
             body * { visibility: hidden; }
-            .invoice-render, .invoice-render * { visibility: visible; }
-            .invoice-render { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; margin: 0; padding: 10mm; }
-            .no-print { display: none; }
+            .invoice-canvas, .invoice-canvas * { visibility: visible; }
+            .invoice-canvas { position: absolute; left: 0; top: 0; margin: 0; box-shadow: none; width: 100%; }
+            .no-print { display: none !important; }
         }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="text-slate-900 overflow-hidden">
+<body class="overflow-x-hidden">
 
 <div id="app" v-cloak>
-    <!-- LOGIN INTERFACE -->
-    <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-[#0f172a] p-6">
-        <div class="w-full max-w-md bg-white rounded-[3rem] shadow-2xl overflow-hidden">
-            <div class="p-12 text-center">
-                <div class="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-3">
-                    <i data-lucide="layers" class="text-white w-10 h-10 -rotate-3"></i>
+    <!-- LOGIN -->
+    <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-slate-950 p-6">
+        <div class="w-full max-w-md bg-white rounded-[2.5rem] p-10 shadow-2xl">
+            <div class="text-center mb-10">
+                <div class="inline-flex p-4 bg-blue-600 rounded-3xl text-white mb-4">
+                    <i data-lucide="shield-check" class="w-10 h-10"></i>
                 </div>
-                <h1 class="text-3xl font-black tracking-tighter text-slate-900">ERP CLOUD</h1>
-                <p class="text-slate-400 text-xs mt-2 uppercase tracking-widest font-bold">Secure Infrastructure</p>
-                
-                <div class="mt-10 space-y-4 text-left">
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Username</label>
-                        <input v-model="login.user" type="text" class="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2">Password</label>
-                        <input v-model="login.pass" type="password" class="w-full mt-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all">
-                    </div>
-                    <button @click="handleLogin" class="w-full bg-slate-900 hover:bg-blue-600 text-white font-black py-4 rounded-2xl mt-4 transition-all shadow-xl shadow-slate-200 active:scale-95">
-                        ACCESS SYSTEM
-                    </button>
-                </div>
+                <h1 class="text-3xl font-extrabold tracking-tighter">Factus ERP</h1>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-widest mt-2">Acceso Administrativo</p>
+            </div>
+            <div class="space-y-4">
+                <input v-model="login.user" type="text" placeholder="Usuario" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <input v-model="login.pass" type="password" placeholder="Contraseña" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
+                <button @click="handleLogin" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg">INGRESAR AL SISTEMA</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN ERP INTERFACE -->
+    <!-- DASHBOARD PRINCIPAL -->
     <div v-else class="flex h-screen overflow-hidden">
-        <!-- COLLAPSIBLE SIDEBAR -->
-        <aside class="w-72 bg-slate-900 text-slate-400 flex flex-col shrink-0">
-            <div class="p-8 flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-lg text-white"><i data-lucide="zap" class="w-5 h-5"></i></div>
-                <span class="text-white font-black text-xl tracking-tighter">FACTUS ERP</span>
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-900 text-white flex flex-col shrink-0">
+            <div class="p-6 flex items-center gap-3 border-b border-slate-800">
+                <i data-lucide="box" class="text-blue-500"></i>
+                <span class="font-black text-xl">FACTUS</span>
             </div>
-
-            <nav class="flex-1 px-4 py-6 space-y-8 overflow-y-auto custom-scrollbar">
-                <div>
-                    <h5 class="text-[10px] font-black uppercase tracking-[0.2em] px-4 mb-4 text-slate-600">Core Modules</h5>
-                    <div class="space-y-1">
-                        <button @click="currentTab = 'sales'" :class="navBtnClass('sales')"><i data-lucide="shopping-cart"></i> Ventas</button>
-                        <button @click="currentTab = 'purchases'" :class="navBtnClass('purchases')"><i data-lucide="package"></i> Compras</button>
-                        <button @click="currentTab = 'inventory'" :class="navBtnClass('inventory')"><i data-lucide="box"></i> Inventario</button>
-                    </div>
-                </div>
-                <div>
-                    <h5 class="text-[10px] font-black uppercase tracking-[0.2em] px-4 mb-4 text-slate-600">Financials</h5>
-                    <div class="space-y-1">
-                        <button @click="currentTab = 'credit_notes'" :class="navBtnClass('credit_notes')"><i data-lucide="file-minus"></i> Notas Crédito</button>
-                        <button @click="currentTab = 'history'" :class="navBtnClass('history')"><i data-lucide="history"></i> Auditoría DIAN</button>
-                    </div>
-                </div>
-                <div class="pt-4">
-                    <button @click="currentTab = 'create'" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl shadow-lg shadow-blue-900/40 transition-all flex items-center justify-center gap-3 active:scale-95">
-                        <i data-lucide="plus-circle" class="w-5 h-5"></i> NUEVO DOCUMENTO
-                    </button>
-                </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <p class="text-[10px] font-bold text-slate-500 uppercase px-3 mb-2">Operaciones</p>
+                <button @click="currentTab = 'bills'" :class="navBtnClass('bills')"><i data-lucide="file-text" class="w-4 h-4"></i> Facturas</button>
+                <button @click="currentTab = 'support'" :class="navBtnClass('support')"><i data-lucide="file-check" class="w-4 h-4"></i> Doc. Soporte</button>
+                <button @click="currentTab = 'create'" :class="navBtnClass('create')" class="!bg-blue-600 !mt-6"><i data-lucide="plus" class="w-4 h-4"></i> Nueva Factura</button>
             </nav>
-
-            <div class="p-8 border-t border-slate-800 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-white border border-slate-700">AD</div>
-                    <span class="text-xs font-bold text-slate-300">Admin</span>
-                </div>
-                <button @click="isLoggedIn = false" class="text-red-400 hover:text-red-300"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+            <div class="p-6 border-t border-slate-800">
+                <button @click="isLoggedIn = false" class="text-slate-500 hover:text-white flex items-center gap-2 text-sm font-bold"><i data-lucide="log-out" class="w-4 h-4"></i> Salir</button>
             </div>
         </aside>
 
-        <!-- CONTENT AREA -->
-        <main class="flex-1 flex flex-col bg-[#f8fafc] overflow-hidden">
-            <!-- TOP BAR -->
-            <header class="h-20 bg-white border-b border-slate-200 px-10 flex items-center justify-between shrink-0">
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-16 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
+                <h2 class="text-sm font-black uppercase tracking-widest text-slate-400">{{ currentTab }}</h2>
                 <div class="flex items-center gap-4">
-                    <h2 class="text-xs font-black uppercase tracking-widest text-slate-500">{{ currentTab }}</h2>
-                    <span class="w-px h-6 bg-slate-200"></span>
-                    <div class="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1 rounded-full border border-emerald-100 text-[10px] font-black">
-                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> ONLINE: FACTUS API
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4"></i>
-                        <input type="text" placeholder="Buscar documento..." class="bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 w-64 transition-all">
-                    </div>
+                    <button @click="loadData" class="p-2 hover:bg-slate-100 rounded-full"><i data-lucide="refresh-cw" :class="{'animate-spin': loading}" class="w-4 h-4"></i></button>
                 </div>
             </header>
 
-            <!-- MODULE LOADER -->
-            <div class="flex-1 overflow-y-auto p-10 custom-scrollbar">
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
                 
-                <!-- SALES / HISTORY LIST -->
-                <div v-if="['sales', 'purchases', 'credit_notes', 'history'].includes(currentTab)" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50/50 border-b border-slate-100">
-                                <tr>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase">Referencia</th>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase">Tercero / Cliente</th>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase text-center">Estado DIAN</th>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase text-right">Monto</th>
-                                    <th class="px-8 py-5 text-[10px] font-black text-slate-400 uppercase text-right">Opciones</th>
+                <!-- LISTADO DE FACTURAS -->
+                <div v-if="currentTab === 'bills' || currentTab === 'support'">
+                    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-[10px] font-black uppercase text-slate-400 border-b">
+                                    <th class="px-6 py-4">Número</th>
+                                    <th class="px-6 py-4">Cliente</th>
+                                    <th class="px-6 py-4">Fecha</th>
+                                    <th class="px-6 py-4 text-right">Monto</th>
+                                    <th class="px-6 py-4 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-50">
-                                <tr v-for="doc in dataList" :key="doc.number" class="hover:bg-blue-50/20 transition-all">
-                                    <td class="px-8 py-5 font-mono text-sm font-bold text-blue-600">{{ doc.number }}</td>
-                                    <td class="px-8 py-5">
-                                        <div class="text-sm font-bold text-slate-800">{{ getCustomerName(doc) }}</div>
-                                        <div class="text-[10px] text-slate-400 font-medium">{{ getCustomerDoc(doc) }}</div>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr v-for="item in dataList" :key="item.number" class="hover:bg-slate-50 transition-all">
+                                    <td class="px-6 py-4 font-bold text-blue-600 text-sm">{{ item.number }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm font-bold">{{ item.customer?.names || 'Cliente de Contado' }}</div>
+                                        <div class="text-[10px] text-slate-400">{{ item.customer?.identification || '---' }}</div>
                                     </td>
-                                    <td class="px-8 py-5 text-center">
-                                        <span class="px-3 py-1 bg-green-100 text-green-700 text-[9px] font-black uppercase rounded-full">Validado</span>
-                                    </td>
-                                    <td class="px-8 py-5 text-right text-sm font-black text-slate-900">
-                                        {{ formatPrice(doc.total || 0) }}
-                                    </td>
-                                    <td class="px-8 py-5 text-right">
-                                        <div class="flex justify-end gap-2">
-                                            <button @click="renderInvoice(doc)" class="p-2.5 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all">
-                                                <i data-lucide="layout" class="w-4 h-4"></i>
+                                    <td class="px-6 py-4 text-xs text-slate-500">{{ item.created_at }}</td>
+                                    <td class="px-6 py-4 text-right font-black text-sm text-slate-900">{{ formatPrice(item.total) }}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex justify-center gap-2">
+                                            <button @click="viewInvoice(item)" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all" title="Ver Gráfica">
+                                                <i data-lucide="eye" class="w-4 h-4"></i>
                                             </button>
-                                            <button @click="showJSON(doc)" class="p-2.5 bg-slate-50 text-slate-600 rounded-xl hover:bg-slate-900 hover:text-white transition-all">
+                                            <button @click="viewJSON(item)" class="p-2 bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-900 hover:text-white transition-all" title="Ver JSON">
                                                 <i data-lucide="code" class="w-4 h-4"></i>
                                             </button>
                                         </div>
@@ -160,77 +126,54 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <div v-if="loading" class="p-20 text-center animate-pulse">
-                            <i data-lucide="loader" class="w-10 h-10 text-blue-600 mx-auto animate-spin"></i>
-                            <p class="text-[10px] font-black text-slate-400 uppercase mt-4">Sincronizando registros...</p>
+                        <div v-if="loading" class="p-20 flex flex-col items-center">
+                            <div class="loader mb-4"></div>
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Sincronizando con Factus...</p>
+                        </div>
+                        <div v-if="!loading && dataList.length === 0" class="p-20 text-center">
+                            <p class="text-slate-400 font-bold">No hay registros para mostrar.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- FORMULARIO CREAR -->
-                <div v-if="currentTab === 'create'" class="max-w-4xl mx-auto animate-in zoom-in-95 duration-300">
-                    <div class="bg-white rounded-[3rem] border border-slate-200 shadow-2xl p-12">
-                        <div class="flex items-center justify-between mb-12">
-                            <div>
-                                <h3 class="text-2xl font-black text-slate-900">Nueva Operación</h3>
-                                <p class="text-xs text-slate-400 mt-1">Generación de documento electrónico estructurado</p>
+                <!-- FORMULARIO CREACIÓN -->
+                <div v-if="currentTab === 'create'" class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-xl p-10">
+                        <h3 class="text-2xl font-black mb-8">Nueva Factura de Venta</h3>
+                        <div class="grid grid-cols-2 gap-6 mb-8">
+                            <div class="col-span-2">
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Nombre del Cliente</label>
+                                <input v-model="form.names" class="w-full mt-1 p-4 bg-slate-50 border rounded-2xl outline-none focus:border-blue-500">
                             </div>
-                            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                                <i data-lucide="file-check" class="text-blue-600 w-8 h-8"></i>
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Identificación</label>
+                                <input v-model="form.id" class="w-full mt-1 p-4 bg-slate-50 border rounded-2xl outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase">Email</label>
+                                <input v-model="form.email" class="w-full mt-1 p-4 bg-slate-50 border rounded-2xl outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-black uppercase">Productos</h4>
+                                <button @click="addItem" class="text-xs font-bold text-blue-600">+ Añadir</button>
+                            </div>
+                            <div v-for="(item, idx) in form.items" :key="idx" class="flex gap-4 mb-2">
+                                <input v-model="item.name" placeholder="Producto" class="flex-1 p-3 bg-slate-50 border rounded-xl text-sm">
+                                <input v-model.number="item.qty" type="number" class="w-20 p-3 bg-slate-50 border rounded-xl text-center font-bold">
+                                <input v-model.number="item.price" type="number" class="w-32 p-3 bg-slate-50 border rounded-xl text-right font-bold">
+                                <button @click="removeItem(idx)" class="text-red-400 px-2"><i data-lucide="x" class="w-4 h-4"></i></button>
                             </div>
                         </div>
 
-                        <div class="space-y-10">
-                            <!-- SECCION CLIENTE -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-                                <div class="md:col-span-2 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mb-2">Datos del Receptor</div>
-                                <div>
-                                    <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Nombre / Razón Social</label>
-                                    <input v-model="form.customer.names" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-                                <div>
-                                    <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Identificación (NIT/CC)</label>
-                                    <input v-model="form.customer.identification" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-                                <div class="md:col-span-2">
-                                    <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Email de Envío</label>
-                                    <input v-model="form.customer.email" class="w-full mt-1 p-4 bg-white border border-slate-200 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500">
-                                </div>
-                            </div>
-
-                            <!-- SECCION ITEMS -->
-                            <div>
-                                <div class="flex items-center justify-between mb-6">
-                                    <h4 class="text-[10px] font-black text-slate-900 uppercase tracking-widest">Líneas de Detalle</h4>
-                                    <button @click="addItem" class="px-4 py-2 bg-slate-900 text-white text-[10px] font-black rounded-xl hover:bg-blue-600 transition-all">+ AÑADIR</button>
-                                </div>
-                                <div class="space-y-3">
-                                    <div v-for="(item, idx) in form.items" :key="idx" class="flex gap-4 items-end bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                                        <div class="flex-1">
-                                            <input v-model="item.name" placeholder="Descripción del producto..." class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm outline-none">
-                                        </div>
-                                        <div class="w-24">
-                                            <input v-model.number="item.quantity" type="number" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm text-center font-bold">
-                                        </div>
-                                        <div class="w-40">
-                                            <input v-model.number="item.price" type="number" class="w-full p-3 bg-slate-50 border-none rounded-xl text-sm font-bold">
-                                        </div>
-                                        <button @click="removeItem(idx)" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- ACCIONES -->
-                            <div class="flex items-center justify-between pt-10 border-t border-slate-100">
-                                <div>
-                                    <p class="text-[10px] font-black text-slate-400 uppercase mb-1">Total a Pagar (19% IVA Incl.)</p>
-                                    <p class="text-4xl font-black text-slate-900 tracking-tighter">{{ formatPrice(totalInvoice) }}</p>
-                                </div>
-                                <button @click="submitDocument" :disabled="loading" class="bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-2xl font-black text-sm tracking-widest shadow-2xl shadow-blue-200 transition-all active:scale-95 disabled:opacity-50">
-                                    <span v-if="!loading">VALIDAR Y EMITIR DIAN</span>
-                                    <i v-else data-lucide="refresh-cw" class="w-5 h-5 animate-spin mx-auto"></i>
-                                </button>
-                            </div>
+                        <div class="flex items-center justify-between pt-6 border-t">
+                            <div class="text-2xl font-black">{{ formatPrice(totalForm) }}</div>
+                            <button @click="sendToFactus" :disabled="loading" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 disabled:opacity-50">
+                                <span v-if="!loading">GENERAR FACTURA</span>
+                                <span v-else>PROCESANDO...</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -239,125 +182,92 @@
         </main>
     </div>
 
-    <!-- VIRTUAL PDF / INVOICE RENDERER -->
-    <div v-if="viewer.show" class="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md overflow-y-auto p-10 flex flex-col items-center no-print">
-        <div class="w-full max-w-[210mm] flex justify-between items-center mb-6 no-print">
-            <h3 class="text-white font-black text-xl">Previsualización del Documento</h3>
-            <div class="flex gap-4">
-                <button @click="window.print()" class="bg-white px-6 py-3 rounded-xl font-black text-xs uppercase hover:bg-blue-50 transition-all flex items-center gap-2">
-                    <i data-lucide="printer" class="w-4 h-4"></i> Imprimir Factura
-                </button>
-                <button @click="viewer.show = false" class="bg-red-500 text-white p-3 rounded-xl hover:bg-red-600">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-        </div>
-
-        <div class="invoice-paper invoice-render rounded-sm">
-            <!-- Header de la Factura -->
-            <div class="flex justify-between items-start mb-12 border-b-4 border-slate-900 pb-10">
-                <div class="flex items-center gap-6">
-                    <div class="w-20 h-20 bg-slate-900 text-white flex items-center justify-center rounded-2xl">
-                        <i data-lucide="layers" class="w-10 h-10"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-2xl font-black text-slate-900 uppercase">MI EMPRESA ERP S.A.S</h2>
-                        <p class="text-xs font-bold text-slate-500">NIT: 900.123.456-7</p>
-                        <p class="text-xs text-slate-400">Calle Principal #123 - Bogotá, Colombia</p>
-                        <p class="text-xs text-slate-400">Tel: +57 (601) 123-4567</p>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="bg-slate-900 text-white px-6 py-4 rounded-xl">
-                        <p class="text-[10px] font-black uppercase tracking-widest text-blue-400">Factura Electrónica de Venta</p>
-                        <h3 class="text-2xl font-black">{{ viewer.data.number }}</h3>
-                    </div>
-                    <p class="text-[10px] font-black text-slate-500 mt-3 uppercase">Fecha Emisión: <span class="text-slate-900">{{ viewer.data.created_at || '2024-05-20' }}</span></p>
+    <!-- MODAL VISOR GRÁFICO (REPRESENTACIÓN DEL JSON) -->
+    <div v-if="modal.show" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md overflow-y-auto p-4 no-print">
+        <div class="max-w-5xl mx-auto py-10">
+            <div class="flex justify-between items-center mb-6 no-print">
+                <h2 class="text-white font-black text-2xl">Representación Gráfica del JSON</h2>
+                <div class="flex gap-3">
+                    <button @click="window.print()" class="bg-white text-slate-900 px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-blue-50 transition-all">
+                        <i data-lucide="printer" class="w-4 h-4"></i> Imprimir
+                    </button>
+                    <button @click="modal.show = false" class="bg-red-500 text-white p-3 rounded-xl"><i data-lucide="x" class="w-6 h-6"></i></button>
                 </div>
             </div>
 
-            <!-- Datos Cliente y Empresa -->
-            <div class="grid grid-cols-2 gap-20 mb-12">
-                <div>
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Datos del Adquiriente</h4>
-                    <div class="space-y-1">
-                        <p class="text-lg font-black text-slate-900">{{ getCustomerName(viewer.data) }}</p>
-                        <p class="text-sm font-bold text-slate-600">NIT/CC: {{ getCustomerDoc(viewer.data) }}</p>
-                        <p class="text-sm text-slate-500">{{ viewer.data.customer?.email || 'email@cliente.com' }}</p>
-                        <p class="text-sm text-slate-500">Bogotá D.C, Colombia</p>
-                    </div>
-                </div>
-                <div>
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Información de Pago</h4>
-                    <div class="space-y-2">
-                        <div class="flex justify-between text-sm"><span class="text-slate-400">Forma de Pago:</span> <span class="font-bold">Contado</span></div>
-                        <div class="flex justify-between text-sm"><span class="text-slate-400">Método de Pago:</span> <span class="font-bold">Transferencia</span></div>
-                        <div class="flex justify-between text-sm"><span class="text-slate-400">Estado DIAN:</span> <span class="bg-green-600 text-white px-2 py-0.5 rounded text-[9px] font-black">VALIDADO</span></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tabla de Items Renderizada -->
-            <table class="w-full mb-12">
-                <thead>
-                    <tr class="border-b-2 border-slate-900">
-                        <th class="py-4 text-[10px] font-black text-slate-900 uppercase text-left">Descripción del Producto / Servicio</th>
-                        <th class="py-4 text-[10px] font-black text-slate-900 uppercase text-center w-24">Cant.</th>
-                        <th class="py-4 text-[10px] font-black text-slate-900 uppercase text-right w-40">Precio Unit.</th>
-                        <th class="py-4 text-[10px] font-black text-slate-900 uppercase text-right w-40">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    <tr v-for="item in (viewer.data.items || [])" :key="item.id">
-                        <td class="py-4 text-sm font-medium text-slate-700">{{ item.name }}</td>
-                        <td class="py-4 text-sm font-bold text-center text-slate-900">{{ item.quantity }}</td>
-                        <td class="py-4 text-sm font-bold text-right text-slate-900">{{ formatPrice(item.price) }}</td>
-                        <td class="py-4 text-sm font-black text-right text-slate-900">{{ formatPrice(item.price * item.quantity) }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- Footer con Totales y QR -->
-            <div class="flex justify-between items-start pt-10 border-t-2 border-slate-100">
-                <div class="flex gap-6">
-                    <div class="w-32 h-32 bg-slate-50 border border-slate-100 flex items-center justify-center p-2 rounded-xl">
-                        <div class="text-center">
-                            <i data-lucide="qr-code" class="w-16 h-16 text-slate-900 mx-auto"></i>
-                            <p class="text-[7px] font-black mt-2 text-slate-400">VALIDACIÓN DIAN</p>
+            <!-- LIENZO DE LA FACTURA -->
+            <div class="invoice-canvas rounded-lg">
+                <div class="flex justify-between items-start mb-12 border-b-4 border-slate-900 pb-10">
+                    <div class="flex items-center gap-6">
+                        <div class="w-20 h-20 bg-slate-900 text-white flex items-center justify-center rounded-2xl">
+                            <i data-lucide="layers" class="w-10 h-10"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-black text-slate-900 uppercase">SU LOGO AQUÍ S.A.S</h2>
+                            <p class="text-xs font-bold text-slate-500">NIT: 900.000.000-1</p>
+                            <p class="text-xs text-slate-400">Bogotá D.C, Colombia</p>
                         </div>
                     </div>
-                    <div class="max-w-[300px]">
-                        <p class="text-[8px] font-bold text-slate-400 uppercase mb-2">CUFE / Resumen Técnico</p>
-                        <p class="text-[9px] font-mono break-all text-slate-500 leading-tight">
-                            9de9ec14568448b5baa39a87fc8c3c42bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS9de9ec14568448b5baa39a87fc8c3c42bxKg2MEoRngRre8bpMWvH9JRLWan05sOofFghjcS
-                        </p>
+                    <div class="text-right">
+                        <div class="bg-slate-900 text-white px-6 py-4 rounded-xl">
+                            <p class="text-[10px] font-black uppercase tracking-widest text-blue-400">Factura de Venta</p>
+                            <h3 class="text-2xl font-black">{{ modal.data.number }}</h3>
+                        </div>
+                        <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">Fecha: {{ modal.data.created_at || modal.data.date }}</p>
                     </div>
                 </div>
-                <div class="w-80 space-y-4">
-                    <div class="flex justify-between text-sm"><span class="text-slate-400 font-bold uppercase text-[10px]">Subtotal:</span> <span class="font-bold">{{ formatPrice(viewer.data.total / 1.19) }}</span></div>
-                    <div class="flex justify-between text-sm"><span class="text-slate-400 font-bold uppercase text-[10px]">IVA (19%):</span> <span class="font-bold">{{ formatPrice(viewer.data.total - (viewer.data.total / 1.19)) }}</span></div>
-                    <div class="flex justify-between items-center pt-4 border-t border-slate-900">
-                        <span class="text-slate-900 font-black uppercase text-xs">Total Factura:</span>
-                        <span class="text-2xl font-black text-slate-900">{{ formatPrice(viewer.data.total || 0) }}</span>
+
+                <div class="grid grid-cols-2 gap-10 mb-12">
+                    <div>
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Adquiriente</h4>
+                        <div class="space-y-1">
+                            <p class="text-lg font-black text-slate-900">{{ modal.data.customer?.names || 'Cliente Genérico' }}</p>
+                            <p class="text-sm font-bold text-slate-600">CC/NIT: {{ modal.data.customer?.identification }}</p>
+                            <p class="text-sm text-slate-500">{{ modal.data.customer?.email }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Detalles</h4>
+                        <p class="text-sm font-bold">Estado: <span class="text-green-600">VALIDADO POR LA DIAN</span></p>
+                        <p class="text-sm">CUFE: <span class="text-[10px] font-mono break-all">{{ modal.data.uuid || 'N/A' }}</span></p>
                     </div>
                 </div>
-            </div>
 
-            <div class="mt-20 text-center border-t border-dashed border-slate-200 pt-10">
-                <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Resolución DIAN No. 187640000001 de 2024 - Autoriza del 1 al 10000</p>
-                <p class="text-[10px] text-slate-500 font-black mt-2 italic">¡Gracias por su compra!</p>
-            </div>
-        </div>
-    </div>
+                <table class="w-full mb-10 border-collapse">
+                    <thead>
+                        <tr class="border-b-2 border-slate-900">
+                            <th class="py-4 text-xs font-black uppercase text-left">Descripción</th>
+                            <th class="py-4 text-xs font-black uppercase text-center w-20">Cant</th>
+                            <th class="py-4 text-xs font-black uppercase text-right w-32">Unitario</th>
+                            <th class="py-4 text-xs font-black uppercase text-right w-32">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr v-for="item in modal.data.items" :key="item.id">
+                            <td class="py-4 text-sm">{{ item.name }}</td>
+                            <td class="py-4 text-sm text-center">{{ item.quantity }}</td>
+                            <td class="py-4 text-sm text-right font-medium">{{ formatPrice(item.price) }}</td>
+                            <td class="py-4 text-sm text-right font-black">{{ formatPrice(item.price * item.quantity) }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-    <!-- NOTIFICACIONES -->
-    <div v-if="toast.show" class="fixed bottom-10 right-10 z-[200] bg-slate-900 text-white p-6 rounded-3xl shadow-2xl animate-in slide-in-from-right-full flex items-center gap-5">
-        <div class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/40">
-            <i data-lucide="bell" class="w-6 h-6"></i>
-        </div>
-        <div>
-            <p class="text-[10px] font-black text-blue-400 uppercase tracking-widest">Sistema Factus</p>
-            <p class="text-xs font-bold">{{ toast.msg }}</p>
+                <div class="flex justify-end pt-6 border-t-2 border-slate-900">
+                    <div class="w-72 space-y-3">
+                        <div class="flex justify-between text-sm"><span class="text-slate-400 uppercase font-bold text-[10px]">Subtotal:</span> <span class="font-bold">{{ formatPrice(modal.data.total / 1.19) }}</span></div>
+                        <div class="flex justify-between text-sm"><span class="text-slate-400 uppercase font-bold text-[10px]">IVA (19%):</span> <span class="font-bold">{{ formatPrice(modal.data.total - (modal.data.total / 1.19)) }}</span></div>
+                        <div class="flex justify-between items-center pt-3 border-t border-slate-900">
+                            <span class="font-black uppercase text-xs">Total Neto:</span>
+                            <span class="text-2xl font-black text-slate-900">{{ formatPrice(modal.data.total) }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-20 flex items-center gap-6 opacity-30">
+                    <i data-lucide="qr-code" class="w-20 h-20"></i>
+                    <p class="text-[8px] font-bold uppercase max-w-xs leading-relaxed">Representación gráfica de factura electrónica generada por Factus ERP. Validada según normatividad vigente de la DIAN.</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -378,40 +288,33 @@ createApp({
             },
             isLoggedIn: false,
             login: { user: '', pass: '' },
-            currentTab: 'sales',
+            currentTab: 'bills',
             loading: false,
             dataList: [],
             form: {
-                customer: { names: '', identification: '', email: '', municipality_id: '149' },
-                items: [{ name: '', quantity: 1, price: 0 }]
+                names: '', id: '', email: '',
+                items: [{ name: '', qty: 1, price: 0 }]
             },
-            viewer: { show: false, data: {} },
-            toast: { show: false, msg: '' }
+            modal: { show: false, data: {} }
         }
     },
     watch: {
-        currentTab(v) { if(['sales', 'purchases', 'credit_notes', 'history'].includes(v)) this.loadData(); }
+        currentTab(v) { if(['bills', 'support'].includes(v)) this.loadData(); }
     },
     computed: {
-        totalInvoice() {
-            return this.form.items.reduce((acc, i) => acc + (i.quantity * i.price * 1.19), 0);
-        }
+        totalForm() { return this.form.items.reduce((acc, i) => acc + (i.qty * i.price * 1.19), 0); }
     },
-    mounted() { 
-        lucide.createIcons();
-    },
-    updated() { 
-        lucide.createIcons(); 
-    },
+    mounted() { lucide.createIcons(); },
+    updated() { lucide.createIcons(); },
     methods: {
-        handleLogin() {
+        handleLogin() { 
             if(this.login.user && this.login.pass) {
                 this.isLoggedIn = true;
                 this.loadData();
             }
         },
         async getToken() {
-            const cache = JSON.parse(localStorage.getItem('erp_token'));
+            const cache = JSON.parse(localStorage.getItem('factus_tk'));
             if(cache && Date.now() < cache.exp) return cache.token;
 
             try {
@@ -428,7 +331,7 @@ createApp({
                 });
                 const d = await res.json();
                 const obj = { token: d.access_token, exp: Date.now() + (d.expires_in * 1000) };
-                localStorage.setItem('erp_token', JSON.stringify(obj));
+                localStorage.setItem('factus_tk', JSON.stringify(obj));
                 return d.access_token;
             } catch(e) { return null; }
         },
@@ -437,42 +340,46 @@ createApp({
             this.dataList = [];
             try {
                 const token = await this.getToken();
-                let path = 'v1/bills';
-                if(this.currentTab === 'credit_notes') path = 'v1/credit-notes';
-                if(this.currentTab === 'purchases') path = 'v1/support-documents';
-
+                const path = this.currentTab === 'bills' ? 'v1/bills' : 'v1/support-documents';
                 const res = await fetch(`${this.api.url}/${path}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
                 const d = await res.json();
                 this.dataList = d.data?.data || d.data || [];
-            } catch(e) { this.showToast("Error de conexión"); }
+            } catch(e) { console.error(e); }
             finally { this.loading = false; }
         },
-        async renderInvoice(doc) {
+        async viewInvoice(item) {
             this.loading = true;
             try {
                 const token = await this.getToken();
-                const res = await fetch(`${this.api.url}/v1/bills/show/${doc.number}`, {
+                // CONSULTA INDIVIDUAL PARA OBTENER TODO EL JSON (CON ITEMS)
+                const res = await fetch(`${this.api.url}/v1/bills/show/${item.number}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
                 const d = await res.json();
-                this.viewer.data = d.data;
-                this.viewer.show = true;
-            } catch(e) { this.showToast("No se pudo renderizar la factura."); }
+                if(d.data) {
+                    this.modal.data = d.data;
+                    this.modal.show = true;
+                }
+            } catch(e) { alert("Error obteniendo detalles del JSON."); }
             finally { this.loading = false; }
         },
-        async submitDocument() {
+        viewJSON(item) {
+            const blob = new Blob([JSON.stringify(item, null, 4)], { type: 'application/json' });
+            window.open(URL.createObjectURL(blob), '_blank');
+        },
+        async sendToFactus() {
             this.loading = true;
             try {
                 const token = await this.getToken();
                 const payload = {
                     "numbering_range_id": 8,
-                    "reference_code": "FAC-" + Date.now(),
+                    "reference_code": "ERP-" + Date.now(),
                     "customer": {
-                        "identification": this.form.customer.identification,
-                        "names": this.form.customer.names,
-                        "email": this.form.customer.email,
+                        "identification": this.form.id,
+                        "names": this.form.names,
+                        "email": this.form.email,
                         "municipality_id": "149",
                         "identification_document_id": 3,
                         "type_document_identification_id": 1,
@@ -482,9 +389,9 @@ createApp({
                     "payment_form": "1",
                     "payment_method_id": "10",
                     "items": this.form.items.map(i => ({
-                        "code_reference": "P-" + Math.floor(Math.random()*999),
+                        "code_reference": "REF-" + Math.floor(Math.random()*999),
                         "name": i.name,
-                        "quantity": i.quantity,
+                        "quantity": i.qty,
                         "discount_rate": 0,
                         "price": i.price,
                         "tax_rate": "19.00",
@@ -507,28 +414,20 @@ createApp({
 
                 const d = await res.json();
                 if(d.status === 'OK' || d.data) {
-                    this.showToast("¡Documento validado con éxito!");
-                    this.currentTab = 'sales';
+                    alert("¡Éxito! Factura validada por la DIAN.");
+                    this.currentTab = 'bills';
                 } else {
-                    alert("Error: " + JSON.stringify(d.errors || d.message));
+                    alert("Error DIAN: " + JSON.stringify(d.errors));
                 }
-            } catch(e) { alert("Error de comunicación."); }
+            } catch(e) { alert("Fallo técnico."); }
             finally { this.loading = false; }
         },
-        showJSON(doc) {
-            const jsonStr = JSON.stringify(doc, null, 4);
-            const blob = new Blob([jsonStr], { type: 'application/json' });
-            window.open(URL.createObjectURL(blob), '_blank');
-        },
-        getCustomerName(doc) { return doc.customer?.names || doc.receptor?.names || 'Cliente Genérico'; },
-        getCustomerDoc(doc) { return doc.customer?.identification || 'NIT/CC No Disp.'; },
-        addItem() { this.form.items.push({ name: '', quantity: 1, price: 0 }); },
+        addItem() { this.form.items.push({ name: '', qty: 1, price: 0 }); },
         removeItem(idx) { if(this.form.items.length > 1) this.form.items.splice(idx, 1); },
-        showToast(m) { this.toast.msg = m; this.toast.show = true; setTimeout(() => this.toast.show = false, 4000); },
         formatPrice(v) { return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(v); },
         navBtnClass(t) {
-            const b = "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ";
-            return b + (this.currentTab === t ? "bg-slate-800 text-white shadow-lg" : "text-slate-500 hover:text-white hover:bg-slate-800");
+            const b = "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold transition-all ";
+            return b + (this.currentTab === t ? "bg-slate-800 text-white" : "text-slate-500 hover:text-white hover:bg-slate-800");
         }
     }
 }).mount('#app');
