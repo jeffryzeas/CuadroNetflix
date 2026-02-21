@@ -1,37 +1,1320 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuadroNetflix</title>
-    <script>
-        // Factus API Integration
-        const API_BASE_URL = 'https://api.factus.com';
-        const API_KEY = 'YOUR_API_KEY_HERE'; // Replace with your actual API key
+<!doctype html>
+<html lang="es" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Inventario de Pintura</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'DM Sans', sans-serif; }
+    .mono { font-family: 'Space Mono', monospace; }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .anim-slide { animation: slideUp 0.5s ease forwards; }
+    .anim-fade { animation: fadeIn 0.4s ease forwards; }
+    .anim-d1 { animation-delay: 0.05s; opacity: 0; }
+    .anim-d2 { animation-delay: 0.1s; opacity: 0; }
+    .anim-d3 { animation-delay: 0.15s; opacity: 0; }
+    .anim-d4 { animation-delay: 0.2s; opacity: 0; }
 
-        async function fetchData() {
-            const response = await fetch(`${API_BASE_URL}/endpoint`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            });
+    .tab-active {
+      background: var(--primary-action);
+      color: #000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data);
-                // Handle the data as needed
-            } else {
-                console.error(`Error: ${response.status} ${response.statusText}`);
-            }
-        }
+    .card-glow {
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card-glow:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08), 0 12px 32px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
 
-        document.addEventListener('DOMContentLoaded', fetchData);
-    </script>
-</head>
-<body>
-    <h1>Welcome to CuadroNetflix</h1>
-    <div id="content"></div>
-</body>
+    .progress-bar {
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .input-field {
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-field:focus {
+      border-color: var(--primary-action);
+      box-shadow: 0 0 0 3px rgba(var(--primary-action-rgb), 0.15);
+    }
+
+    .toast {
+      animation: slideUp 0.3s ease forwards;
+    }
+
+    :root {
+      --bg-color: #0f1419;
+      --surface-color: #1a2029;
+      --text-color: #e8ecf1;
+      --primary-action: #f59e0b;
+      --primary-action-rgb: 245, 158, 11;
+      --secondary-action: #3b82f6;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.8);
+    }
+
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+    .modal-backdrop {
+      animation: fadeIn 0.3s ease;
+    }
+
+    @media print {
+      * { background: #fff !important; color: #000 !important; }
+      .no-print { display: none !important; }
+      body { margin: 0; padding: 16px; }
+      .card-glow { box-shadow: none !important; border: 1px solid #ddd !important; page-break-inside: avoid; }
+      table { border-collapse: collapse; width: 100%; }
+      table td, table th { border: 1px solid #000; padding: 6px; font-size: 11px; }
+      .print-header { border-bottom: 2px solid #000; margin-bottom: 12px; padding-bottom: 12px; }
+      h1, h2, h3, h4 { color: #000 !important; margin-top: 12px; margin-bottom: 8px; page-break-after: avoid; }
+      .progress-bar-bg { background: #eee !important; }
+      .print-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+      .print-box { border: 1px solid #000; padding: 8px; }
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full" style="background: var(--bg-color); color: var(--text-color);">
+  <div id="app-wrapper" class="h-full w-full overflow-auto scrollbar-thin"><!-- Toast Container -->
+   <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-2 no-print"></div><!-- Header -->
+   <header class="w-full no-print" style="background: var(--surface-color); border-bottom: 2px solid var(--primary-action);">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between flex-wrap gap-3">
+     <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl" style="background: var(--primary-action);">
+       🎨
+      </div>
+      <div>
+       <h1 id="el-title" class="text-lg font-bold leading-tight">Sistema de Inventario de Pintura</h1>
+       <p id="el-company" class="text-xs opacity-60">Mi Empresa S.A.</p>
+      </div>
+     </div>
+     <div class="flex items-center gap-2"><span class="mono text-xs opacity-50" id="el-clock"></span>
+     </div>
+    </div>
+   </header><!-- Navigation Tabs -->
+   <nav class="w-full no-print sticky top-0 z-40" style="background: var(--bg-color);">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex gap-2 overflow-x-auto"><button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-active px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all">📊 Dashboard</button> <button onclick="switchTab('entries')" id="tab-entries" class="px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100" style="background: var(--surface-color);">📥 Entradas</button> <button onclick="switchTab('exits')" id="tab-exits" class="px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100" style="background: var(--surface-color);">📤 Salidas</button> <button onclick="switchTab('daily')" id="tab-daily" class="px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100" style="background: var(--surface-color);">📅 Detalle Diario</button> <button onclick="switchTab('report')" id="tab-report" class="px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100" style="background: var(--surface-color);">📋 Informes</button> <button onclick="switchTab('config')" id="tab-config" class="px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100" style="background: var(--surface-color);">⚙️ Configuración</button>
+    </div>
+   </nav>
+   <main class="max-w-7xl mx-auto px-4 py-6"><!-- ===== DASHBOARD ===== -->
+    <section id="view-dashboard">
+     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="card-glow rounded-xl p-4 anim-slide anim-d1" style="background: var(--surface-color);">
+       <p class="text-xs uppercase tracking-wider opacity-50 mb-1">📦 Stock Actual</p>
+       <p id="stat-stock" class="mono text-2xl font-bold" style="color: var(--primary-action);">0</p>
+       <p class="text-xs opacity-40 mt-1">cubetas disponibles</p>
+      </div>
+      <div class="card-glow rounded-xl p-4 anim-slide anim-d2" style="background: var(--surface-color);">
+       <p class="text-xs uppercase tracking-wider opacity-50 mb-1">✅ Total Entradas</p>
+       <p id="stat-entries" class="mono text-2xl font-bold" style="color: #10b981;">0</p>
+       <p class="text-xs opacity-40 mt-1">cubetas ingresadas</p>
+      </div>
+      <div class="card-glow rounded-xl p-4 anim-slide anim-d3" style="background: var(--surface-color);">
+       <p class="text-xs uppercase tracking-wider opacity-50 mb-1">🎨 Total Salidas</p>
+       <p id="stat-exits" class="mono text-2xl font-bold" style="color: #ef4444;">0</p>
+       <p class="text-xs opacity-40 mt-1">cubetas utilizadas</p>
+      </div>
+      <div class="card-glow rounded-xl p-4 anim-slide anim-d4" style="background: var(--surface-color);">
+       <p class="text-xs uppercase tracking-wider opacity-50 mb-1">🛢️ Estañones Pintados</p>
+       <p id="stat-drums" class="mono text-2xl font-bold" style="color: var(--secondary-action);">0</p>
+       <p class="text-xs opacity-40 mt-1">total acumulado</p>
+      </div>
+     </div>
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+      <div class="card-glow rounded-xl p-5 anim-slide anim-d2" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">⚡ Eficiencia de Pintura</h3>
+       <div id="efficiency-panel" class="space-y-3">
+        <p class="text-xs opacity-50 italic">Sin datos de salida aún...</p>
+       </div>
+      </div>
+      <div class="card-glow rounded-xl p-5 anim-slide anim-d3" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">🕐 Actividad Reciente</h3>
+       <div id="recent-activity" class="space-y-2 max-h-64 overflow-y-auto scrollbar-thin">
+        <p class="text-xs opacity-50 italic">Sin actividad registrada...</p>
+       </div>
+      </div>
+     </div>
+     <div class="card-glow rounded-xl p-5 anim-slide anim-d4" style="background: var(--surface-color);">
+      <h3 class="font-bold text-sm mb-4 flex items-center gap-2">🪣 Desglose de Rendimiento por Cubeta</h3>
+      <p class="text-xs opacity-50 mb-3">Cada cubeta rinde para <span id="el-target-info" class="mono font-bold" style="color: var(--primary-action);">100</span> estañones</p>
+      <div id="bucket-breakdown" class="space-y-2">
+       <p class="text-xs opacity-50 italic">Registra salidas para ver el desglose...</p>
+      </div>
+     </div>
+    </section><!-- ===== ENTRIES ===== -->
+    <section id="view-entries" class="hidden">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">📥 Registrar Entrada de Pintura</h3>
+       <form id="form-entry" class="space-y-4">
+        <div><label for="entry-date" class="block text-xs font-semibold mb-1 opacity-70">Fecha</label> <input type="date" id="entry-date" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="entry-buckets" class="block text-xs font-semibold mb-1 opacity-70">Cantidad de Cubetas (ej: 5 ó 1.88)</label> <input type="number" id="entry-buckets" min="0" step="0.01" placeholder="Ej: 5 o 1.88" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="entry-notes" class="block text-xs font-semibold mb-1 opacity-70">Notas (opcional)</label> <input type="text" id="entry-notes" placeholder="Ej: Proveedor ABC" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div><button type="submit" id="btn-entry" class="w-full py-2.5 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: #10b981; color: #fff;"> ✅ Registrar Entrada </button>
+       </form>
+      </div>
+      <div class="lg:col-span-2 card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">📋 Historial de Entradas</h3>
+       <div id="entry-history" class="space-y-2 max-h-96 overflow-y-auto scrollbar-thin">
+        <p class="text-xs opacity-50 italic">Sin entradas registradas...</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- ===== EXITS ===== -->
+    <section id="view-exits" class="hidden">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">📤 Registrar Salida de Pintura</h3>
+       <form id="form-exit" class="space-y-4">
+        <div><label for="exit-date" class="block text-xs font-semibold mb-1 opacity-70">Fecha</label> <input type="date" id="exit-date" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="exit-buckets" class="block text-xs font-semibold mb-1 opacity-70">Cubetas Utilizadas</label> <input type="number" id="exit-buckets" min="0.01" step="0.01" value="1" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="exit-drums" class="block text-xs font-semibold mb-1 opacity-70">Estañones Pintados</label> <input type="number" id="exit-drums" min="0" step="1" placeholder="Ej: 160" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="exit-notes" class="block text-xs font-semibold mb-1 opacity-70">Notas (opcional)</label> <input type="text" id="exit-notes" placeholder="Ej: Línea producción A" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div><button type="submit" id="btn-exit" class="w-full py-2.5 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: #ef4444; color: #fff;"> 📤 Registrar Salida </button>
+       </form>
+       <div id="exit-preview" class="mt-4 p-3 rounded-lg text-xs hidden" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1);">
+        <p class="font-semibold mb-1">📐 Cálculo en Vivo:</p>
+        <p id="preview-text" class="opacity-70"></p>
+       </div>
+      </div>
+      <div class="lg:col-span-2 card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">📋 Historial de Salidas</h3>
+       <div id="exit-history" class="space-y-2 max-h-96 overflow-y-auto scrollbar-thin">
+        <p class="text-xs opacity-50 italic">Sin salidas registradas...</p>
+       </div>
+      </div>
+     </div>
+    </section><!-- ===== DAILY DETAIL ===== -->
+    <section id="view-daily" class="hidden">
+     <div class="card-glow rounded-xl p-5 mb-4 no-print" style="background: var(--surface-color);">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2">📅 Seleccionar Fecha</h3>
+      <div class="flex gap-3 items-end flex-wrap">
+       <div><label for="daily-date" class="block text-xs font-semibold mb-1 opacity-70">Fecha</label> <input type="date" id="daily-date" class="input-field px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+       </div><button onclick="loadDailyDetail()" class="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: var(--primary-action); color: #000;"> 🔍 Ver Detalle </button>
+      </div>
+     </div>
+     <div id="daily-detail-content"></div>
+    </section><!-- ===== REPORTS ===== -->
+    <section id="view-report" class="hidden">
+     <div class="card-glow rounded-xl p-5 mb-4 no-print" style="background: var(--surface-color);">
+      <h3 class="font-bold text-sm mb-3 flex items-center gap-2">📋 Generar Informe</h3>
+      <div class="flex gap-3 items-end flex-wrap mb-3">
+       <div><label for="report-from" class="block text-xs font-semibold mb-1 opacity-70">Desde</label> <input type="date" id="report-from" class="input-field px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+       </div>
+       <div><label for="report-to" class="block text-xs font-semibold mb-1 opacity-70">Hasta</label> <input type="date" id="report-to" class="input-field px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+       </div><button onclick="generateReport()" class="px-4 py-2 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: var(--primary-action); color: #000;"> 📊 Generar Informe </button>
+      </div>
+      <div class="flex gap-2 flex-wrap"><button onclick="setReportRange('week')" class="px-3 py-1 rounded text-xs font-semibold transition-all hover:opacity-90" style="background: rgba(255,255,255,0.1);">Esta Semana</button> <button onclick="setReportRange('lastweek')" class="px-3 py-1 rounded text-xs font-semibold transition-all hover:opacity-90" style="background: rgba(255,255,255,0.1);">Semana Pasada</button> <button onclick="setReportRange('month')" class="px-3 py-1 rounded text-xs font-semibold transition-all hover:opacity-90" style="background: rgba(255,255,255,0.1);">Este Mes</button> <button onclick="setReportRange('all')" class="px-3 py-1 rounded text-xs font-semibold transition-all hover:opacity-90" style="background: rgba(255,255,255,0.1);">Todo</button> <button onclick="printReport()" class="px-4 py-1 rounded text-xs font-bold" style="background: var(--secondary-action); color: #fff;">🖨️ Imprimir</button> <button onclick="exportToExcel()" class="px-4 py-1 rounded text-xs font-bold" style="background: #10b981; color: #fff;">📊 Descargar Excel</button>
+      </div>
+     </div>
+     <div id="report-content"></div>
+    </section><!-- ===== CONFIGURATION ===== -->
+    <section id="view-config" class="hidden">
+     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">🏢 Configuración de Empresa</h3>
+       <form id="form-config" class="space-y-4">
+        <div><label for="config-title" class="block text-xs font-semibold mb-1 opacity-70">Nombre del Sistema</label> <input type="text" id="config-title" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-company" class="block text-xs font-semibold mb-1 opacity-70">Nombre de la Empresa</label> <input type="text" id="config-company" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-ruc" class="block text-xs font-semibold mb-1 opacity-70">RUC/NIT</label> <input type="text" id="config-ruc" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-address" class="block text-xs font-semibold mb-1 opacity-70">Dirección</label> <input type="text" id="config-address" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-phone" class="block text-xs font-semibold mb-1 opacity-70">Teléfono</label> <input type="text" id="config-phone" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-email" class="block text-xs font-semibold mb-1 opacity-70">Correo Electrónico</label> <input type="text" id="config-email" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div>
+        <div><label for="config-drums" class="block text-xs font-semibold mb-1 opacity-70">Estañones por Cubeta</label> <input type="number" id="config-drums" min="1" step="1" value="100" class="input-field w-full px-3 py-2 rounded-lg text-sm" style="background: var(--bg-color); border: 1px solid rgba(255,255,255,0.1); color: var(--text-color);">
+        </div><button type="submit" id="btn-config" class="w-full py-2.5 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: var(--primary-action); color: #000;"> 💾 Guardar Configuración </button>
+       </form>
+      </div>
+      <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+       <h3 class="font-bold text-sm mb-4 flex items-center gap-2">🎨 Configuración de Colores</h3>
+       <form id="form-colors" class="space-y-4">
+        <div><label for="config-bg" class="block text-xs font-semibold mb-1 opacity-70">Color de Fondo</label>
+         <div class="flex gap-2 items-center"><input type="color" id="config-bg" class="w-12 h-10 rounded cursor-pointer"> <span id="config-bg-hex" class="mono text-xs opacity-50">#0f1419</span>
+         </div>
+        </div>
+        <div><label for="config-surface" class="block text-xs font-semibold mb-1 opacity-70">Color de Superficie</label>
+         <div class="flex gap-2 items-center"><input type="color" id="config-surface" class="w-12 h-10 rounded cursor-pointer"> <span id="config-surface-hex" class="mono text-xs opacity-50">#1a2029</span>
+         </div>
+        </div>
+        <div><label for="config-primary" class="block text-xs font-semibold mb-1 opacity-70">Color Principal (Acción)</label>
+         <div class="flex gap-2 items-center"><input type="color" id="config-primary" class="w-12 h-10 rounded cursor-pointer"> <span id="config-primary-hex" class="mono text-xs opacity-50">#f59e0b</span>
+         </div>
+        </div>
+        <div><label for="config-secondary" class="block text-xs font-semibold mb-1 opacity-70">Color Secundario</label>
+         <div class="flex gap-2 items-center"><input type="color" id="config-secondary" class="w-12 h-10 rounded cursor-pointer"> <span id="config-secondary-hex" class="mono text-xs opacity-50">#3b82f6</span>
+         </div>
+        </div><button type="submit" id="btn-colors" class="w-full py-2.5 rounded-lg font-bold text-sm transition-all hover:opacity-90" style="background: var(--secondary-action); color: #fff;"> 🎨 Aplicar Colores </button>
+       </form>
+      </div>
+     </div>
+    </section>
+   </main><!-- Delete Confirmation Modal -->
+   <div id="delete-modal" class="fixed inset-0 z-50 hidden items-center justify-center no-print modal-backdrop" style="background: rgba(0,0,0,0.7);">
+    <div class="rounded-xl p-6 max-w-sm mx-4" style="background: var(--surface-color);">
+     <p class="font-bold text-sm mb-2">⚠️ Confirmar Eliminación</p>
+     <p id="delete-modal-text" class="text-xs opacity-70 mb-4">¿Estás seguro de eliminar este registro?</p>
+     <div class="flex gap-2"><button id="delete-confirm-btn" class="flex-1 py-2 rounded-lg font-bold text-sm" style="background: #ef4444; color: #fff;">Eliminar</button> <button onclick="closeDeleteModal()" class="flex-1 py-2 rounded-lg font-bold text-sm" style="background: rgba(255,255,255,0.1);">Cancelar</button>
+     </div>
+    </div>
+   </div><!-- Remainder Confirmation Modal -->
+   <div id="remainder-modal" class="fixed inset-0 z-50 hidden items-center justify-center no-print modal-backdrop" style="background: rgba(0,0,0,0.7);">
+    <div class="rounded-xl p-6 max-w-sm mx-4" style="background: var(--surface-color);">
+     <p class="font-bold text-sm mb-1">🎨 Confirmación de Sobrante</p>
+     <p id="remainder-modal-text" class="text-xs opacity-70 mb-4"></p>
+     <div class="bg-blue-500 bg-opacity-10 rounded p-3 mb-4 border border-blue-500 border-opacity-30">
+      <p id="remainder-calc-text" class="text-xs font-semibold"></p>
+     </div>
+     <div class="flex gap-2"><button id="remainder-confirm-yes" class="flex-1 py-2 rounded-lg font-bold text-sm" style="background: #10b981; color: #fff;">✅ Sí, Sobró Pintura</button> <button id="remainder-confirm-no" class="flex-1 py-2 rounded-lg font-bold text-sm" style="background: #ef4444; color: #fff;">❌ No, fue Pérdida</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+// ========== STATE ==========
+let allRecords = [];
+let currentTab = 'dashboard';
+let deleteTarget = null;
+let drumsPerBucket = 100;
+let pendingExit = null;
+
+let companyConfig = {
+  system_title: 'Sistema de Inventario de Pintura',
+  company_name: 'Mi Empresa S.A.',
+  company_ruc: '',
+  company_address: '',
+  company_phone: '',
+  company_email: '',
+  drums_per_bucket: '100',
+  background_color: '#0f1419',
+  surface_color: '#1a2029',
+  text_color: '#e8ecf1',
+  primary_action: '#f59e0b',
+  secondary_action: '#3b82f6',
+  font_family: 'DM Sans',
+  font_size: 14
+};
+
+const defaultConfig = JSON.parse(JSON.stringify(companyConfig));
+
+// ========== CLOCK ==========
+function updateClock() {
+  const el = document.getElementById('el-clock');
+  if (el) {
+    const now = new Date();
+    el.textContent = now.toLocaleDateString('es', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + ' • ' + now.toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' });
+  }
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ========== TOAST ==========
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  const colors = { success: '#10b981', error: '#ef4444', info: '#3b82f6' };
+  toast.className = 'toast rounded-lg px-4 py-3 text-sm font-semibold shadow-lg';
+  toast.style.cssText = `background: ${colors[type] || colors.info}; color: #fff; min-width: 200px;`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+// ========== TABS ==========
+function switchTab(tab) {
+  currentTab = tab;
+  ['dashboard', 'entries', 'exits', 'daily', 'report', 'config'].forEach(t => {
+    const view = document.getElementById('view-' + t);
+    const btn = document.getElementById('tab-' + t);
+    if (view) view.classList.toggle('hidden', t !== tab);
+    if (btn) {
+      if (t === tab) {
+        btn.className = 'tab-active px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all';
+      } else {
+        btn.className = 'px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-all opacity-70 hover:opacity-100';
+        btn.style.background = 'var(--surface-color)';
+      }
+    }
+  });
+}
+
+// ========== DELETE MODAL ==========
+function openDeleteModal(record) {
+  deleteTarget = record;
+  const modal = document.getElementById('delete-modal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  const typeLabel = record.type === 'entry' ? 'entrada' : 'salida';
+  document.getElementById('delete-modal-text').textContent = `¿Eliminar esta ${typeLabel} del ${formatDate(record.date)}?`;
+}
+function closeDeleteModal() {
+  deleteTarget = null;
+  const modal = document.getElementById('delete-modal');
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+}
+document.getElementById('delete-confirm-btn').addEventListener('click', async function() {
+  if (!deleteTarget) return;
+  this.disabled = true;
+  this.textContent = 'Eliminando...';
+  const result = await window.dataSdk.delete(deleteTarget);
+  if (result.isOk) {
+    showToast('Registro eliminado', 'info');
+  } else {
+    showToast('Error al eliminar', 'error');
+  }
+  this.disabled = false;
+  this.textContent = 'Eliminar';
+  closeDeleteModal();
+});
+
+// ========== REMAINDER MODAL ==========
+function openRemainderModal(calcData) {
+  pendingExit = calcData;
+  const modal = document.getElementById('remainder-modal');
+  modal.classList.remove('hidden');
+  modal.style.display = 'flex';
+  
+  const { buckets, drums, target, remainder, efficiency } = calcData;
+  const remainderNotation = (remainder / drumsPerBucket).toFixed(2);
+  
+  document.getElementById('remainder-modal-text').innerHTML = `
+    Utilizaste <span class="font-bold" style="color: var(--primary-action);">${buckets}</span> cubeta(s) para pintar <span class="font-bold" style="color: var(--secondary-action);">${drums}</span> estañones.<br><br>
+    ¿Quedó sobrante de pintura que deba agregarse al inventario?
+  `;
+  
+  document.getElementById('remainder-calc-text').innerHTML = `
+    <span class="font-mono">Meta: ${target} estañones | Pintados: ${drums}</span><br>
+    <span class="font-mono" style="color: ${efficiency >= 80 ? '#10b981' : efficiency >= 50 ? '#f59e0b' : '#ef4444'};">Eficiencia: ${efficiency}%</span><br>
+    ${remainder > 0 
+      ? `<span style="color: #10b981;">✅ Sobrante detectado: <span class="font-mono font-bold">${remainder}</span> estañones (${remainderNotation} cubetas)</span>` 
+      : `<span style="color: #ef4444;">⚠️ Meta no alcanzada: Faltan ${Math.abs(remainder)} estañones</span>`}
+  `;
+}
+
+function closeRemainderModal() {
+  pendingExit = null;
+  const modal = document.getElementById('remainder-modal');
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+}
+
+document.getElementById('remainder-confirm-yes').addEventListener('click', async function() {
+  if (!pendingExit) return;
+  await saveExitWithRemainder(true);
+});
+
+document.getElementById('remainder-confirm-no').addEventListener('click', async function() {
+  if (!pendingExit) return;
+  await saveExitWithRemainder(false);
+});
+
+async function saveExitWithRemainder(hasRemainder) {
+  const btn = document.getElementById('remainder-confirm-yes');
+  btn.disabled = true;
+  
+  const { date, buckets, drums, target, remainder } = pendingExit;
+  const notes = document.getElementById('exit-notes').value.trim();
+  
+  const recordData = {
+    type: 'exit',
+    date,
+    buckets_in: 0,
+    buckets_out: parseFloat(buckets),
+    buckets_remainder: hasRemainder && remainder > 0 ? remainder / drumsPerBucket : 0,
+    drums_painted: drums,
+    drums_target: target,
+    waste_drums: !hasRemainder && remainder > 0 ? remainder : 0,
+    notes,
+    created_at: new Date().toISOString()
+  };
+  
+  const result = await window.dataSdk.create(recordData);
+  
+  if (result.isOk) {
+    const msg = hasRemainder && remainder > 0 
+      ? `✅ Salida registrada: ${drums} estañones + ${(remainder / drumsPerBucket).toFixed(2)} cubetas sobrantes al stock` 
+      : `⚠️ Salida registrada: ${drums} estañones (pérdida registrada)`;
+    showToast(msg, 'success');
+    document.getElementById('exit-drums').value = '';
+    document.getElementById('exit-notes').value = '';
+    document.getElementById('exit-preview').classList.add('hidden');
+    closeRemainderModal();
+  } else {
+    showToast('Error al guardar', 'error');
+  }
+  
+  btn.disabled = false;
+}
+
+// ========== HELPERS ==========
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function formatDateFull(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('es', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+}
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// Calculate bucket usage
+function calcBucketUsage(drumsActual, bucketsUsed) {
+  const target = drumsPerBucket * bucketsUsed;
+  if (bucketsUsed === 0) return { full: 0, percent: 0, notation: '0.00', remainder: 0, efficiency: 0, wastedDrums: 0, target };
+  
+  const remainder = drumsActual - target;
+  const efficiency = Math.round((drumsActual / target) * 100);
+  
+  if (remainder >= 0) {
+    const remainderPercent = (remainder / drumsPerBucket) * 100;
+    const notation = (remainder / drumsPerBucket).toFixed(2);
+    return { full: 0, percent: remainderPercent, notation, remainder, efficiency, wastedDrums: 0, target };
+  } else {
+    return { full: 0, percent: 0, notation: '0.00', remainder, efficiency, wastedDrums: Math.abs(remainder), target };
+  }
+}
+
+// ========== LIVE PREVIEW ==========
+function updateExitPreview() {
+  const buckets = parseFloat(document.getElementById('exit-buckets').value) || 0;
+  const drums = parseInt(document.getElementById('exit-drums').value) || 0;
+  const preview = document.getElementById('exit-preview');
+  const previewText = document.getElementById('preview-text');
+  if (buckets > 0 && drums >= 0) {
+    preview.classList.remove('hidden');
+    const calc = calcBucketUsage(drums, buckets);
+    const statusColor = calc.remainder > 0 ? '#10b981' : calc.remainder < 0 ? '#f59e0b' : '#3b82f6';
+    const statusMsg = calc.remainder > 0 
+      ? `✅ Sobrante: <span class="font-mono font-bold" style="color: #10b981;">${(calc.remainder / drumsPerBucket).toFixed(2)}</span> cubetas` 
+      : calc.remainder < 0 
+      ? `⚠️ Faltó: <span class="font-mono font-bold" style="color: #f59e0b;">${Math.abs(calc.remainder)}</span> estañones` 
+      : `✅ Exacto: Meta alcanzada`;
+    previewText.innerHTML = `
+      <span class="font-bold" style="color: var(--primary-action);">${buckets}</span> cubeta(s) → <span class="font-bold" style="color: var(--secondary-action);">${drums}</span> estañones<br>
+      Meta: ${calc.target} | Eficiencia: <span class="mono font-bold" style="color: ${calc.efficiency >= 80 ? '#10b981' : calc.efficiency >= 50 ? '#f59e0b' : '#ef4444'};">${calc.efficiency}%</span><br>
+      ${statusMsg}
+    `;
+  } else {
+    preview.classList.add('hidden');
+  }
+}
+document.getElementById('exit-buckets').addEventListener('input', updateExitPreview);
+document.getElementById('exit-drums').addEventListener('input', updateExitPreview);
+
+// ========== FORMS ==========
+document.getElementById('form-entry').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const date = document.getElementById('entry-date').value;
+  const buckets = parseFloat(document.getElementById('entry-buckets').value);
+  const notes = document.getElementById('entry-notes').value.trim();
+  if (!date || !buckets || buckets < 0) { showToast('Completa todos los campos', 'error'); return; }
+  if (allRecords.length >= 999) { showToast('Límite de 999 registros alcanzado', 'error'); return; }
+
+  const btn = document.getElementById('btn-entry');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  const result = await window.dataSdk.create({
+    type: 'entry', date, buckets_in: buckets, buckets_out: 0, buckets_decimal: buckets, buckets_remainder: 0, drums_painted: 0, drums_target: 0, waste_drums: 0, notes, created_at: new Date().toISOString()
+  });
+  btn.disabled = false; btn.textContent = '✅ Registrar Entrada';
+  if (result.isOk) {
+    const displayBuckets = buckets % 1 !== 0 ? buckets.toFixed(2) : buckets;
+    showToast(`✅ +${displayBuckets} cubeta(s) registradas en el stock`, 'success');
+    document.getElementById('entry-buckets').value = '';
+    document.getElementById('entry-notes').value = '';
+  } else {
+    showToast('Error al guardar', 'error');
+  }
+});
+
+document.getElementById('form-exit').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const date = document.getElementById('exit-date').value;
+  const buckets = parseFloat(document.getElementById('exit-buckets').value);
+  const drums = parseInt(document.getElementById('exit-drums').value);
+  const notes = document.getElementById('exit-notes').value.trim();
+  if (!date || !buckets || buckets <= 0 || drums === undefined || drums < 0) { showToast('Completa todos los campos', 'error'); return; }
+
+  // Check stock
+  const entries = allRecords.filter(r => r.type === 'entry');
+  const exits = allRecords.filter(r => r.type === 'exit');
+  const totalIn = entries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+  const totalOut = exits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+  const totalRemainder = exits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const stock = totalIn - totalOut - totalRemainder;
+  
+  if (buckets > stock + 0.01) { showToast(`❌ Stock insuficiente. Solo hay ${stock.toFixed(2)} cubeta(s)`, 'error'); return; }
+  if (allRecords.length >= 999) { showToast('Límite de 999 registros alcanzado', 'error'); return; }
+
+  const calc = calcBucketUsage(drums, buckets);
+  openRemainderModal({ date, buckets, drums, target: calc.target, remainder: calc.remainder, efficiency: calc.efficiency });
+});
+
+// ========== CONFIG FORM ==========
+document.getElementById('form-config').addEventListener('submit', function(e) {
+  e.preventDefault();
+  companyConfig.system_title = document.getElementById('config-title').value || defaultConfig.system_title;
+  companyConfig.company_name = document.getElementById('config-company').value || defaultConfig.company_name;
+  companyConfig.company_ruc = document.getElementById('config-ruc').value;
+  companyConfig.company_address = document.getElementById('config-address').value;
+  companyConfig.company_phone = document.getElementById('config-phone').value;
+  companyConfig.company_email = document.getElementById('config-email').value;
+  companyConfig.drums_per_bucket = document.getElementById('config-drums').value || '100';
+  drumsPerBucket = parseInt(companyConfig.drums_per_bucket) || 100;
+  
+  applyConfig(companyConfig);
+  showToast('✅ Configuración guardada correctamente', 'success');
+  if (allRecords.length > 0) renderAll(allRecords);
+});
+
+document.getElementById('form-colors').addEventListener('submit', function(e) {
+  e.preventDefault();
+  companyConfig.background_color = document.getElementById('config-bg').value;
+  companyConfig.surface_color = document.getElementById('config-surface').value;
+  companyConfig.primary_action = document.getElementById('config-primary').value;
+  companyConfig.secondary_action = document.getElementById('config-secondary').value;
+  applyConfig(companyConfig);
+  showToast('🎨 Colores aplicados correctamente', 'success');
+});
+
+// Update color display
+['config-bg', 'config-surface', 'config-primary', 'config-secondary'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('input', function() {
+      document.getElementById(id + '-hex').textContent = this.value.toUpperCase();
+    });
+  }
+});
+
+// ========== RENDER ALL ==========
+function renderAll(data) {
+  allRecords = data.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.created_at || '').localeCompare(a.created_at || ''));
+
+  const entries = allRecords.filter(r => r.type === 'entry');
+  const exits = allRecords.filter(r => r.type === 'exit');
+  const totalIn = entries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+  const totalOut = exits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+  const totalRemainder = exits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const totalDrums = exits.reduce((s, r) => s + (r.drums_painted || 0), 0);
+  const stock = totalIn - totalOut - totalRemainder;
+
+  // Stats
+  document.getElementById('stat-stock').textContent = stock.toFixed(2);
+  document.getElementById('stat-entries').textContent = totalIn.toFixed(2);
+  document.getElementById('stat-exits').textContent = totalOut.toFixed(2);
+  document.getElementById('stat-drums').textContent = totalDrums.toLocaleString('es');
+
+  // Efficiency Panel
+  const effPanel = document.getElementById('efficiency-panel');
+  if (exits.length > 0) {
+    const totalTarget = exits.reduce((s, r) => s + (r.drums_target || 0), 0);
+    const overallEff = totalTarget > 0 ? Math.round((totalDrums / totalTarget) * 100) : 0;
+    const avgDrumsPerBucket = totalOut > 0 ? (totalDrums / totalOut).toFixed(1) : 0;
+    const totalWaste = exits.reduce((s, r) => s + (r.waste_drums || 0), 0);
+    const effColor = overallEff >= 80 ? '#10b981' : overallEff >= 50 ? '#f59e0b' : '#ef4444';
+    const totalRecovered = totalRemainder.toFixed(2);
+    
+    effPanel.innerHTML = `
+      <div class="flex justify-between items-center text-xs">
+        <span class="opacity-70">Eficiencia General</span>
+        <span class="mono font-bold" style="color: ${effColor};">${overallEff}%</span>
+      </div>
+      <div class="w-full h-2 rounded-full progress-bar-bg" style="background: rgba(255,255,255,0.1);">
+        <div class="h-full rounded-full progress-bar" style="width: ${Math.min(overallEff, 100)}%; background: ${effColor};"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mt-2">
+        <div class="text-xs"><span class="opacity-50">Meta Total:</span><br><span class="mono font-bold">${totalTarget.toLocaleString('es')}</span> est.</div>
+        <div class="text-xs"><span class="opacity-50">Pintados:</span><br><span class="mono font-bold">${totalDrums.toLocaleString('es')}</span> est.</div>
+        <div class="text-xs"><span class="opacity-50">Promedio/Cubeta:</span><br><span class="mono font-bold">${avgDrumsPerBucket}</span> est.</div>
+        <div class="text-xs"><span class="opacity-50">Pérdidas:</span><br><span class="mono font-bold" style="color: #ef4444;">${totalWaste.toLocaleString('es')}</span> est.</div>
+        <div class="text-xs col-span-2"><span class="opacity-50">Sobrantes Recuperados:</span><br><span class="mono font-bold" style="color: #10b981;">+${totalRecovered}</span> cubetas</div>
+      </div>
+    `;
+  } else {
+    effPanel.innerHTML = '<p class="text-xs opacity-50 italic">Sin datos de salida aún...</p>';
+  }
+
+  // Recent Activity
+  const recentEl = document.getElementById('recent-activity');
+  const recent = allRecords.slice(0, 8);
+  if (recent.length > 0) {
+    recentEl.innerHTML = recent.map(r => {
+      const isEntry = r.type === 'entry';
+      const icon = isEntry ? '📥' : '📤';
+      const color = isEntry ? '#10b981' : '#ef4444';
+      const displayBuckets = isEntry 
+        ? (r.buckets_decimal || r.buckets_in).toFixed(2) 
+        : r.buckets_out.toFixed(2);
+      const detail = isEntry
+        ? `+${displayBuckets} cubeta(s)`
+        : `−${displayBuckets} cubeta(s) → ${r.drums_painted} estañones`;
+      return `<div class="flex items-center gap-3 p-2 rounded-lg" style="background: rgba(255,255,255,0.03);">
+        <span class="text-lg">${icon}</span>
+        <div class="flex-1 min-w-0">
+          <p class="text-xs font-semibold truncate" style="color: ${color};">${detail}</p>
+          <p class="text-xs opacity-40">${formatDate(r.date)}${r.notes ? ' • ' + r.notes : ''}</p>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    recentEl.innerHTML = '<p class="text-xs opacity-50 italic">Sin actividad registrada...</p>';
+  }
+
+  // Bucket Breakdown
+  const breakdownEl = document.getElementById('bucket-breakdown');
+  const lastExits = exits.slice(0, 10);
+  if (lastExits.length > 0) {
+    breakdownEl.innerHTML = lastExits.map(ex => {
+      const calc = calcBucketUsage(ex.drums_painted || 0, ex.buckets_out || 1);
+      const effColor = calc.efficiency >= 80 ? '#10b981' : calc.efficiency >= 50 ? '#f59e0b' : '#ef4444';
+      const remainder = ex.buckets_remainder || 0;
+      const waste = ex.waste_drums || 0;
+      const statusIcon = remainder > 0 ? '✅' : waste > 0 ? '❌' : '🔄';
+      const statusMsg = remainder > 0 ? `+${remainder.toFixed(2)} cubetas al stock` : waste > 0 ? `${waste} est. perdidos` : 'Exacto';
+      return `<div class="flex items-center gap-3 p-3 rounded-lg" style="background: rgba(255,255,255,0.03);">
+        <div class="text-center" style="min-width: 70px;">
+          <p class="mono text-lg font-bold" style="color: var(--primary-action);">${(ex.buckets_out || 0).toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-center mb-1">
+            <p class="text-xs font-semibold">${formatDate(ex.date)}</p>
+            <span class="mono text-xs font-bold" style="color: ${effColor};">${calc.efficiency}%</span>
+          </div>
+          <div class="w-full h-1.5 rounded-full" style="background: rgba(255,255,255,0.1);">
+            <div class="h-full rounded-full progress-bar" style="width: ${Math.min(calc.efficiency, 100)}%; background: ${effColor};"></div>
+          </div>
+          <p class="text-xs opacity-40 mt-1">${ex.drums_painted}/${calc.target} est. | ${statusIcon} ${statusMsg}${ex.notes ? ' • ' + ex.notes : ''}</p>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    breakdownEl.innerHTML = '<p class="text-xs opacity-50 italic">Registra salidas para ver el desglose...</p>';
+  }
+
+  // History
+  renderHistory('entry-history', entries, 'entry');
+  renderHistory('exit-history', exits, 'exit');
+}
+
+function renderHistory(containerId, records, type) {
+  const container = document.getElementById(containerId);
+  if (records.length === 0) {
+    container.innerHTML = `<p class="text-xs opacity-50 italic">Sin ${type === 'entry' ? 'entradas' : 'salidas'} registradas...</p>`;
+    return;
+  }
+  container.innerHTML = records.map(r => {
+    const isEntry = type === 'entry';
+    const mainColor = isEntry ? '#10b981' : '#ef4444';
+    let detail = '';
+    if (isEntry) {
+      const displayBuckets = (r.buckets_decimal || r.buckets_in).toFixed(2);
+      detail = `<span class="mono font-bold" style="color: ${mainColor};">+${displayBuckets}</span> cubeta(s)`;
+    } else {
+      const calc = calcBucketUsage(r.drums_painted || 0, r.buckets_out || 1);
+      const remainder = r.buckets_remainder || 0;
+      const waste = r.waste_drums || 0;
+      const extra = remainder > 0 ? ` <span class="text-xs opacity-60" style="color: #10b981;">✅ +${remainder.toFixed(2)} al stock</span>` : waste > 0 ? ` <span class="text-xs opacity-60" style="color: #ef4444;">❌ ${waste} pérdida</span>` : '';
+      detail = `<span class="mono font-bold" style="color: ${mainColor};">−${(r.buckets_out || 0).toFixed(2)}</span> cubeta(s) → <span class="mono font-bold" style="color: var(--secondary-action);">${r.drums_painted}</span> estañones <span class="mono text-xs opacity-60">(${calc.efficiency}%)</span>${extra}`;
+    }
+    return `<div class="flex items-center gap-3 p-3 rounded-lg" style="background: rgba(255,255,255,0.03);">
+      <div class="flex-1">
+        <p class="text-xs font-semibold">${formatDate(r.date)}</p>
+        <p class="text-xs mt-0.5">${detail}</p>
+        ${r.notes ? `<p class="text-xs opacity-40 mt-0.5">📝 ${r.notes}</p>` : ''}
+      </div>
+      <button onclick='openDeleteModal(${JSON.stringify(r).replace(/'/g, "&#39;")})' class="px-2 py-1 rounded text-xs opacity-40 hover:opacity-100 transition-all" style="background: rgba(239,68,68,0.15); color: #ef4444;" title="Eliminar">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+// ========== DAILY DETAIL ==========
+function loadDailyDetail() {
+  const date = document.getElementById('daily-date').value;
+  if (!date) { showToast('Selecciona una fecha', 'error'); return; }
+
+  const dayRecords = allRecords.filter(r => r.date === date);
+  const dayEntries = dayRecords.filter(r => r.type === 'entry');
+  const dayExits = dayRecords.filter(r => r.type === 'exit');
+  const dayBucketsIn = dayEntries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+  const dayBucketsOut = dayExits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+  const dayRemainder = dayExits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const dayDrums = dayExits.reduce((s, r) => s + (r.drums_painted || 0), 0);
+  const dayWaste = dayExits.reduce((s, r) => s + (r.waste_drums || 0), 0);
+  const dayTarget = dayExits.reduce((s, r) => s + (r.drums_target || 0), 0);
+  const dayEff = dayTarget > 0 ? Math.round((dayDrums / dayTarget) * 100) : 0;
+  const effColor = dayEff >= 80 ? '#10b981' : dayEff >= 50 ? '#f59e0b' : '#ef4444';
+
+  const allBefore = allRecords.filter(r => r.date <= date);
+  const stockAtDate = allBefore.filter(r => r.type === 'entry').reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0)
+    - allBefore.filter(r => r.type === 'exit').reduce((s, r) => s + (r.buckets_out || 0), 0)
+    - allBefore.filter(r => r.type === 'exit').reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+
+  const content = document.getElementById('daily-detail-content');
+
+  if (dayRecords.length === 0) {
+    content.innerHTML = `<div class="card-glow rounded-xl p-6 text-center" style="background: var(--surface-color);">
+      <p class="text-3xl mb-3">📭</p>
+      <p class="font-bold text-sm">Sin registros para ${formatDateFull(date)}</p>
+      <p class="text-xs opacity-50 mt-1">No hay entradas ni salidas en esta fecha</p>
+    </div>`;
+    return;
+  }
+
+  content.innerHTML = `
+    <div class="print-only hidden mb-4">
+      <h2 style="font-size:18px; font-weight:bold;">Detalle Diario — ${formatDateFull(date)}</h2>
+    </div>
+    <div class="card-glow rounded-xl p-5 mb-4" style="background: var(--surface-color);">
+      <h3 class="font-bold mb-4">📅 ${formatDateFull(date)}</h3>
+      <div class="grid grid-cols-2 lg:grid-cols-6 gap-3">
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📥 Entradas</p>
+          <p class="mono text-lg font-bold" style="color: #10b981;">+${dayBucketsIn.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📤 Salidas</p>
+          <p class="mono text-lg font-bold" style="color: #ef4444;">−${dayBucketsOut.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">✅ Sobrantes</p>
+          <p class="mono text-lg font-bold" style="color: #10b981;">+${dayRemainder.toFixed(2)}</p>
+          <p class="text-xs opacity-40">al stock</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">🛢️ Estañones</p>
+          <p class="mono text-lg font-bold" style="color: var(--secondary-action);">${dayDrums}</p>
+          <p class="text-xs opacity-40">pintados</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">⚡ Eficiencia</p>
+          <p class="mono text-lg font-bold" style="color: ${effColor};">${dayEff}%</p>
+          <p class="text-xs opacity-40">del día</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📦 Stock Diario</p>
+          <p class="mono text-lg font-bold" style="color: var(--primary-action);">${stockAtDate.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+      </div>
+    </div>
+
+    ${dayEntries.length > 0 ? `
+    <div class="card-glow rounded-xl p-5 mb-4" style="background: var(--surface-color);">
+      <h4 class="font-bold text-sm mb-3">📥 Entradas del Día</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead><tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <th class="text-left py-2 opacity-50">Hora Registro</th>
+            <th class="text-right py-2 opacity-50">Cubetas</th>
+            <th class="text-left py-2 opacity-50 pl-4">Notas</th>
+          </tr></thead>
+          <tbody>${dayEntries.map(r => {
+            const displayBuckets = (r.buckets_decimal || r.buckets_in).toFixed(2);
+            return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td class="py-2">${r.created_at ? new Date(r.created_at).toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+              <td class="text-right py-2 mono font-bold" style="color: #10b981;">+${displayBuckets}</td>
+              <td class="py-2 pl-4 opacity-60">${r.notes || '—'}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : ''}
+
+    ${dayExits.length > 0 ? `
+    <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+      <h4 class="font-bold text-sm mb-3">📤 Salidas del Día</h4>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead><tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <th class="text-left py-2 opacity-50">Hora</th>
+            <th class="text-right py-2 opacity-50">Cubetas</th>
+            <th class="text-right py-2 opacity-50">Estañones</th>
+            <th class="text-right py-2 opacity-50">Meta</th>
+            <th class="text-right py-2 opacity-50">Eficiencia</th>
+            <th class="text-right py-2 opacity-50">Sobrante</th>
+            <th class="text-right py-2 opacity-50">Pérdida</th>
+            <th class="text-left py-2 opacity-50 pl-4">Notas</th>
+          </tr></thead>
+          <tbody>${dayExits.map(r => {
+            const calc = calcBucketUsage(r.drums_painted || 0, r.buckets_out || 1);
+            const eColor = calc.efficiency >= 80 ? '#10b981' : calc.efficiency >= 50 ? '#f59e0b' : '#ef4444';
+            const remainder = r.buckets_remainder || 0;
+            const waste = r.waste_drums || 0;
+            return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <td class="py-2">${r.created_at ? new Date(r.created_at).toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit'}) : '—'}</td>
+              <td class="text-right py-2 mono font-bold" style="color: #ef4444;">−${(r.buckets_out || 0).toFixed(2)}</td>
+              <td class="text-right py-2 mono font-bold" style="color: var(--secondary-action);">${r.drums_painted}</td>
+              <td class="text-right py-2 mono opacity-60">${calc.target}</td>
+              <td class="text-right py-2 mono font-bold" style="color: ${eColor};">${calc.efficiency}%</td>
+              <td class="text-right py-2 mono font-bold" style="color: #10b981;">${remainder > 0 ? remainder.toFixed(2) : '—'}</td>
+              <td class="text-right py-2 mono font-bold" style="color: #ef4444;">${waste > 0 ? waste : '—'}</td>
+              <td class="py-2 pl-4 opacity-60">${r.notes || '—'}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : ''}
+  `;
+}
+
+// ========== REPORT ==========
+function setReportRange(range) {
+  const now = new Date();
+  let from, to;
+  if (range === 'week') {
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    from = new Date(now.getFullYear(), now.getMonth(), diff);
+    to = new Date(now);
+  } else if (range === 'lastweek') {
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+    to = new Date(now.getFullYear(), now.getMonth(), diff - 1);
+    from = new Date(to.getFullYear(), to.getMonth(), to.getDate() - 6);
+  } else if (range === 'month') {
+    from = new Date(now.getFullYear(), now.getMonth(), 1);
+    to = new Date(now);
+  } else {
+    if (allRecords.length > 0) {
+      const dates = allRecords.map(r => r.date).filter(Boolean).sort();
+      from = new Date(dates[0] + 'T12:00:00');
+      to = new Date(dates[dates.length - 1] + 'T12:00:00');
+    } else {
+      from = new Date(now); to = new Date(now);
+    }
+  }
+  const fmt = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  document.getElementById('report-from').value = fmt(from);
+  document.getElementById('report-to').value = fmt(to);
+  generateReport();
+}
+
+function generateReport() {
+  const fromDate = document.getElementById('report-from').value;
+  const toDate = document.getElementById('report-to').value;
+  if (!fromDate || !toDate) { showToast('Selecciona rango de fechas', 'error'); return; }
+
+  const rangeRecords = allRecords.filter(r => r.date >= fromDate && r.date <= toDate);
+  const rangeEntries = rangeRecords.filter(r => r.type === 'entry');
+  const rangeExits = rangeRecords.filter(r => r.type === 'exit');
+  const totalIn = rangeEntries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+  const totalOut = rangeExits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+  const totalRemainder = rangeExits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const totalDrums = rangeExits.reduce((s, r) => s + (r.drums_painted || 0), 0);
+  const totalWaste = rangeExits.reduce((s, r) => s + (r.waste_drums || 0), 0);
+  const totalTarget = rangeExits.reduce((s, r) => s + (r.drums_target || 0), 0);
+  const overallEff = totalTarget > 0 ? Math.round((totalDrums / totalTarget) * 100) : 0;
+  const effColor = overallEff >= 80 ? '#10b981' : overallEff >= 50 ? '#f59e0b' : '#ef4444';
+
+  const beforeRange = allRecords.filter(r => r.date < fromDate);
+  const stockBefore = beforeRange.filter(r => r.type === 'entry').reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0)
+    - beforeRange.filter(r => r.type === 'exit').reduce((s, r) => s + (r.buckets_out || 0), 0)
+    - beforeRange.filter(r => r.type === 'exit').reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const stockAfter = stockBefore + totalIn - totalOut - totalRemainder;
+
+  const dayMap = {};
+  rangeRecords.forEach(r => {
+    if (!dayMap[r.date]) dayMap[r.date] = { entries: [], exits: [] };
+    if (r.type === 'entry') dayMap[r.date].entries.push(r);
+    else dayMap[r.date].exits.push(r);
+  });
+  const days = Object.keys(dayMap).sort();
+
+  const content = document.getElementById('report-content');
+  content.innerHTML = `
+    <!-- Print Header -->
+    <div style="display:none" class="print-only">
+      <div style="border-bottom: 2px solid #000; padding-bottom: 12px; margin-bottom: 16px;">
+        <h1 style="font-size: 20px; font-weight: bold; margin: 0;">${companyConfig.system_title}</h1>
+        <p style="font-size: 12px; margin: 4px 0 0;">${companyConfig.company_name}</p>
+        ${companyConfig.company_ruc ? `<p style="font-size: 11px; margin: 2px 0 0;">RUC: ${companyConfig.company_ruc}</p>` : ''}
+        ${companyConfig.company_address ? `<p style="font-size: 11px; margin: 2px 0 0;">Dirección: ${companyConfig.company_address}</p>` : ''}
+        ${companyConfig.company_phone ? `<p style="font-size: 11px; margin: 2px 0 0;">Teléfono: ${companyConfig.company_phone}</p>` : ''}
+        ${companyConfig.company_email ? `<p style="font-size: 11px; margin: 2px 0 0;">Email: ${companyConfig.company_email}</p>` : ''}
+        <p style="font-size: 12px; margin: 8px 0 0; border-top: 1px solid #000; padding-top: 8px;">Informe: ${formatDate(fromDate)} — ${formatDate(toDate)}</p>
+        <p style="font-size: 10px; margin: 4px 0 0; opacity: 0.7;">Generado: ${new Date().toLocaleString('es')}</p>
+      </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="card-glow rounded-xl p-5 mb-4" style="background: var(--surface-color);">
+      <h3 class="font-bold mb-1 text-sm">📊 INFORME COMPLETO DE AUDITORÍA</h3>
+      <p class="text-xs opacity-50 mb-4">${formatDate(fromDate)} — ${formatDate(toDate)} | ${days.length} día(s)</p>
+
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📦 Stock Inicial</p>
+          <p class="mono text-lg font-bold">${stockBefore.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(16,185,129,0.1);">
+          <p class="text-xs opacity-50">📥 Entradas</p>
+          <p class="mono text-lg font-bold" style="color: #10b981;">+${totalIn.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(239,68,68,0.1);">
+          <p class="text-xs opacity-50">📤 Salidas</p>
+          <p class="mono text-lg font-bold" style="color: #ef4444;">−${totalOut.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(16,185,129,0.1);">
+          <p class="text-xs opacity-50">✅ Sobrantes</p>
+          <p class="mono text-lg font-bold" style="color: #10b981;">+${totalRemainder.toFixed(2)}</p>
+          <p class="text-xs opacity-40">recuperadas</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📦 Stock Final</p>
+          <p class="mono text-lg font-bold" style="color: var(--primary-action);">${stockAfter.toFixed(2)}</p>
+          <p class="text-xs opacity-40">cubetas</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
+        <div class="p-3 rounded-lg text-center" style="background: rgba(59,130,246,0.1);">
+          <p class="text-xs opacity-50">🛢️ Pintados</p>
+          <p class="mono text-lg font-bold" style="color: var(--secondary-action);">${totalDrums.toLocaleString('es')}</p>
+          <p class="text-xs opacity-40">estañones</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">🎯 Meta Total</p>
+          <p class="mono text-lg font-bold">${totalTarget.toLocaleString('es')}</p>
+          <p class="text-xs opacity-40">estañones</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(239,68,68,0.1);">
+          <p class="text-xs opacity-50">❌ Pérdidas</p>
+          <p class="mono text-lg font-bold" style="color: #ef4444;">${totalWaste.toLocaleString('es')}</p>
+          <p class="text-xs opacity-40">estañones</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">📊 Diferencia</p>
+          <p class="mono text-lg font-bold">${(totalTarget - totalDrums).toLocaleString('es')}</p>
+          <p class="text-xs opacity-40">neta</p>
+        </div>
+        <div class="p-3 rounded-lg text-center" style="background: rgba(255,255,255,0.05);">
+          <p class="text-xs opacity-50">⚡ Eficiencia</p>
+          <p class="mono text-lg font-bold" style="color: ${effColor};">${overallEff}%</p>
+          <div class="w-full h-1 rounded-full mt-1" style="background: rgba(255,255,255,0.1);">
+            <div class="h-full rounded-full progress-bar" style="width: ${Math.min(overallEff, 100)}%; background: ${effColor};"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily Table -->
+    <div class="card-glow rounded-xl p-5 mb-4" style="background: var(--surface-color);">
+      <h4 class="font-bold text-sm mb-3">📅 DESGLOSE DIARIO</h4>
+      ${days.length > 0 ? `
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr style="border-bottom: 2px solid rgba(255,255,255,0.15); font-weight: bold;">
+              <th class="text-left py-2">Fecha</th>
+              <th class="text-right py-2">📥</th>
+              <th class="text-right py-2">📤</th>
+              <th class="text-right py-2">✅</th>
+              <th class="text-right py-2">🛢️</th>
+              <th class="text-right py-2">🎯</th>
+              <th class="text-right py-2">❌</th>
+              <th class="text-right py-2">⚡</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${days.map(day => {
+              const d = dayMap[day];
+              const dIn = d.entries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+              const dOut = d.exits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+              const dRemainder = d.exits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+              const dDrums = d.exits.reduce((s, r) => s + (r.drums_painted || 0), 0);
+              const dWaste = d.exits.reduce((s, r) => s + (r.waste_drums || 0), 0);
+              const dTarget = d.exits.reduce((s, r) => s + (r.drums_target || 0), 0);
+              const dEff = dTarget > 0 ? Math.round((dDrums / dTarget) * 100) : 0;
+              const dColor = dEff >= 80 ? '#10b981' : dEff >= 50 ? '#f59e0b' : '#ef4444';
+              return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td class="py-1.5 font-semibold">${formatDate(day)}</td>
+                <td class="text-right py-1.5 mono" style="color: #10b981;">${dIn > 0 ? '+' + dIn.toFixed(2) : '—'}</td>
+                <td class="text-right py-1.5 mono" style="color: #ef4444;">${dOut > 0 ? '−' + dOut.toFixed(2) : '—'}</td>
+                <td class="text-right py-1.5 mono font-bold" style="color: #10b981;">${dRemainder > 0 ? '+' + dRemainder.toFixed(2) : '—'}</td>
+                <td class="text-right py-1.5 mono font-bold" style="color: var(--secondary-action);">${dDrums || '—'}</td>
+                <td class="text-right py-1.5 mono opacity-60">${dTarget || '—'}</td>
+                <td class="text-right py-1.5 mono" style="color: #ef4444;">${dWaste > 0 ? dWaste : '—'}</td>
+                <td class="text-right py-1.5 mono font-bold" style="color: ${dColor};">${dOut > 0 ? dEff + '%' : '—'}</td>
+              </tr>`;
+            }).join('')}
+            <tr style="border-top: 2px solid rgba(255,255,255,0.2); font-weight: bold;">
+              <td class="py-1.5">TOTAL</td>
+              <td class="text-right py-1.5 mono" style="color: #10b981;">+${totalIn.toFixed(2)}</td>
+              <td class="text-right py-1.5 mono" style="color: #ef4444;">−${totalOut.toFixed(2)}</td>
+              <td class="text-right py-1.5 mono" style="color: #10b981;">+${totalRemainder.toFixed(2)}</td>
+              <td class="text-right py-1.5 mono" style="color: var(--secondary-action);">${totalDrums.toLocaleString('es')}</td>
+              <td class="text-right py-1.5 mono opacity-60">${totalTarget.toLocaleString('es')}</td>
+              <td class="text-right py-1.5 mono" style="color: #ef4444;">${totalWaste.toLocaleString('es')}</td>
+              <td class="text-right py-1.5 mono" style="color: ${effColor};">${overallEff}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>` : '<p class="text-xs opacity-50 italic">Sin registros...</p>'}
+    </div>
+
+    <!-- All Transactions -->
+    <div class="card-glow rounded-xl p-5" style="background: var(--surface-color);">
+      <h4 class="font-bold text-sm mb-3">📝 TODOS LOS MOVIMIENTOS</h4>
+      ${rangeRecords.length > 0 ? `
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs">
+          <thead>
+            <tr style="border-bottom: 2px solid rgba(255,255,255,0.15); font-weight: bold;">
+              <th class="text-left py-2">Fecha</th>
+              <th class="text-left py-2">Tipo</th>
+              <th class="text-right py-2">Cubetas</th>
+              <th class="text-right py-2">Est.</th>
+              <th class="text-right py-2">Meta</th>
+              <th class="text-right py-2">Sobr.</th>
+              <th class="text-right py-2">Pérd.</th>
+              <th class="text-right py-2">Efic.</th>
+              <th class="text-left py-2">Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rangeRecords.sort((a,b) => (a.date||'').localeCompare(b.date||'')).map(r => {
+              const isEntry = r.type === 'entry';
+              const calc = !isEntry ? calcBucketUsage(r.drums_painted || 0, r.buckets_out || 1) : null;
+              const eColor = calc ? (calc.efficiency >= 80 ? '#10b981' : calc.efficiency >= 50 ? '#f59e0b' : '#ef4444') : '';
+              const displayBuckets = isEntry ? (r.buckets_decimal || r.buckets_in).toFixed(2) : (r.buckets_out || 0).toFixed(2);
+              return `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td class="py-1.5">${formatDate(r.date)}</td>
+                <td class="py-1.5"><span class="px-2 py-0.5 rounded text-xs font-bold" style="background: ${isEntry ? 'rgba(16,185,129,0.15); color: #10b981' : 'rgba(239,68,68,0.15); color: #ef4444'};">${isEntry ? '📥' : '📤'}</span></td>
+                <td class="text-right py-1.5 mono" style="color: ${isEntry ? '#10b981' : '#ef4444'};">${isEntry ? '+' : '−'}${displayBuckets}</td>
+                <td class="text-right py-1.5 mono">${isEntry ? '—' : (r.drums_painted || 0)}</td>
+                <td class="text-right py-1.5 mono opacity-60">${isEntry ? '—' : (calc ? calc.target : '—')}</td>
+                <td class="text-right py-1.5 mono" style="color: #10b981;">${!isEntry && r.buckets_remainder > 0 ? r.buckets_remainder.toFixed(2) : '—'}</td>
+                <td class="text-right py-1.5 mono" style="color: #ef4444;">${!isEntry && r.waste_drums > 0 ? r.waste_drums : '—'}</td>
+                <td class="text-right py-1.5 mono" style="color: ${eColor};">${isEntry ? '—' : (calc ? calc.efficiency + '%' : '—')}</td>
+                <td class="py-1.5 text-xs opacity-50">${r.notes || '—'}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>` : '<p class="text-xs opacity-50 italic">Sin movimientos...</p>'}
+    </div>
+  `;
+}
+
+function printReport() {
+  if (!document.getElementById('report-from').value || !document.getElementById('report-to').value) {
+    showToast('Genera un informe primero', 'error');
+    return;
+  }
+  window.print();
+}
+
+// ========== EXPORT TO EXCEL ==========
+function exportToExcel() {
+  const fromDate = document.getElementById('report-from').value;
+  const toDate = document.getElementById('report-to').value;
+  if (!fromDate || !toDate) { showToast('Genera un informe primero', 'error'); return; }
+
+  const rangeRecords = allRecords.filter(r => r.date >= fromDate && r.date <= toDate);
+  const rangeEntries = rangeRecords.filter(r => r.type === 'entry');
+  const rangeExits = rangeRecords.filter(r => r.type === 'exit');
+  const totalIn = rangeEntries.reduce((s, r) => s + (r.buckets_in || r.buckets_decimal || 0), 0);
+  const totalOut = rangeExits.reduce((s, r) => s + (r.buckets_out || 0), 0);
+  const totalRemainder = rangeExits.reduce((s, r) => s + (r.buckets_remainder || 0), 0);
+  const totalDrums = rangeExits.reduce((s, r) => s + (r.drums_painted || 0), 0);
+  const totalWaste = rangeExits.reduce((s, r) => s + (r.waste_drums || 0), 0);
+  const totalTarget = rangeExits.reduce((s, r) => s + (r.drums_target || 0), 0);
+  const overallEff = totalTarget > 0 ? Math.round((totalDrums / totalTarget) * 100) : 0;
+
+  const workbook = XLSX.utils.book_new();
+
+  // Resumen
+  const summaryData = [
+    ['INFORME DE INVENTARIO DE PINTURA'],
+    [''],
+    ['Empresa', companyConfig.company_name],
+    ['RUC', companyConfig.company_ruc],
+    ['Período', `${formatDate(fromDate)} - ${formatDate(toDate)}`],
+    ['Generado', new Date().toLocaleString('es')],
+    [''],
+    ['RESUMEN DE PERÍODO'],
+    ['Stock Inicial', ''],
+    ['Entradas', totalIn],
+    ['Salidas', totalOut],
+    ['Sobrantes Recuperados', totalRemainder],
+    ['Stock Final', (totalIn - totalOut - totalRemainder).toFixed(2)],
+    [''],
+    ['Estañones Pintados', totalDrums],
+    ['Meta Total', totalTarget],
+    ['Pérdidas', totalWaste],
+    ['Eficiencia Global', overallEff + '%']
+  ];
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+  XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumen');
+
+  // Movimientos
+  const movementsData = [
+    ['Fecha', 'Tipo', 'Cubetas', 'Estañones', 'Meta', 'Sobrante', 'Pérdida', 'Eficiencia', 'Notas']
+  ];
+  rangeRecords.sort((a,b) => (a.date||'').localeCompare(b.date||'')).forEach(r => {
+    const isEntry = r.type === 'entry';
+    const calc = !isEntry ? calcBucketUsage(r.drums_painted || 0, r.buckets_out || 1) : null;
+    const displayBuckets = isEntry ? (r.buckets_decimal || r.buckets_in).toFixed(2) : (r.buckets_out || 0).toFixed(2);
+    movementsData.push([
+      formatDate(r.date),
+      isEntry ? 'ENTRADA' : 'SALIDA',
+      displayBuckets,
+      isEntry ? '' : r.drums_painted,
+      isEntry ? '' : (calc ? calc.target : ''),
+      !isEntry && r.buckets_remainder > 0 ? r.buckets_remainder.toFixed(2) : '',
+      !isEntry && r.waste_drums > 0 ? r.waste_drums : '',
+      isEntry ? '' : (calc ? calc.efficiency + '%' : ''),
+      r.notes || ''
+    ]);
+  });
+  const movementsSheet = XLSX.utils.aoa_to_sheet(movementsData);
+  XLSX.utils.book_append_sheet(workbook, movementsSheet, 'Movimientos');
+
+  // Descargar
+  const filename = `Inventario_Pintura_${formatDate(fromDate)}_${formatDate(toDate)}.xlsx`;
+  XLSX.writeFile(workbook, filename);
+  showToast(`✅ Archivo "${filename}" descargado exitosamente`, 'success');
+}
+
+// ========== APPLY CONFIG ==========
+function applyConfig(config) {
+  const root = document.documentElement;
+  root.style.setProperty('--bg-color', config.background_color || defaultConfig.background_color);
+  root.style.setProperty('--surface-color', config.surface_color || defaultConfig.surface_color);
+  root.style.setProperty('--text-color', config.text_color || defaultConfig.text_color);
+  root.style.setProperty('--primary-action', config.primary_action || defaultConfig.primary_action);
+  root.style.setProperty('--secondary-action', config.secondary_action || defaultConfig.secondary_action);
+
+  const pa = config.primary_action || defaultConfig.primary_action;
+  const r = parseInt(pa.slice(1,3),16), g = parseInt(pa.slice(3,5),16), b = parseInt(pa.slice(5,7),16);
+  root.style.setProperty('--primary-action-rgb', `${r}, ${g}, ${b}`);
+
+  document.body.style.background = config.background_color || defaultConfig.background_color;
+  document.body.style.color = config.text_color || defaultConfig.text_color;
+
+  const titleEl = document.getElementById('el-title');
+  const compEl = document.getElementById('el-company');
+  if (titleEl) titleEl.textContent = config.system_title || defaultConfig.system_title;
+  if (compEl) compEl.textContent = config.company_name || defaultConfig.company_name;
+
+  const dpb = parseInt(config.drums_per_bucket || defaultConfig.drums_per_bucket) || 100;
+  drumsPerBucket = dpb;
+  const targetInfo = document.getElementById('el-target-info');
+  if (targetInfo) targetInfo.textContent = dpb;
+}
+
+// ========== INIT ==========
+(async function() {
+  const today = todayStr();
+  document.getElementById('entry-date').value = today;
+  document.getElementById('exit-date').value = today;
+  document.getElementById('daily-date').value = today;
+  document.getElementById('report-from').value = today;
+  document.getElementById('report-to').value = today;
+
+  // Config form initialization
+  document.getElementById('config-title').value = companyConfig.system_title;
+  document.getElementById('config-company').value = companyConfig.company_name;
+  document.getElementById('config-ruc').value = companyConfig.company_ruc;
+  document.getElementById('config-address').value = companyConfig.company_address;
+  document.getElementById('config-phone').value = companyConfig.company_phone;
+  document.getElementById('config-email').value = companyConfig.company_email;
+  document.getElementById('config-drums').value = companyConfig.drums_per_bucket;
+
+  // Color initialization
+  document.getElementById('config-bg').value = companyConfig.background_color;
+  document.getElementById('config-surface').value = companyConfig.surface_color;
+  document.getElementById('config-primary').value = companyConfig.primary_action;
+  document.getElementById('config-secondary').value = companyConfig.secondary_action;
+
+  document.getElementById('config-bg-hex').textContent = companyConfig.background_color.toUpperCase();
+  document.getElementById('config-surface-hex').textContent = companyConfig.surface_color.toUpperCase();
+  document.getElementById('config-primary-hex').textContent = companyConfig.primary_action.toUpperCase();
+  document.getElementById('config-secondary-hex').textContent = companyConfig.secondary_action.toUpperCase();
+
+  // Element SDK
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig: companyConfig,
+      onConfigChange: async (config) => {
+        companyConfig = config;
+        applyConfig(config);
+        document.getElementById('config-title').value = config.system_title || defaultConfig.system_title;
+        document.getElementById('config-company').value = config.company_name || defaultConfig.company_name;
+      },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+          { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => config.primary_action || defaultConfig.primary_action, set: (v) => { config.primary_action = v; window.elementSdk.setConfig({ primary_action: v }); } },
+          { get: () => config.secondary_action || defaultConfig.secondary_action, set: (v) => { config.secondary_action = v; window.elementSdk.setConfig({ secondary_action: v }); } }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ['system_title', config.system_title || defaultConfig.system_title],
+        ['company_name', config.company_name || defaultConfig.company_name],
+        ['company_ruc', config.company_ruc || ''],
+        ['company_address', config.company_address || ''],
+        ['company_phone', config.company_phone || ''],
+        ['company_email', config.company_email || ''],
+        ['drums_per_bucket', config.drums_per_bucket || defaultConfig.drums_per_bucket]
+      ])
+    });
+  }
+
+  // Data SDK
+  if (window.dataSdk) {
+    const dataHandler = { onDataChanged(data) { renderAll(data); } };
+    const initResult = await window.dataSdk.init(dataHandler);
+    if (!initResult.isOk) { showToast('Error al conectar con la base de datos', 'error'); }
+  }
+})();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9d12c87d8656ad73',t:'MTc3MTY0MDYyMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
