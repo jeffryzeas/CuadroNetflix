@@ -3,148 +3,324 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sabiduría Universal - HD</title>
+    <title>AI Book Studio - Creador Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;500;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --netflix-red: #E50914;
-            --netflix-black: #050505;
-        }
-        body {
-            background-color: var(--netflix-black);
-            color: white;
-            font-family: 'Lexend', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@300;400;600&display=swap');
         
-        .capture-area {
-            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
-            position: relative;
-            width: 100%;
-            max-width: 450px;
-            aspect-ratio: 4 / 5;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 50px;
-            box-sizing: border-box;
-            border-radius: 2px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
-            overflow: hidden;
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        .book-font { font-family: 'Crimson Pro', serif; }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
         }
-
-        /* Marca de agua profesional micro-texto */
-        .security-watermark {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 200%;
-            height: 200%;
-            pointer-events: none;
-            opacity: 0.025;
-            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='0' y='20' font-family='Arial' font-size='7' fill='white' transform='rotate(-45 100 100)'%3EAUTÉNTICO • SABIDURÍA UNIVERSAL • COPIA VERIFICADA%3C/text%3E%3C/svg%3E");
-            z-index: 1;
-        }
-
-        /* Resalte del número de día de fondo */
-        .day-highlight {
-            font-size: 11rem;
-            line-height: 0.8;
-            opacity: 0.12;
-            font-weight: 900;
-            position: absolute;
-            top: 20px;
-            right: -20px;
-            color: var(--netflix-red);
-            pointer-events: none;
-            z-index: 2;
-            letter-spacing: -5px;
-        }
-
-        .quote-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            z-index: 10;
-        }
-
-        .quote-style {
-            font-family: 'Playfair Display', serif;
-            font-style: italic;
-            line-height: 1.15;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            font-size: clamp(2.2rem, 10vw, 3.2rem);
-            margin-bottom: 25px;
-            transition: opacity 0.4s ease;
-        }
-
-        .btn-action {
-            background: #141414;
-            border: 1px solid #222;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            font-weight: 900;
-            font-size: 11px;
-        }
-        .btn-action:hover {
-            background: var(--netflix-red);
-            border-color: var(--netflix-red);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2);
-        }
-
-        .loader-bar {
-            height: 4px;
-            width: 0%;
-            background: var(--netflix-red);
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            transition: width 0.3s ease;
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .page-preview {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background: white;
+            min-height: 600px;
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-    <div id="loading-bar" class="loader-bar"></div>
+    <div class="max-w-5xl mx-auto">
+        <!-- Encabezado -->
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-bold text-slate-800 mb-2">AI Book Studio</h1>
+            <p class="text-slate-600">Escribe, ilustra y publica tu libro en segundos</p>
+        </header>
 
-    <!-- Área de Captura Principal -->
-    <div id="capture-container" class="capture-area">
-        <div class="security-watermark"></div>
-        <div id="day-large" class="day-highlight">--</div>
-        
-        <!-- Titulo Sabiduría Universal -->
-        <div class="z-10 flex items-center gap-4 mb-6">
-            <div class="w-12 h-[3px] bg-[#E50914]"></div>
-            <span class="text-[12px] tracking-[0.5em] font-black text-white/60 uppercase">SABIDURÍA UNIVERSAL</span>
-        </div>
-
-        <!-- Frase Principal -->
-        <div class="quote-container" id="fade-target">
-            <p id="quote-text" class="quote-style">
-                "Cargando..."
-            </p>
-            <div class="flex items-center gap-4">
-                <div class="h-[1px] w-8 bg-[#E50914] opacity-70"></div>
-                <p id="quote-author" class="text-[#E50914] text-[14px] font-black tracking-[0.25em] uppercase">
-                    — MAESTRO
-                </p>
+        <!-- Formulario de Configuración -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Título del Libro</label>
+                    <input type="text" id="bookTitle" placeholder="Ej: Las Crónicas del Tiempo Perdido" 
+                           class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Género / Estilo</label>
+                    <select id="bookGenre" class="w-full p-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <option value="Novela Fantástica">Novela Fantástica</option>
+                        <option value="Ciencia Ficción">Ciencia Ficción</option>
+                        <option value="Autoayuda">Autoayuda</option>
+                        <option value="Historia">Historia</option>
+                        <option value="Poesía">Poesía</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="mt-6 flex flex-wrap gap-4">
+                <button onclick="generateBookContent()" id="btnGenerate" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl transition flex items-center gap-2">
+                    <span>Generar Contenido con IA</span>
+                </button>
+                <button onclick="generateCover()" id="btnCover" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl transition flex items-center gap-2 hidden">
+                    <span>Generar Portada IA</span>
+                </button>
+                <button onclick="downloadPDF()" id="btnPDF" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-xl transition flex items-center gap-2 hidden">
+                    <span>Descargar PDF</span>
+                </button>
             </div>
         </div>
 
-        <!-- Footer -->
-        <div class="z-10 flex justify-between items-end border-t border-white/5 pt-8">
-            <div class="space-y-1">
+        <!-- Estado de Progreso -->
+        <div id="statusMessage" class="hidden mb-6 p-4 rounded-lg bg-blue-50 text-blue-700 text-center font-medium border border-blue-100">
+            <div class="loader mr-2"></div> <span id="statusText">Procesando...</span>
+        </div>
+
+        <!-- Editor y Vista Previa -->
+        <div id="bookPreview" class="hidden">
+            <div class="flex flex-col lg:flex-row gap-8">
+                
+                <!-- Columna Izquierda: Edición -->
+                <div class="w-full lg:w-1/3 space-y-4">
+                    <h3 class="font-bold text-slate-800 uppercase text-xs tracking-wider">Estructura del Libro</h3>
+                    <div id="chapterList" class="space-y-2">
+                        <!-- Capítulos se cargarán aquí -->
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Vista Previa de Página -->
+                <div class="w-full lg:w-2/3">
+                    <div id="pdfContent" class="page-preview p-12 book-font text-slate-800 relative overflow-hidden">
+                        <div id="coverView" class="w-full h-full flex flex-col items-center justify-center text-center">
+                            <div id="coverImageContainer" class="w-full mb-8 rounded shadow-lg overflow-hidden bg-slate-100 min-h-[400px] flex items-center justify-center">
+                                <span class="text-slate-400 italic">Sin portada generada</span>
+                            </div>
+                            <h1 id="previewTitle" class="text-5xl font-bold mb-4">Título del Libro</h1>
+                            <p id="previewAuthor" class="text-xl italic text-slate-500">Por Autor IA</p>
+                        </div>
+                        
+                        <div id="contentView" class="hidden">
+                            <h2 id="chapterTitle" class="text-3xl font-bold mb-6 border-b pb-4">Capítulo 1</h2>
+                            <div id="chapterBody" class="text-lg leading-relaxed whitespace-pre-wrap text-justify">
+                                Selecciona un capítulo para editar o leer el contenido generado.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; // La plataforma inyectará la clave automáticamente
+        let bookData = {
+            title: "",
+            author: "AI Author Studio",
+            chapters: [],
+            coverUrl: ""
+        };
+
+        const { jsPDF } = window.jspdf;
+
+        async function fetchGemini(prompt, systemPrompt = "Eres un escritor de libros profesional.") {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: prompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            for (let i = 0; i < 5; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await response.json();
+                    return data.candidates[0].content.parts[0].text;
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+            throw new Error("No se pudo conectar con la IA después de varios intentos.");
+        }
+
+        async function generateBookContent() {
+            const title = document.getElementById('bookTitle').value;
+            const genre = document.getElementById('bookGenre').value;
+            
+            if (!title) {
+                alert("Por favor, ingresa un título para el libro.");
+                return;
+            }
+
+            showStatus("Creando el esquema de los capítulos...");
+            bookData.title = title;
+            document.getElementById('previewTitle').innerText = title;
+
+            try {
+                const schemaPrompt = `Genera un esquema de 5 capítulos para un libro titulado "${title}" del género "${genre}". Devuelve solo los nombres de los capítulos en una lista numerada.`;
+                const schemaRaw = await fetchGemini(schemaPrompt);
+                
+                const lines = schemaRaw.split('\n').filter(l => l.match(/^\d/));
+                bookData.chapters = lines.map(line => ({
+                    title: line.replace(/^\d+\.\s*/, ''),
+                    content: "Generando contenido..."
+                }));
+
+                renderChapters();
+                document.getElementById('bookPreview').classList.remove('hidden');
+                
+                // Generar contenido del primer capítulo de inmediato
+                await generateChapterContent(0);
+                
+                showStatus("¡Estructura lista! Ahora puedes generar la portada.");
+                document.getElementById('btnCover').classList.remove('hidden');
+                document.getElementById('btnPDF').classList.remove('hidden');
+
+            } catch (error) {
+                showStatus("Error: " + error.message);
+            }
+        }
+
+        async function generateChapterContent(index) {
+            showStatus(`Redactando ${bookData.chapters[index].title}...`);
+            const prompt = `Escribe el contenido completo del capítulo titulado "${bookData.chapters[index].title}" para el libro "${bookData.title}". El estilo debe ser fluido y profesional. Mínimo 500 palabras.`;
+            const content = await fetchGemini(prompt);
+            bookData.chapters[index].content = content;
+            selectChapter(index);
+        }
+
+        function renderChapters() {
+            const list = document.getElementById('chapterList');
+            list.innerHTML = `
+                <div onclick="showCover()" class="p-3 bg-white border rounded-lg cursor-pointer hover:bg-blue-50 transition font-semibold text-blue-600">
+                    Portada del Libro
+                </div>
+            `;
+            bookData.chapters.forEach((ch, i) => {
+                const div = document.createElement('div');
+                div.className = "p-3 bg-white border rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm flex justify-between items-center";
+                div.innerHTML = `
+                    <span class="truncate">${ch.title}</span>
+                    <button onclick="event.stopPropagation(); generateChapterContent(${i})" class="text-xs text-blue-500 hover:underline">Regenerar</button>
+                `;
+                div.onclick = () => selectChapter(i);
+                list.appendChild(div);
+            });
+        }
+
+        function selectChapter(i) {
+            document.getElementById('coverView').classList.add('hidden');
+            document.getElementById('contentView').classList.remove('hidden');
+            document.getElementById('chapterTitle').innerText = bookData.chapters[i].title;
+            document.getElementById('chapterBody').innerText = bookData.chapters[i].content;
+            hideStatus();
+        }
+
+        function showCover() {
+            document.getElementById('coverView').classList.remove('hidden');
+            document.getElementById('contentView').classList.add('hidden');
+        }
+
+        async function generateCover() {
+            showStatus("Diseñando la portada con IA...");
+            const prompt = `Una portada de libro profesional para una novela de ${document.getElementById('bookGenre').value} titulada "${bookData.title}". Estilo cinematográfico, artístico y detallado, sin texto, solo ilustración central.`;
+            
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instances: [{ prompt: prompt }],
+                        parameters: { sampleCount: 1 }
+                    })
+                });
+                
+                const result = await response.json();
+                const base64 = result.predictions[0].bytesBase64Encoded;
+                bookData.coverUrl = `data:image/png;base64,${base64}`;
+                
+                const container = document.getElementById('coverImageContainer');
+                container.innerHTML = `<img src="${bookData.coverUrl}" class="w-full h-full object-cover">`;
+                showCover();
+                showStatus("¡Portada generada con éxito!");
+            } catch (e) {
+                showStatus("Error generando imagen. Inténtalo de nuevo.");
+            }
+        }
+
+        async function downloadPDF() {
+            showStatus("Preparando PDF... Esto puede tardar un momento.");
+            const doc = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+            });
+
+            const margin = 20;
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+
+            // 1. PORTADA
+            if (bookData.coverUrl) {
+                doc.addImage(bookData.coverUrl, 'PNG', 0, 0, pageWidth, pageHeight);
+                doc.setFillColor(0, 0, 0, 0.4);
+                doc.rect(0, pageHeight - 60, pageWidth, 60, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(26);
+                doc.text(bookData.title.toUpperCase(), pageWidth / 2, pageHeight - 35, { align: 'center' });
+                doc.setFontSize(14);
+                doc.text(bookData.author, pageWidth / 2, pageHeight - 20, { align: 'center' });
+            } else {
+                doc.setFontSize(30);
+                doc.text(bookData.title, pageWidth / 2, pageHeight / 3, { align: 'center' });
+            }
+
+            // 2. CAPÍTULOS
+            for (let ch of bookData.chapters) {
+                doc.addPage();
+                doc.setTextColor(40, 40, 40);
+                doc.setFontSize(22);
+                doc.text(ch.title, margin, 40);
+                doc.setDrawColor(200, 200, 200);
+                doc.line(margin, 45, pageWidth - margin, 45);
+                
+                doc.setFontSize(12);
+                const splitText = doc.splitTextToSize(ch.content, pageWidth - (margin * 2));
+                
+                let cursorY = 60;
+                for (let line of splitText) {
+                    if (cursorY > pageHeight - 20) {
+                        doc.addPage();
+                        cursorY = 25;
+                    }
+                    doc.text(line, margin, cursorY);
+                    cursorY += 7;
+                }
+            }
+
+            doc.save(`${bookData.title.replace(/\s+/g, '_')}.pdf`);
+            showStatus("¡PDF descargado!");
+            setTimeout(hideStatus, 2000);
+        }
+
+        function showStatus(text) {
+            const banner = document.getElementById('statusMessage');
+            const statusText = document.getElementById('statusText');
+            banner.classList.remove('hidden');
+            statusText.innerText = text;
+        }
+
+        function hideStatus() {
+            document.getElementById('statusMessage').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
+
                 <div class="text-[11px] text-white/30 uppercase tracking-[0.3em] font-black">
                     DÍA <span id="day-mini" class="text-white/70">--</span> / 365
                 </div>
