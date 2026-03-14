@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Book Studio - Edición Profesional</title>
+    <title>AI Book Studio - Edición Profesional Imprenta</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=Inter:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@300;400;600&display=swap');
         
         body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #1e293b; }
         .book-font { font-family: 'Crimson Pro', serif; }
@@ -40,15 +40,27 @@
     <div class="max-w-6xl mx-auto">
         <header class="mb-10 text-center">
             <h1 class="text-5xl font-extrabold text-slate-900 mb-2">AI Book Studio</h1>
-            <p class="text-slate-500 text-lg">Escribe, diseña y publica tu libro con Groq e Imagen</p>
+            <p class="text-slate-500 text-lg">Escribe, diseña y maqueta tu libro listo para imprenta</p>
         </header>
 
-        <!-- Panel de Control -->
         <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-200 mb-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Título del Libro</label>
                     <input type="text" id="bookTitle" placeholder="Ej: Sombras del Mañana" 
+                           class="w-full p-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-100 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nombre del Autor</label>
+                    <input type="text" id="bookAuthor" placeholder="Ej: IA Autor o Tu Nombre" 
+                           class="w-full p-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-100 outline-none transition-all">
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Dedicatoria (Opcional)</label>
+                    <input type="text" id="bookDedication" placeholder="Ej: Para aquellos que miran las estrellas..." 
                            class="w-full p-4 rounded-xl border border-slate-200 focus:ring-4 focus:ring-indigo-100 outline-none transition-all">
                 </div>
                 <div>
@@ -68,42 +80,34 @@
             
             <div class="mt-8 flex flex-wrap gap-4 justify-center">
                 <button onclick="generateBookContent()" id="btnGenerate" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-10 rounded-2xl shadow-lg transition-all transform hover:-translate-y-1">
-                    Generar Texto con Groq
+                    1. Generar Contenido (Groq)
                 </button>
                 <button onclick="downloadPDF()" id="btnPDF" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-10 rounded-2xl shadow-lg transition-all hidden transform hover:-translate-y-1">
-                    Descargar Libro PDF
+                    2. Descargar PDF Editorial
                 </button>
             </div>
         </div>
 
-        <!-- Estado -->
         <div id="statusMessage" class="hidden mb-8 p-4 rounded-xl bg-indigo-50 text-indigo-800 text-center font-semibold border border-indigo-100">
             <div class="loader mr-3"></div> <span id="statusText">Procesando...</span>
         </div>
 
-        <!-- Editor y Preview -->
         <div id="bookPreview" class="hidden grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Barra lateral de capítulos -->
             <div class="lg:col-span-4 space-y-4">
                 <h3 class="font-bold text-slate-400 uppercase text-xs tracking-widest">Capítulos Generados</h3>
                 <div id="chapterList" class="space-y-3"></div>
             </div>
 
-            <!-- Previsualización del libro -->
             <div class="lg:col-span-8">
                 <div id="pdfContent" class="page-preview p-12 md:p-20 book-font text-slate-900 leading-relaxed relative border border-slate-200">
-                    
-                    <!-- Vista de Portada -->
                     <div id="coverView" class="flex flex-col items-center justify-center text-center min-h-[600px]">
                         <div id="coverImageContainer" class="w-full max-w-sm mb-12 rounded-lg shadow-2xl overflow-hidden bg-slate-50 aspect-[2/3] flex items-center justify-center border border-slate-200">
                             <span class="text-slate-400 italic">Sube una imagen o usa la IA</span>
                         </div>
                         <h1 id="previewTitle" contenteditable="true" class="text-5xl font-bold mb-4 text-slate-900 focus:outline-none">Título del Libro</h1>
-                        <p class="text-xl italic text-slate-400">Por Autor IA</p>
+                        <p id="previewAuthor" class="text-xl italic text-slate-400">Por Autor IA</p>
                     </div>
                     
-                    <!-- Vista de Contenido -->
                     <div id="contentView" class="hidden">
                         <h2 id="chapterTitle" contenteditable="true" class="text-4xl font-bold mb-8 border-b-2 border-slate-100 pb-4 text-slate-800 focus:outline-none">Título del Capítulo</h2>
                         <div id="chapterBody" contenteditable="true" class="editable-content text-xl whitespace-pre-wrap text-justify min-h-[500px]">
@@ -116,11 +120,13 @@
     </div>
 
     <script>
-        const GROQ_API_KEY = "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";
-        const IMAGEN_API_KEY = ""; // Clave para Imagen 4.0
+        const GROQ_API_KEY = "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"; // REEMPLAZA CON TU KEY
+        const IMAGEN_API_KEY = ""; 
         
         let bookData = {
             title: "",
+            author: "",
+            dedication: "",
             chapters: [],
             coverUrl: "",
             currentChapterIndex: -1
@@ -128,7 +134,6 @@
 
         const { jsPDF } = window.jspdf;
 
-        // Función para peticiones a Groq
         async function fetchGroq(prompt, system = "Eres un autor galardonado que escribe con profundidad y detalle.") {
             const url = "https://api.groq.com/openai/v1/chat/completions";
             try {
@@ -155,7 +160,6 @@
             }
         }
 
-        // Carga de imagen local
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -173,12 +177,17 @@
         }
 
         async function generateBookContent() {
-            const titleInput = document.getElementById('bookTitle').value;
-            if (!titleInput) return alert("Escribe un título primero.");
+            const titleInput = document.getElementById('bookTitle').value || "Libro Sin Título";
+            const authorInput = document.getElementById('bookAuthor').value || "Autor Desconocido";
+            bookData.dedication = document.getElementById('bookDedication').value;
+
+            bookData.title = titleInput;
+            bookData.author = authorInput;
+            
+            document.getElementById('previewTitle').innerText = bookData.title;
+            document.getElementById('previewAuthor').innerText = "Por " + bookData.author;
 
             showStatus("Groq está diseñando la estructura de tu libro...");
-            bookData.title = titleInput;
-            document.getElementById('previewTitle').innerText = titleInput;
 
             try {
                 const schemaPrompt = `Genera un índice de 5 capítulos para un libro titulado "${bookData.title}". Solo los nombres de los capítulos, uno por línea, sin números.`;
@@ -193,7 +202,7 @@
                 renderChapters();
                 document.getElementById('bookPreview').classList.remove('hidden');
                 
-                // Generar el primer capítulo automáticamente
+                // Generar el primer capítulo para mostrar algo
                 await generateChapterContent(0);
                 
                 document.getElementById('btnPDF').classList.remove('hidden');
@@ -207,7 +216,7 @@
             bookData.currentChapterIndex = index;
             showStatus(`Redactando: ${bookData.chapters[index].title}...`);
             
-            const prompt = `Escribe el capítulo completo titulado "${bookData.chapters[index].title}" para el libro "${bookData.title}". Usa un lenguaje rico y envolvente. Mínimo 800 palabras. Idioma: Español.`;
+            const prompt = `Escribe el capítulo completo titulado "${bookData.chapters[index].title}" para el libro "${bookData.title}". Usa un lenguaje rico, párrafos bien estructurados y diálogos si es necesario. Mínimo 800 palabras. Idioma: Español.`;
             try {
                 const content = await fetchGroq(prompt);
                 bookData.chapters[index].content = content;
@@ -218,30 +227,23 @@
             }
         }
 
-        // Guardar cambios al editar el texto
+        // Listeners de edición manual
         document.getElementById('chapterBody').addEventListener('input', (e) => {
-            if (bookData.currentChapterIndex >= 0) {
-                bookData.chapters[bookData.currentChapterIndex].content = e.target.innerText;
-            }
+            if (bookData.currentChapterIndex >= 0) bookData.chapters[bookData.currentChapterIndex].content = e.target.innerText;
         });
-
         document.getElementById('chapterTitle').addEventListener('input', (e) => {
             if (bookData.currentChapterIndex >= 0) {
                 bookData.chapters[bookData.currentChapterIndex].title = e.target.innerText;
                 renderChapters();
             }
         });
-
-        document.getElementById('previewTitle').addEventListener('input', (e) => {
-            bookData.title = e.target.innerText;
-        });
+        document.getElementById('previewTitle').addEventListener('input', (e) => bookData.title = e.target.innerText);
 
         function renderChapters() {
             const list = document.getElementById('chapterList');
             list.innerHTML = `
                 <div onclick="showCover()" class="p-4 bg-indigo-600 text-white rounded-xl cursor-pointer hover:bg-indigo-700 transition shadow-md font-bold flex items-center justify-between">
                     <span>Ir a Portada</span>
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
             `;
             bookData.chapters.forEach((ch, i) => {
@@ -271,24 +273,19 @@
         }
 
         async function generateCover() {
+            // Tu lógica de Imagen 4.0 se mantiene igual
             showStatus("Imagen 4.0 está diseñando tu portada...");
             const prompt = `Professional book cover for "${bookData.title}". Cinematic, artistic illustration, high definition, elegant style, center focused, no text.`;
-            
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${IMAGEN_API_KEY}`;
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        instances: [{ prompt: prompt }],
-                        parameters: { sampleCount: 1 }
-                    })
+                    body: JSON.stringify({ instances: [{ prompt: prompt }], parameters: { sampleCount: 1 }})
                 });
-                
                 const result = await response.json();
                 const base64 = result.predictions[0].bytesBase64Encoded;
                 bookData.coverUrl = `data:image/png;base64,${base64}`;
-                
                 const container = document.getElementById('coverImageContainer');
                 container.innerHTML = `<img src="${bookData.coverUrl}" class="w-full h-full object-cover">`;
                 showCover();
@@ -299,65 +296,190 @@
             }
         }
 
+        // ==========================================
+        // NUEVA FUNCIÓN DE MAQUETACIÓN PARA IMPRENTA
+        // ==========================================
         function downloadPDF() {
-            showStatus("Generando PDF... por favor espera.");
-            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-            const margin = 25;
+            showStatus("Maquetando PDF para imprenta... por favor espera.");
+            
+            // Tamaño A5 (148 x 210 mm) estándar de novelas
+            const doc = new jsPDF({ unit: 'mm', format: 'a5' });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             let pageNum = 1;
 
-            const addPageNumber = (d, num) => {
-                d.setFontSize(10);
-                d.setTextColor(150);
-                d.text(`${num}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+            // Configuración de Márgenes Editorial (Gutter)
+            const marginTop = 20;
+            const marginBottom = 20;
+            const marginInner = 22; // Margen más ancho para la encuadernación/pegado
+            const marginOuter = 14; // Margen exterior más estrecho
+
+            // Helper para obtener márgenes según si es página par o impar
+            const getMargins = (page) => {
+                const isOdd = page % 2 !== 0; // Impares son páginas derechas
+                return {
+                    left: isOdd ? marginInner : marginOuter,
+                    right: isOdd ? marginOuter : marginInner,
+                    width: pageWidth - marginInner - marginOuter
+                };
             };
 
-            // 1. PORTADA
-            if (bookData.coverUrl) {
-                doc.addImage(bookData.coverUrl, 'PNG', 0, 0, pageWidth, pageHeight);
-                doc.setFillColor(0, 0, 0, 0.6);
-                doc.rect(0, pageHeight - 60, pageWidth, 60, 'F');
-                doc.setTextColor(255);
-                doc.setFontSize(28);
-                doc.text(bookData.title.toUpperCase(), pageWidth / 2, pageHeight - 35, { align: 'center' });
-                doc.setFontSize(14);
-                doc.text("AUTOR IA", pageWidth / 2, pageHeight - 20, { align: 'center' });
-            } else {
-                doc.setFontSize(30);
-                doc.text(bookData.title, pageWidth / 2, pageHeight / 3, { align: 'center' });
-            }
+            const addPageNumber = (d, num) => {
+                const m = getMargins(num);
+                d.setFontSize(9);
+                d.setTextColor(100);
+                // Número centrado en la página
+                d.text(`${num}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
+            };
 
-            // 2. CONTENIDO
-            bookData.chapters.forEach((ch, idx) => {
+            const addNewPage = () => {
                 doc.addPage();
                 pageNum++;
-                
-                doc.setTextColor(30);
-                doc.setFontSize(24);
-                doc.text(`${ch.title}`, margin, 40);
-                doc.line(margin, 45, pageWidth - margin, 45);
-                
+            };
+
+            // 1. PORTADA EXTERIOR (Pág 1 - Impar/Derecha)
+            if (bookData.coverUrl) {
+                doc.addImage(bookData.coverUrl, 'PNG', 0, 0, pageWidth, pageHeight);
+                doc.setFillColor(0, 0, 0, 0.7);
+                doc.rect(0, pageHeight - 40, pageWidth, 40, 'F');
+                doc.setTextColor(255);
+                doc.setFontSize(22);
+                doc.text(bookData.title.toUpperCase(), pageWidth / 2, pageHeight - 22, { align: 'center' });
                 doc.setFontSize(12);
-                const splitText = doc.splitTextToSize(ch.content, pageWidth - (margin * 2));
+                doc.text(bookData.author.toUpperCase(), pageWidth / 2, pageHeight - 12, { align: 'center' });
+            } else {
+                doc.setFontSize(24);
+                doc.text(bookData.title, pageWidth / 2, pageHeight / 2, { align: 'center' });
+            }
+
+            // 2. PÁGINA EN BLANCO (Pág 2 - Par/Izquierda - Reverso de portada)
+            addNewPage();
+
+            // 3. PORTADILLA (Pág 3 - Impar/Derecha)
+            addNewPage();
+            doc.setTextColor(0);
+            doc.setFont("times", "bold");
+            doc.setFontSize(28);
+            const splitTitle = doc.splitTextToSize(bookData.title.toUpperCase(), getMargins(pageNum).width);
+            doc.text(splitTitle, pageWidth / 2, pageHeight / 3, { align: 'center' });
+            
+            doc.setFont("times", "normal");
+            doc.setFontSize(14);
+            doc.text(bookData.author, pageWidth / 2, pageHeight / 3 + 30, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text("AI Book Studio Press", pageWidth / 2, pageHeight - 30, { align: 'center' });
+
+            // 4. PÁGINA LEGAL / COPYRIGHT (Pág 4 - Par/Izquierda)
+            addNewPage();
+            doc.setFontSize(9);
+            doc.setTextColor(80);
+            const mLegal = getMargins(pageNum);
+            const year = new Date().getFullYear();
+            doc.text(`© ${year} ${bookData.author}`, mLegal.left, pageHeight - 80);
+            doc.text("Todos los derechos reservados.", mLegal.left, pageHeight - 75);
+            doc.text("Ninguna parte de esta publicación puede ser reproducida,", mLegal.left, pageHeight - 65);
+            doc.text("distribuida o transmitida de ninguna forma ni por ningún medio.", mLegal.left, pageHeight - 60);
+            doc.text("ISBN: 978-X-XXXXXXX-X-X", mLegal.left, pageHeight - 50);
+            doc.text("Impreso en la Tierra.", mLegal.left, pageHeight - 45);
+
+            // 5. DEDICATORIA (Pág 5 - Impar/Derecha)
+            if (bookData.dedication) {
+                addNewPage();
+                doc.setFont("times", "italic");
+                doc.setFontSize(12);
+                const splitDedication = doc.splitTextToSize(bookData.dedication, getMargins(pageNum).width - 20);
+                doc.text(splitDedication, pageWidth / 2, pageHeight / 2 - 20, { align: 'center' });
+                addNewPage(); // Pág 6 Blanca para que el índice empiece en impar
+            } else {
+                addNewPage(); // Pág 5 Blanca
+                addNewPage(); // Pág 6 Blanca
+            }
+
+            // 7. ÍNDICE (Pág 7 - Impar/Derecha)
+            addNewPage();
+            const mToc = getMargins(pageNum);
+            doc.setFont("times", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(0);
+            doc.text("ÍNDICE", mToc.left, 40);
+            
+            doc.setFont("times", "normal");
+            doc.setFontSize(12);
+            let yToc = 60;
+            bookData.chapters.forEach((ch, idx) => {
+                doc.text(`Capítulo ${idx + 1}: ${ch.title}`, mToc.left, yToc);
+                yToc += 10;
+            });
+            
+            // Pág 8 Blanca (reverso del índice)
+            addNewPage();
+
+            // CAPÍTULOS (Inician en Pág 9)
+            doc.setTextColor(20); // Gris muy oscuro para impresión
+            
+            bookData.chapters.forEach((ch, idx) => {
+                // Forzar que cada capítulo empiece en página impar (Derecha)
+                if (pageNum % 2 === 0) addNewPage();
                 
-                let y = 60;
-                splitText.forEach(line => {
-                    if (y > pageHeight - 20) {
-                        addPageNumber(doc, pageNum);
-                        doc.addPage();
-                        pageNum++;
-                        y = 30;
-                    }
-                    doc.text(line, margin, y);
-                    y += 8;
+                const mCh = getMargins(pageNum);
+                
+                // Título del capítulo (A media página)
+                doc.setFont("times", "bold");
+                doc.setFontSize(22);
+                doc.text(`Capítulo ${idx + 1}`, mCh.left, 50);
+                doc.setFontSize(16);
+                doc.setFont("times", "italic");
+                doc.text(`${ch.title}`, mCh.left, 60);
+                
+                doc.setFont("times", "normal");
+                doc.setFontSize(11);
+                
+                // Procesar el texto dividiéndolo en párrafos
+                const paragraphs = ch.content.split('\n').filter(p => p.trim() !== '');
+                let y = 80; // Donde empieza el texto en la primera página del cap
+
+                paragraphs.forEach((para) => {
+                    const m = getMargins(pageNum); // Recalcular márgenes por si cambiamos de página
+                    
+                    // jsPDF splitTextToSize no justifica automáticamente, usamos justify
+                    const lines = doc.splitTextToSize(para.trim(), m.width);
+                    
+                    lines.forEach(line => {
+                        // Salto de página
+                        if (y > pageHeight - marginBottom) {
+                            addPageNumber(doc, pageNum);
+                            addNewPage();
+                            const newM = getMargins(pageNum);
+                            y = marginTop;
+                            
+                            // Imprimir encabezado pequeño
+                            doc.setFontSize(8);
+                            doc.setTextColor(150);
+                            if (pageNum % 2 === 0) {
+                                doc.text(bookData.author.toUpperCase(), newM.left, marginTop - 8);
+                            } else {
+                                doc.text(bookData.title.toUpperCase(), pageWidth - newM.right, marginTop - 8, {align: 'right'});
+                            }
+                            doc.setFontSize(11);
+                            doc.setTextColor(20);
+                        }
+                        
+                        // Imprimir línea (justificada excepto la última del párrafo)
+                        const currentM = getMargins(pageNum);
+                        doc.text(line, currentM.left, y, { align: 'justify', maxWidth: currentM.width });
+                        y += 6; // Interlineado
+                    });
+                    
+                    y += 3; // Espacio entre párrafos
                 });
+                
                 addPageNumber(doc, pageNum);
+                addNewPage();
             });
 
-            doc.save(`${bookData.title.replace(/\s+/g, '_')}.pdf`);
-            showStatus("¡Descarga completa!");
-            setTimeout(hideStatus, 2000);
+            doc.save(`${bookData.title.replace(/\s+/g, '_')}_Imprenta.pdf`);
+            showStatus("¡Maquetación completada! PDF descargado.");
+            setTimeout(hideStatus, 3000);
         }
 
         function showStatus(text) {
@@ -372,346 +494,3 @@
     </script>
 </body>
 </html>
-
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const apiKey = ""; // La plataforma inyectará la clave automáticamente
-        let bookData = {
-            title: "",
-            author: "AI Author Studio",
-            chapters: [],
-            coverUrl: ""
-        };
-
-        const { jsPDF } = window.jspdf;
-
-        async function fetchGemini(prompt, systemPrompt = "Eres un escritor de libros profesional.") {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
-            };
-
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const data = await response.json();
-                    return data.candidates[0].content.parts[0].text;
-                } catch (e) {
-                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
-                }
-            }
-            throw new Error("No se pudo conectar con la IA después de varios intentos.");
-        }
-
-        async function generateBookContent() {
-            const title = document.getElementById('bookTitle').value;
-            const genre = document.getElementById('bookGenre').value;
-            
-            if (!title) {
-                alert("Por favor, ingresa un título para el libro.");
-                return;
-            }
-
-            showStatus("Creando el esquema de los capítulos...");
-            bookData.title = title;
-            document.getElementById('previewTitle').innerText = title;
-
-            try {
-                const schemaPrompt = `Genera un esquema de 5 capítulos para un libro titulado "${title}" del género "${genre}". Devuelve solo los nombres de los capítulos en una lista numerada.`;
-                const schemaRaw = await fetchGemini(schemaPrompt);
-                
-                const lines = schemaRaw.split('\n').filter(l => l.match(/^\d/));
-                bookData.chapters = lines.map(line => ({
-                    title: line.replace(/^\d+\.\s*/, ''),
-                    content: "Generando contenido..."
-                }));
-
-                renderChapters();
-                document.getElementById('bookPreview').classList.remove('hidden');
-                
-                // Generar contenido del primer capítulo de inmediato
-                await generateChapterContent(0);
-                
-                showStatus("¡Estructura lista! Ahora puedes generar la portada.");
-                document.getElementById('btnCover').classList.remove('hidden');
-                document.getElementById('btnPDF').classList.remove('hidden');
-
-            } catch (error) {
-                showStatus("Error: " + error.message);
-            }
-        }
-
-        async function generateChapterContent(index) {
-            showStatus(`Redactando ${bookData.chapters[index].title}...`);
-            const prompt = `Escribe el contenido completo del capítulo titulado "${bookData.chapters[index].title}" para el libro "${bookData.title}". El estilo debe ser fluido y profesional. Mínimo 500 palabras.`;
-            const content = await fetchGemini(prompt);
-            bookData.chapters[index].content = content;
-            selectChapter(index);
-        }
-
-        function renderChapters() {
-            const list = document.getElementById('chapterList');
-            list.innerHTML = `
-                <div onclick="showCover()" class="p-3 bg-white border rounded-lg cursor-pointer hover:bg-blue-50 transition font-semibold text-blue-600">
-                    Portada del Libro
-                </div>
-            `;
-            bookData.chapters.forEach((ch, i) => {
-                const div = document.createElement('div');
-                div.className = "p-3 bg-white border rounded-lg cursor-pointer hover:bg-slate-50 transition text-sm flex justify-between items-center";
-                div.innerHTML = `
-                    <span class="truncate">${ch.title}</span>
-                    <button onclick="event.stopPropagation(); generateChapterContent(${i})" class="text-xs text-blue-500 hover:underline">Regenerar</button>
-                `;
-                div.onclick = () => selectChapter(i);
-                list.appendChild(div);
-            });
-        }
-
-        function selectChapter(i) {
-            document.getElementById('coverView').classList.add('hidden');
-            document.getElementById('contentView').classList.remove('hidden');
-            document.getElementById('chapterTitle').innerText = bookData.chapters[i].title;
-            document.getElementById('chapterBody').innerText = bookData.chapters[i].content;
-            hideStatus();
-        }
-
-        function showCover() {
-            document.getElementById('coverView').classList.remove('hidden');
-            document.getElementById('contentView').classList.add('hidden');
-        }
-
-        async function generateCover() {
-            showStatus("Diseñando la portada con IA...");
-            const prompt = `Una portada de libro profesional para una novela de ${document.getElementById('bookGenre').value} titulada "${bookData.title}". Estilo cinematográfico, artístico y detallado, sin texto, solo ilustración central.`;
-            
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        instances: [{ prompt: prompt }],
-                        parameters: { sampleCount: 1 }
-                    })
-                });
-                
-                const result = await response.json();
-                const base64 = result.predictions[0].bytesBase64Encoded;
-                bookData.coverUrl = `data:image/png;base64,${base64}`;
-                
-                const container = document.getElementById('coverImageContainer');
-                container.innerHTML = `<img src="${bookData.coverUrl}" class="w-full h-full object-cover">`;
-                showCover();
-                showStatus("¡Portada generada con éxito!");
-            } catch (e) {
-                showStatus("Error generando imagen. Inténtalo de nuevo.");
-            }
-        }
-
-        async function downloadPDF() {
-            showStatus("Preparando PDF... Esto puede tardar un momento.");
-            const doc = new jsPDF({
-                orientation: 'portrait',
-                unit: 'mm',
-                format: 'a4'
-            });
-
-            const margin = 20;
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-
-            // 1. PORTADA
-            if (bookData.coverUrl) {
-                doc.addImage(bookData.coverUrl, 'PNG', 0, 0, pageWidth, pageHeight);
-                doc.setFillColor(0, 0, 0, 0.4);
-                doc.rect(0, pageHeight - 60, pageWidth, 60, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(26);
-                doc.text(bookData.title.toUpperCase(), pageWidth / 2, pageHeight - 35, { align: 'center' });
-                doc.setFontSize(14);
-                doc.text(bookData.author, pageWidth / 2, pageHeight - 20, { align: 'center' });
-            } else {
-                doc.setFontSize(30);
-                doc.text(bookData.title, pageWidth / 2, pageHeight / 3, { align: 'center' });
-            }
-
-            // 2. CAPÍTULOS
-            for (let ch of bookData.chapters) {
-                doc.addPage();
-                doc.setTextColor(40, 40, 40);
-                doc.setFontSize(22);
-                doc.text(ch.title, margin, 40);
-                doc.setDrawColor(200, 200, 200);
-                doc.line(margin, 45, pageWidth - margin, 45);
-                
-                doc.setFontSize(12);
-                const splitText = doc.splitTextToSize(ch.content, pageWidth - (margin * 2));
-                
-                let cursorY = 60;
-                for (let line of splitText) {
-                    if (cursorY > pageHeight - 20) {
-                        doc.addPage();
-                        cursorY = 25;
-                    }
-                    doc.text(line, margin, cursorY);
-                    cursorY += 7;
-                }
-            }
-
-            doc.save(`${bookData.title.replace(/\s+/g, '_')}.pdf`);
-            showStatus("¡PDF descargado!");
-            setTimeout(hideStatus, 2000);
-        }
-
-        function showStatus(text) {
-            const banner = document.getElementById('statusMessage');
-            const statusText = document.getElementById('statusText');
-            banner.classList.remove('hidden');
-            statusText.innerText = text;
-        }
-
-        function hideStatus() {
-            document.getElementById('statusMessage').classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
-
-                <div class="text-[11px] text-white/30 uppercase tracking-[0.3em] font-black">
-                    DÍA <span id="day-mini" class="text-white/70">--</span> / 365
-                </div>
-                <div id="timestamp" class="text-[8px] text-white/10 font-mono tracking-tight opacity-40 uppercase">
-                    ID: NF-PRO-VERIFIED-DATA
-                </div>
-            </div>
-            <div class="text-[#E50914] font-black text-5xl italic tracking-tighter scale-y-110 opacity-90">JZ</div>
-        </div>
-    </div>
-
-    <!-- Panel de Navegación -->
-    <div class="flex flex-wrap gap-5 mt-10 justify-center no-capture">
-        <button id="generate-btn" class="btn-action px-10 py-4 rounded-sm text-white">
-            Generar Otra
-        </button>
-        <button id="download-btn" class="btn-action px-10 py-4 rounded-sm text-white bg-white/5 border-white/10">
-            Descargar Ultra HD
-        </button>
-    </div>
-
-    <script>
-        const GROQ_API_KEY = "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";
-        const quoteText = document.getElementById('quote-text');
-        const quoteAuthor = document.getElementById('quote-author');
-        const dayLarge = document.getElementById('day-large');
-        const dayMini = document.getElementById('day-mini');
-        const timestamp = document.getElementById('timestamp');
-        const loadingBar = document.getElementById('loading-bar');
-        const generateBtn = document.getElementById('generate-btn');
-        const downloadBtn = document.getElementById('download-btn');
-        const fadeTarget = document.getElementById('fade-target');
-
-        function getDayOfYear() {
-            const now = new Date();
-            const start = new Date(now.getFullYear(), 0, 0);
-            return Math.floor((now - start) / (1000 * 60 * 60 * 24));
-        }
-
-        async function fetchWisdom() {
-            loadingBar.style.width = "30%";
-            generateBtn.disabled = true;
-            generateBtn.style.opacity = "0.5";
-            fadeTarget.style.opacity = "0.2";
-            
-            const day = getDayOfYear();
-            dayLarge.innerText = day;
-            dayMini.innerText = day;
-            timestamp.innerText = `ID: NF-${Math.random().toString(36).substr(2, 9).toUpperCase()}-DAY${day}-ULTRA`;
-
-            const systemPrompt = "Eres un maestro de sabiduría universal. Genera una frase de ánimos (máximo 10 palabras), poderosa y admirable con sabiduria la frase tiene que ser diferente a la ultima consulta. En español. Formato JSON: {\"q\": \"frase\", \"a\": \"autor\"}";
-            const userPrompt = `Sabiduría perfecta para el día ${day}. No menciones el día en la frase.`;
-
-            try {
-                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${GROQ_API_KEY}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: "system", content: systemPrompt },
-                            { role: "user", content: userPrompt }
-                        ],
-                        response_format: { type: "json_object" },
-                        temperature: 0.85
-                    })
-                });
-
-                loadingBar.style.width = "85%";
-                const data = await response.json();
-                const content = JSON.parse(data.choices[0].message.content);
-                
-                setTimeout(() => {
-                    quoteText.innerText = `"${content.q}"`;
-                    quoteAuthor.innerText = `— ${content.a}`;
-                    fadeTarget.style.opacity = "1";
-                    loadingBar.style.width = "100%";
-                    setTimeout(() => loadingBar.style.width = "0%", 400);
-                }, 300);
-
-            } catch (e) {
-                console.error(e);
-                quoteText.innerText = "La paz comienza con una sonrisa.";
-                quoteAuthor.innerText = "— Teresa de Calcuta";
-            } finally {
-                generateBtn.disabled = false;
-                generateBtn.style.opacity = "1";
-            }
-        }
-
-        async function downloadHD() {
-            const container = document.getElementById('capture-container');
-            const originalBtnText = downloadBtn.innerText;
-            downloadBtn.innerText = "CAPTURANDO...";
-            
-            try {
-                const canvas = await html2canvas(container, {
-                    scale: 4, 
-                    useCORS: true,
-                    backgroundColor: "#050505",
-                    letterRendering: true,
-                    scrollX: 0,
-                    scrollY: -window.scrollY
-                });
-                
-                const link = document.createElement('a');
-                link.download = `SABIDURIA_UNIVERSAL_DIA_${getDayOfYear()}.png`;
-                link.href = canvas.toDataURL('image/png', 1.0);
-                link.click();
-            } catch (err) {
-                console.error("Error en descarga:", err);
-            } finally {
-                downloadBtn.innerText = originalBtnText;
-            }
-        }
-
-        generateBtn.addEventListener('click', fetchWisdom);
-        downloadBtn.addEventListener('click', downloadHD);
-        window.onload = fetchWisdom;
-    </script>
-</body>
-</html>
-
