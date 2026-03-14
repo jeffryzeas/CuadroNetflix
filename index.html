@@ -1,1 +1,273 @@
-hooka
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabiduría Universal - HD</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;500;900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --netflix-red: #E50914;
+            --netflix-black: #050505;
+        }
+        body {
+            background-color: var(--netflix-black);
+            color: white;
+            font-family: 'Lexend', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .capture-area {
+            background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            aspect-ratio: 4 / 5;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 50px;
+            box-sizing: border-box;
+            border-radius: 2px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9);
+            overflow: hidden;
+        }
+
+        /* Marca de agua profesional micro-texto */
+        .security-watermark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            pointer-events: none;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='0' y='20' font-family='Arial' font-size='7' fill='white' transform='rotate(-45 100 100)'%3EAUTÉNTICO • SABIDURÍA UNIVERSAL • COPIA VERIFICADA%3C/text%3E%3C/svg%3E");
+            z-index: 1;
+        }
+
+        /* Resalte del número de día de fondo */
+        .day-highlight {
+            font-size: 11rem;
+            line-height: 0.8;
+            opacity: 0.12;
+            font-weight: 900;
+            position: absolute;
+            top: 20px;
+            right: -20px;
+            color: var(--netflix-red);
+            pointer-events: none;
+            z-index: 2;
+            letter-spacing: -5px;
+        }
+
+        .quote-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .quote-style {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            line-height: 1.15;
+            text-shadow: 0 10px 40px rgba(0,0,0,0.9);
+            font-size: clamp(2.2rem, 10vw, 3.2rem);
+            margin-bottom: 25px;
+            transition: opacity 0.4s ease;
+        }
+
+        .btn-action {
+            background: #141414;
+            border: 1px solid #222;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 900;
+            font-size: 11px;
+        }
+        .btn-action:hover {
+            background: var(--netflix-red);
+            border-color: var(--netflix-red);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(229, 9, 20, 0.2);
+        }
+
+        .loader-bar {
+            height: 4px;
+            width: 0%;
+            background: var(--netflix-red);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loading-bar" class="loader-bar"></div>
+
+    <!-- Área de Captura Principal -->
+    <div id="capture-container" class="capture-area">
+        <div class="security-watermark"></div>
+        <div id="day-large" class="day-highlight">--</div>
+        
+        <!-- Titulo Sabiduría Universal -->
+        <div class="z-10 flex items-center gap-4 mb-6">
+            <div class="w-12 h-[3px] bg-[#E50914]"></div>
+            <span class="text-[12px] tracking-[0.5em] font-black text-white/60 uppercase">SABIDURÍA UNIVERSAL</span>
+        </div>
+
+        <!-- Frase Principal -->
+        <div class="quote-container" id="fade-target">
+            <p id="quote-text" class="quote-style">
+                "Cargando..."
+            </p>
+            <div class="flex items-center gap-4">
+                <div class="h-[1px] w-8 bg-[#E50914] opacity-70"></div>
+                <p id="quote-author" class="text-[#E50914] text-[14px] font-black tracking-[0.25em] uppercase">
+                    — MAESTRO
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="z-10 flex justify-between items-end border-t border-white/5 pt-8">
+            <div class="space-y-1">
+                <div class="text-[11px] text-white/30 uppercase tracking-[0.3em] font-black">
+                    DÍA <span id="day-mini" class="text-white/70">--</span> / 365
+                </div>
+                <div id="timestamp" class="text-[8px] text-white/10 font-mono tracking-tight opacity-40 uppercase">
+                    ID: NF-PRO-VERIFIED-DATA
+                </div>
+            </div>
+            <div class="text-[#E50914] font-black text-5xl italic tracking-tighter scale-y-110 opacity-90">JZ</div>
+        </div>
+    </div>
+
+    <!-- Panel de Navegación -->
+    <div class="flex flex-wrap gap-5 mt-10 justify-center no-capture">
+        <button id="generate-btn" class="btn-action px-10 py-4 rounded-sm text-white">
+            Generar Otra
+        </button>
+        <button id="download-btn" class="btn-action px-10 py-4 rounded-sm text-white bg-white/5 border-white/10">
+            Descargar Ultra HD
+        </button>
+    </div>
+
+    <script>
+        const GROQ_API_KEY = "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";
+        const quoteText = document.getElementById('quote-text');
+        const quoteAuthor = document.getElementById('quote-author');
+        const dayLarge = document.getElementById('day-large');
+        const dayMini = document.getElementById('day-mini');
+        const timestamp = document.getElementById('timestamp');
+        const loadingBar = document.getElementById('loading-bar');
+        const generateBtn = document.getElementById('generate-btn');
+        const downloadBtn = document.getElementById('download-btn');
+        const fadeTarget = document.getElementById('fade-target');
+
+        function getDayOfYear() {
+            const now = new Date();
+            const start = new Date(now.getFullYear(), 0, 0);
+            return Math.floor((now - start) / (1000 * 60 * 60 * 24));
+        }
+
+        async function fetchWisdom() {
+            loadingBar.style.width = "30%";
+            generateBtn.disabled = true;
+            generateBtn.style.opacity = "0.5";
+            fadeTarget.style.opacity = "0.2";
+            
+            const day = getDayOfYear();
+            dayLarge.innerText = day;
+            dayMini.innerText = day;
+            timestamp.innerText = `ID: NF-${Math.random().toString(36).substr(2, 9).toUpperCase()}-DAY${day}-ULTRA`;
+
+            const systemPrompt = "Eres un maestro de sabiduría universal. Genera una frase de ánimos extremadamente corta (máximo 10 palabras), poderosa y admirable. En español. Formato JSON: {\"q\": \"frase\", \"a\": \"autor\"}";
+            const userPrompt = `Sabiduría perfecta para el día ${day}. No menciones el día en la frase.`;
+
+            try {
+                const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${GROQ_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: userPrompt }
+                        ],
+                        response_format: { type: "json_object" },
+                        temperature: 0.85
+                    })
+                });
+
+                loadingBar.style.width = "85%";
+                const data = await response.json();
+                const content = JSON.parse(data.choices[0].message.content);
+                
+                setTimeout(() => {
+                    quoteText.innerText = `"${content.q}"`;
+                    quoteAuthor.innerText = `— ${content.a}`;
+                    fadeTarget.style.opacity = "1";
+                    loadingBar.style.width = "100%";
+                    setTimeout(() => loadingBar.style.width = "0%", 400);
+                }, 300);
+
+            } catch (e) {
+                console.error(e);
+                quoteText.innerText = "La paz comienza con una sonrisa.";
+                quoteAuthor.innerText = "— Teresa de Calcuta";
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = "1";
+            }
+        }
+
+        async function downloadHD() {
+            const container = document.getElementById('capture-container');
+            const originalBtnText = downloadBtn.innerText;
+            downloadBtn.innerText = "CAPTURANDO...";
+            
+            try {
+                const canvas = await html2canvas(container, {
+                    scale: 4, 
+                    useCORS: true,
+                    backgroundColor: "#050505",
+                    letterRendering: true,
+                    scrollX: 0,
+                    scrollY: -window.scrollY
+                });
+                
+                const link = document.createElement('a');
+                link.download = `SABIDURIA_UNIVERSAL_DIA_${getDayOfYear()}.png`;
+                link.href = canvas.toDataURL('image/png', 1.0);
+                link.click();
+            } catch (err) {
+                console.error("Error en descarga:", err);
+            } finally {
+                downloadBtn.innerText = originalBtnText;
+            }
+        }
+
+        generateBtn.addEventListener('click', fetchWisdom);
+        downloadBtn.addEventListener('click', downloadHD);
+        window.onload = fetchWisdom;
+    </script>
+</body>
+</html>
+
