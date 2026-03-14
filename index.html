@@ -3,447 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Book Studio - Máster Editorial</title>
+    <title>AI Book Studio - Ultimate Print Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
         
-        body { font-family: 'Inter', sans-serif; background: #0f172a; color: #f8fafc; height: 100vh; overflow: hidden; }
-        .book-font { font-family: 'Lora', serif; } /* Lora es excelente para lectura editorial */
+        body { font-family: 'Inter', sans-serif; background: #020617; color: #f8fafc; height: 100vh; overflow: hidden; }
+        /* Crimson Text es una tipografía premiada para diseño editorial impreso */
+        .book-font { font-family: 'Crimson Text', serif; } 
         
-        /* Scrollbar estilizado */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        .loader {
-            border: 3px solid #334155; border-top: 3px solid #3b82f6; border-radius: 50%;
-            width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle;
-        }
+        .spinner { border: 2px solid #334155; border-top: 2px solid #10b981; border-radius: 50%; width: 14px; height: 14px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
     </style>
 </head>
 <body class="flex flex-col h-screen">
 
-    <header class="bg-slate-900 border-b border-slate-800 p-4 flex justify-between items-center shrink-0">
+    <header class="bg-slate-900 border-b border-slate-800 p-3 flex justify-between items-center shrink-0 shadow-md z-10">
         <div>
-            <h1 class="text-2xl font-extrabold text-white tracking-tight">AI Book Studio <span class="text-blue-500">Máster</span></h1>
-            <p class="text-slate-400 text-xs">Paginación real, Cero Markdown, Justificación Perfecta</p>
+            <h1 class="text-xl font-black text-white tracking-tighter">AI BOOK STUDIO <span class="text-emerald-500 text-sm font-bold uppercase tracking-widest ml-2">Perfection Edition</span></h1>
         </div>
-        <div id="globalStatus" class="text-sm font-semibold text-blue-400 hidden">
-            <div class="loader mr-2"></div><span id="statusText">Procesando...</span>
+        <div id="statusIndicator" class="text-xs font-bold text-emerald-400 hidden bg-emerald-900/30 px-3 py-1.5 rounded-full border border-emerald-800/50">
+            <div class="spinner mr-2 align-middle"></div><span id="statusMsg" class="align-middle">Procesando...</span>
         </div>
-        <button onclick="updatePDFPreview()" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-lg font-bold transition flex items-center gap-2 shadow-lg shadow-blue-500/20">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-            Refrescar PDF
+        <button onclick="compilePDF()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-1.5 rounded text-sm font-bold transition flex items-center gap-2 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+            Compilar y Ver PDF Completo
         </button>
     </header>
 
     <div class="flex flex-1 overflow-hidden">
         
-        <div class="w-1/4 bg-slate-800 border-r border-slate-700 p-5 overflow-y-auto flex flex-col gap-5">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 pb-2">1. Metadatos</h2>
+        <div class="w-1/4 bg-slate-900 border-r border-slate-800 p-5 overflow-y-auto flex flex-col gap-4">
             
-            <input type="text" id="bTitle" placeholder="Título del Libro" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm text-white">
-            <input type="text" id="bAuthor" placeholder="Nombre del Autor" class="w-full bg-slate-900 border border-slate-700 rounded p-3 text-sm text-white">
-            
-            <div>
-                <label class="block text-xs font-bold text-slate-400 mb-2">Portada (Obligatorio)</label>
-                <input type="file" id="imageUpload" accept="image/*" class="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 cursor-pointer">
+            <div class="space-y-3 bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Metadatos del Libro</h2>
+                <input type="text" id="inpTitle" placeholder="Título Exacto del Libro" class="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-sm text-white focus:border-emerald-500 outline-none">
+                <input type="text" id="inpAuthor" placeholder="Nombre del Autor" class="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-sm text-white focus:border-emerald-500 outline-none">
+                <input type="text" id="inpDedication" placeholder="Dedicatoria (Opcional)" class="w-full bg-slate-950 border border-slate-700 rounded p-2.5 text-sm text-white focus:border-emerald-500 outline-none">
             </div>
 
-            <button onclick="generateStructure()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded text-sm transition mt-2">
-                Generar Índice con IA
+            <div class="space-y-3 bg-slate-800/50 p-4 rounded-lg border border-slate-700/50">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dimensiones de la Obra</h2>
+                <div class="flex gap-2">
+                    <div class="w-1/2">
+                        <label class="text-[10px] text-slate-500 block mb-1">Nº CAPÍTULOS</label>
+                        <input type="number" id="inpCapCount" value="5" min="1" max="20" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-center text-white outline-none">
+                    </div>
+                    <div class="w-1/2">
+                        <label class="text-[10px] text-slate-500 block mb-1">PALABRAS / CAP</label>
+                        <input type="number" id="inpWordCount" value="1000" step="100" class="w-full bg-slate-950 border border-slate-700 rounded p-2 text-sm text-center text-white outline-none">
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <label class="text-[10px] text-slate-500 block mb-1">PORTADA (Opcional)</label>
+                    <input type="file" id="inpCover" accept="image/*" class="w-full text-[10px] text-slate-400 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-slate-700 file:text-white cursor-pointer">
+                </div>
+            </div>
+
+            <button onclick="planificarLibro()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded text-sm transition shadow-lg">
+                1. Crear Estructura e Índice
             </button>
 
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest border-b border-slate-700 pb-2 mt-4">2. Estructura (Editable)</h2>
-            <div id="chapterList" class="flex flex-col gap-2">
-                <p class="text-xs text-slate-500 italic">Genera el índice primero...</p>
-            </div>
-            
-            <button onclick="generateAllContent()" id="btnGenContent" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded text-sm transition hidden shadow-lg shadow-emerald-600/20">
-                Redactar Todo el Libro
-            </button>
-        </div>
-
-        <div class="w-1/3 bg-white p-0 flex flex-col border-r border-slate-300 relative">
-            <div class="bg-slate-100 p-3 border-b border-slate-300 flex justify-between items-center">
-                <span class="text-slate-800 font-bold text-sm" id="editorHeader">Selecciona una sección a la izquierda</span>
-                <span class="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded">Editor Activo</span>
-            </div>
-            <textarea id="mainEditor" class="flex-1 w-full resize-none p-6 book-font text-lg text-slate-900 leading-relaxed bg-white" placeholder="El contenido aparecerá aquí para que lo edites libremente..."></textarea>
-            
-            <div class="bg-slate-50 border-t border-slate-200 p-2 text-center text-xs text-slate-500">
-                Los cambios en este panel se guardan automáticamente en la memoria.
-            </div>
-        </div>
-
-        <div class="flex-1 bg-slate-900 relative flex flex-col">
-            <div class="bg-slate-800 p-3 border-b border-slate-700 flex justify-between items-center">
-                <span class="text-white font-bold text-sm">Previsualización Real (PDF Imprenta A5)</span>
-                <button onclick="downloadFinalPDF()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-4 py-1.5 rounded text-sm transition shadow-lg shadow-amber-500/20">
-                    Descargar PDF
+            <div id="indexContainer" class="hidden flex flex-col gap-2 mt-2">
+                <h2 class="text-[10px] font-black text-emerald-500 uppercase tracking-widest border-b border-slate-700 pb-2">Índice Editorial</h2>
+                <div id="listChapters" class="space-y-1"></div>
+                <button onclick="escribirLibroCompleto()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 rounded text-sm transition shadow-lg mt-3 border border-emerald-500">
+                    2. Redactar Libro Completo (IA)
                 </button>
             </div>
-            <iframe id="pdfPreviewFrame" class="w-full flex-1 bg-slate-950" style="border: none;"></iframe>
-            <div id="emptyPreview" class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <p class="text-slate-500 text-sm border border-slate-700 p-4 rounded-lg bg-slate-800/50">Haz clic en "Refrescar PDF" para previsualizar el libro.</p>
+        </div>
+
+        <div class="w-1/3 bg-slate-100 flex flex-col relative">
+            <div class="bg-white p-2 border-b border-slate-300 flex justify-between items-center shadow-sm z-10">
+                <span class="text-slate-800 font-bold text-sm" id="editorTitle">Mesa de Edición</span>
+                <span class="text-[10px] font-bold bg-slate-200 text-slate-500 px-2 py-1 rounded uppercase tracking-wider">Guardado en Memoria</span>
+            </div>
+            <textarea id="editorArea" class="flex-1 w-full resize-none p-8 book-font text-[17px] text-slate-900 leading-[1.8] bg-[#faf9f6] outline-none" placeholder="El texto plano aparecerá aquí. Cero asteriscos, pura narrativa."></textarea>
+        </div>
+
+        <div class="flex-1 bg-slate-800 relative flex flex-col">
+            <div class="bg-slate-900 p-2 border-b border-slate-800 flex justify-between items-center">
+                <span class="text-slate-300 font-bold text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-12h2v6h-2zm0 8h2v2h-2z"/></svg>
+                    Vista Previa A5 (Imprenta Real)
+                </span>
+                <button onclick="descargarPDF()" class="bg-white hover:bg-slate-200 text-slate-900 font-bold px-4 py-1.5 rounded text-xs transition shadow-md">
+                    Descargar Archivo Final
+                </button>
+            </div>
+            <iframe id="pdfFrame" class="w-full flex-1 bg-slate-950" style="border:none;"></iframe>
+            <div id="pdfOverlay" class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-slate-900/80 backdrop-blur-sm z-20">
+                <svg class="w-16 h-16 text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                <p class="text-slate-400 text-sm font-semibold">Configura y compila el libro para previsualizar</p>
             </div>
         </div>
     </div>
 
-    <img id="barcodeCanvas" class="hidden">
+    <img id="barcodeImg" class="hidden">
 
     <script>
-        const GROQ_API_KEY = "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";
+        const GROQ_KEY = "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";
         const { jsPDF } = window.jspdf;
 
-        let book = {
-            title: "", author: "", coverUrl: "", isbn: "",
-            prologue: "", epilogue: "", glossary: "",
-            chapters: [], activeSection: null
+        let data = {
+            title: "", author: "", dedication: "", cover: null, isbn: "",
+            prologue: "", epilogue: "", glossary: "", chapters: [], activeId: null
         };
 
-        // Escucha cambios en los inputs básicos
-        document.getElementById('bTitle').addEventListener('input', e => book.title = e.target.value);
-        document.getElementById('bAuthor').addEventListener('input', e => book.author = e.target.value);
-        
-        // Carga de imagen
-        document.getElementById('imageUpload').addEventListener('change', function(e) {
+        // Event Listeners Básicos
+        document.getElementById('inpTitle').addEventListener('input', e => data.title = e.target.value);
+        document.getElementById('inpAuthor').addEventListener('input', e => data.author = e.target.value);
+        document.getElementById('inpDedication').addEventListener('input', e => data.dedication = e.target.value);
+        document.getElementById('inpCover').addEventListener('change', e => {
             const file = e.target.files[0];
-            if (file) {
-                const r = new FileReader();
-                r.onload = ev => { book.coverUrl = ev.target.result; updatePDFPreview(); };
-                r.readAsDataURL(file);
-            }
+            if(file) { const r = new FileReader(); r.onload = ev => data.cover = ev.target.result; r.readAsDataURL(file); }
         });
-
-        // Autoguardado del editor
-        document.getElementById('mainEditor').addEventListener('input', function(e) {
+        document.getElementById('editorArea').addEventListener('input', e => {
             const val = e.target.value;
-            if(book.activeSection === 'prologue') book.prologue = val;
-            else if(book.activeSection === 'epilogue') book.epilogue = val;
-            else if(book.activeSection === 'glossary') book.glossary = val;
-            else if(typeof book.activeSection === 'number') book.chapters[book.activeSection].content = val;
+            if(data.activeId === 'prologue') data.prologue = val;
+            else if(data.activeId === 'epilogue') data.epilogue = val;
+            else if(data.activeId === 'glossary') data.glossary = val;
+            else if(typeof data.activeId === 'number') data.chapters[data.activeId].content = val;
         });
 
-        function setStatus(msg) {
-            const el = document.getElementById('globalStatus');
-            if(msg) { el.classList.remove('hidden'); document.getElementById('statusText').innerText = msg; }
-            else { el.classList.add('hidden'); }
+        function showUI(msg) {
+            const el = document.getElementById('statusIndicator');
+            if(msg) { el.classList.remove('hidden'); document.getElementById('statusMsg').innerText = msg; el.classList.add('animate-pulse'); }
+            else { el.classList.add('hidden'); el.classList.remove('animate-pulse'); }
         }
 
-        // Petición a Groq ULTRA ESTRICTA contra el Markdown
-        async function fetchAI(prompt) {
-            const systemPrompt = `Eres un escritor editorial profesional. REGLA ABSOLUTA: Prohibido usar asteriscos (*), almohadillas (#), o cualquier formato Markdown. Escribe EXCLUSIVAMENTE en texto plano. Separa los párrafos con un salto de línea normal. Si usas un asterisco, el sistema fallará.`;
+        // Conexión con IA asegurando cero markdown
+        async function aiAsk(prompt) {
             try {
                 const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
+                    headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
-                        messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }],
-                        temperature: 0.6
+                        messages: [
+                            { role: "system", content: "Eres un novelista profesional. REGLA DE ORO: Escribe estrictamente en TEXTO PLANO. Prohibido usar asteriscos (*), almohadillas (#), o guiones para listas. Solo texto y saltos de línea (Enters) entre párrafos. Si rompes esta regla, el sistema de imprenta colapsará." }, 
+                            { role: "user", content: prompt }
+                        ],
+                        temperature: 0.7
                     })
                 });
-                const data = await res.json();
-                return data.choices[0].message.content.replace(/[*#_]/g, '').trim(); // Filtro extra de seguridad
-            } catch (error) {
-                console.error(error); throw new Error("Fallo de conexión IA.");
-            }
+                const json = await res.json();
+                return json.choices[0].message.content.replace(/[*#_]/g, '').trim();
+            } catch (e) { console.error(e); throw new Error("Error de conexión IA"); }
         }
 
-        async function generateStructure() {
-            if(!book.title) return alert("Ingresa un título primero.");
-            setStatus("Creando estructura...");
-            book.isbn = "978" + Math.floor(Math.random() * 9000000000 + 1000000000);
-            JsBarcode("#barcodeCanvas", book.isbn, { format: "EAN13", displayValue: true, width: 2, height: 40 });
+        // 1. Planificar
+        async function planificarLibro() {
+            if(!data.title) return alert("Por favor, ponle un título a tu obra maestra.");
+            const numCaps = parseInt(document.getElementById('inpCapCount').value) || 5;
+            
+            showUI("Ideando arquitectura literaria...");
+            data.isbn = "978" + Math.floor(Math.random() * 9000000000 + 1000000000);
+            JsBarcode("#barcodeImg", data.isbn, { format: "EAN13", displayValue: true, width: 2, height: 40 });
 
             try {
-                const prompt = `Crea un índice de 5 capítulos para el libro "${book.title}". Devuelve SOLO los títulos, uno por línea, sin numeración.`;
-                const raw = await fetchAI(prompt);
+                const prompt = `Crea un índice de exactamente ${numCaps} capítulos para el libro "${data.title}". Devuelve SOLO los nombres de los capítulos, uno por línea, sin enumerar (sin 1., 2., etc).`;
+                const raw = await aiAsk(prompt);
                 
-                book.chapters = raw.split('\n').filter(l => l.trim()).slice(0, 5).map(t => ({
-                    title: t.replace(/^\d+[\.\-\)]\s*/, '').trim(),
+                data.chapters = raw.split('\n').filter(l => l.trim()).slice(0, numCaps).map(t => ({
+                    title: t.replace(/^[\d\.\-\)]+\s*/, '').trim(),
                     content: ""
                 }));
                 
-                book.prologue = ""; book.epilogue = ""; book.glossary = "";
-                renderChapterList();
-                document.getElementById('btnGenContent').classList.remove('hidden');
-                setStatus();
-            } catch(e) { alert(e.message); setStatus(); }
+                data.prologue = ""; data.epilogue = ""; data.glossary = "";
+                actualizarLista();
+                document.getElementById('indexContainer').classList.remove('hidden');
+                showUI();
+            } catch(e) { alert(e); showUI(); }
         }
 
-        function renderChapterList() {
-            const list = document.getElementById('chapterList');
+        function actualizarLista() {
+            const list = document.getElementById('listChapters');
             let html = `
-                <div onclick="openEditor('prologue')" class="p-2 bg-slate-900 border border-slate-700 rounded cursor-pointer hover:border-blue-500 text-sm text-slate-300 flex justify-between">
-                    <span>Prólogo</span> ${book.prologue ? '<span class="text-emerald-500">✓</span>' : ''}
+                <div onclick="cargarEditor('prologue')" class="p-2 bg-slate-800 rounded text-xs cursor-pointer hover:bg-slate-700 text-slate-300 flex justify-between items-center border border-slate-700/50 transition">
+                    Prólogo ${data.prologue ? '<span class="text-emerald-500 font-bold">✓</span>' : ''}
                 </div>`;
             
-            book.chapters.forEach((ch, i) => {
+            data.chapters.forEach((ch, i) => {
                 html += `
-                <div class="flex gap-2">
-                    <input type="text" value="${ch.title}" onchange="book.chapters[${i}].title = this.value; updatePDFPreview();" class="flex-1 bg-slate-900 border border-slate-700 rounded p-2 text-sm text-white focus:border-blue-500 outline-none">
-                    <button onclick="openEditor(${i})" class="bg-slate-700 hover:bg-slate-600 px-3 rounded text-sm text-white transition">
-                        ${ch.content ? '✓ Editar' : '✎'}
+                <div class="flex gap-1">
+                    <input type="text" value="${ch.title}" onchange="data.chapters[${i}].title = this.value" class="flex-1 bg-slate-800 border border-slate-700/50 rounded p-2 text-xs text-white focus:border-emerald-500 outline-none">
+                    <button onclick="cargarEditor(${i})" class="bg-slate-700 hover:bg-slate-600 px-2 rounded text-xs text-white transition">
+                        ${ch.content ? '✓' : '✎'}
                     </button>
                 </div>`;
             });
 
             html += `
-                <div onclick="openEditor('epilogue')" class="p-2 bg-slate-900 border border-slate-700 rounded cursor-pointer hover:border-blue-500 text-sm text-slate-300 flex justify-between mt-2">
-                    <span>Epílogo</span> ${book.epilogue ? '<span class="text-emerald-500">✓</span>' : ''}
+                <div onclick="cargarEditor('epilogue')" class="p-2 bg-slate-800 rounded text-xs cursor-pointer hover:bg-slate-700 text-slate-300 flex justify-between items-center border border-slate-700/50 transition mt-1">
+                    Epílogo ${data.epilogue ? '<span class="text-emerald-500 font-bold">✓</span>' : ''}
                 </div>
-                <div onclick="openEditor('glossary')" class="p-2 bg-slate-900 border border-slate-700 rounded cursor-pointer hover:border-blue-500 text-sm text-slate-300 flex justify-between">
-                    <span>Glosario</span> ${book.glossary ? '<span class="text-emerald-500">✓</span>' : ''}
+                <div onclick="cargarEditor('glossary')" class="p-2 bg-slate-800 rounded text-xs cursor-pointer hover:bg-slate-700 text-slate-300 flex justify-between items-center border border-slate-700/50 transition mt-1">
+                    Glosario ${data.glossary ? '<span class="text-emerald-500 font-bold">✓</span>' : ''}
                 </div>`;
             
             list.innerHTML = html;
         }
 
-        function openEditor(section) {
-            book.activeSection = section;
-            const ed = document.getElementById('mainEditor');
-            const head = document.getElementById('editorHeader');
+        function cargarEditor(id) {
+            data.activeId = id;
+            const ed = document.getElementById('editorArea');
+            const tit = document.getElementById('editorTitle');
             
-            if(section === 'prologue') { head.innerText = "Editando: Prólogo"; ed.value = book.prologue; }
-            else if(section === 'epilogue') { head.innerText = "Editando: Epílogo"; ed.value = book.epilogue; }
-            else if(section === 'glossary') { head.innerText = "Editando: Glosario"; ed.value = book.glossary; }
-            else { head.innerText = `Editando: ${book.chapters[section].title}`; ed.value = book.chapters[section].content; }
+            if(id === 'prologue') { tit.innerText = "Prólogo"; ed.value = data.prologue; }
+            else if(id === 'epilogue') { tit.innerText = "Epílogo"; ed.value = data.epilogue; }
+            else if(id === 'glossary') { tit.innerText = "Glosario"; ed.value = data.glossary; }
+            else { tit.innerText = data.chapters[id].title; ed.value = data.chapters[id].content; }
         }
 
-        async function generateAllContent() {
-            document.getElementById('btnGenContent').classList.add('hidden');
+        // 2. Redactar
+        async function escribirLibroCompleto() {
+            const targetWords = document.getElementById('inpWordCount').value || 1000;
             
             try {
-                setStatus("Escribiendo Prólogo...");
-                book.prologue = await fetchAI(`Escribe un prólogo para el libro "${book.title}". Mínimo 300 palabras. Texto plano.`);
-                renderChapterList();
+                showUI("Escribiendo Prólogo...");
+                data.prologue = await aiAsk(`Escribe el prólogo para "${data.title}" por "${data.author}". Texto inmersivo.`);
+                actualizarLista();
 
-                for(let i=0; i<book.chapters.length; i++) {
-                    setStatus(`Escribiendo Cap ${i+1}...`);
-                    book.chapters[i].content = await fetchAI(`Escribe el capítulo titulado "${book.chapters[i].title}" del libro "${book.title}". Mínimo 700 palabras. Narrativa inmersiva. Texto plano sin marcas.`);
-                    renderChapterList();
+                for(let i=0; i<data.chapters.length; i++) {
+                    showUI(`Escribiendo Capítulo ${i+1}/${data.chapters.length}...`);
+                    data.chapters[i].content = await aiAsk(`Escribe el capítulo completo titulado "${data.chapters[i].title}" del libro "${data.title}". Debe tener aproximadamente ${targetWords} palabras. Desarrolla la narrativa profundamente.`);
+                    actualizarLista();
                 }
 
-                setStatus("Escribiendo Epílogo y Glosario...");
-                book.epilogue = await fetchAI(`Escribe un epílogo para "${book.title}". Mínimo 300 palabras. Texto plano.`);
-                book.glossary = await fetchAI(`Crea un glosario de 10 términos clave que podrían aparecer en un libro llamado "${book.title}". Formato: Termino: Definición. Texto plano.`);
+                showUI("Escribiendo Epílogo y Glosario...");
+                data.epilogue = await aiAsk(`Escribe el epílogo para "${data.title}". Texto emotivo de cierre.`);
+                data.glossary = await aiAsk(`Glosario de 15 términos para el libro "${data.title}". Formato -> Palabra: Definición.`);
                 
-                renderChapterList();
-                setStatus();
-                updatePDFPreview();
-                openEditor(0); // Abre el cap 1
-            } catch(e) {
-                alert(e.message); setStatus(); document.getElementById('btnGenContent').classList.remove('hidden');
-            }
+                actualizarLista(); showUI(); cargarEditor(0);
+                compilePDF(); // Auto-compilar al terminar
+            } catch(e) { alert(e); showUI(); }
         }
 
         // ==========================================
-        // MOTOR DE MAQUETACIÓN PDF AVANZADO
+        // MOTOR TIPOGRÁFICO DEFINITIVO (EL MEJOR DEL MUNDO)
         // ==========================================
-        function generateDoc() {
-            // A5 Format
+        function createPDFEngine() {
             const doc = new jsPDF({ unit: 'mm', format: 'a5' });
-            const pW = doc.internal.pageSize.getWidth();
-            const pH = doc.internal.pageSize.getHeight();
+            const pW = doc.internal.pageSize.getWidth(); // 148
+            const pH = doc.internal.pageSize.getHeight(); // 210
             
-            // Márgenes Alternos
-            const mTop = 20, mBot = 22, mInner = 25, mOuter = 15;
+            // Márgenes Editoriales Clásicos (Proporción áurea)
+            const mTop = 22, mBot = 25, mInner = 24, mOuter = 16;
             
-            let absPage = 1; // Página absoluta del PDF
-            let docPage = 0; // Página de lectura (inicia en Cap 1)
+            let absPage = 1; // Contador absoluto físico
+            let docPage = 0; // Contador de lectura
 
-            // Helpers
-            const getLeft = () => (absPage % 2 !== 0) ? mInner : mOuter;
-            const getRight = () => (absPage % 2 !== 0) ? mOuter : mInner;
+            // Geometría dinámica basada en Recto (impar) / Verso (par)
+            const isRecto = () => absPage % 2 !== 0;
+            const getX = () => isRecto() ? mInner : mOuter;
             const getW = () => pW - mInner - mOuter;
             
             const newPage = () => { doc.addPage(); absPage++; };
 
-            // Paginación Inferior Inteligente
-            const printPageNumber = (type) => {
-                doc.setFontSize(9); doc.setTextColor(100);
-                let text = "";
-                if(type === 'roman') {
-                    // Convertir simple a romano para intro
-                    const romans = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII"];
-                    text = romans[(absPage-3) % 12] || ""; 
-                } else if (type === 'arabic') {
-                    text = docPage.toString();
+            // Asegurar que un contenido empiece en página impar (Derecha)
+            const ensureRecto = () => { if (!isRecto()) { newPage(); docPage++; printHF(); } };
+
+            // Encabezados y Pies de Página
+            const printHF = () => {
+                doc.setFont("times", "normal"); doc.setTextColor(120);
+                
+                // 1. Pie: Número de página (Centrado)
+                let pageStr = "";
+                if(docPage > 0 && absPage > 6) { // Desde el prólogo/cap1
+                    if(docPage < 1000) { pageStr = docPage.toString(); } // Arábigos
                 }
-                if(text) doc.text(text, pW/2, pH - 12, { align: 'center' });
+                if(pageStr) { doc.setFontSize(10); doc.text(pageStr, pW/2, pH - 15, { align: 'center' }); }
+
+                // 2. Encabezado (Running Head)
+                if(absPage > 8 && docPage > 0) {
+                    doc.setFontSize(8); doc.setFont("times", "italic");
+                    if(isRecto() && data.title) {
+                        doc.text(data.title.toUpperCase(), pW - (isRecto()? mOuter : mInner), 14, { align: 'right' });
+                    } else if (!isRecto() && data.author) {
+                        doc.text(data.author.toUpperCase(), (isRecto()? mInner : mOuter), 14, { align: 'left' });
+                    }
+                }
             };
 
-            // Función de Justificación Manual para jsPDF
-            const printJustifiedText = (text, startY, numberType) => {
-                doc.setTextColor(20); doc.setFont("times", "normal"); doc.setFontSize(11);
+            // Motor de renderizado de texto con cálculo de saltos de página y justificación nativa
+            const renderBlock = (text, startY) => {
+                doc.setTextColor(30); doc.setFont("times", "normal"); doc.setFontSize(11);
                 let y = startY;
-                const lineHeight = 5.5;
+                const lineHeight = 5.8; // Interlineado
                 const paras = text.split('\n').filter(p => p.trim());
 
                 paras.forEach(para => {
-                    const words = para.trim().split(/\s+/);
-                    let line = '';
+                    // splitTextToSize corta el texto respetando palabras enteras
+                    const lines = doc.splitTextToSize(para.trim(), getW());
                     
-                    for (let i = 0; i < words.length; i++) {
-                        const testLine = line + words[i] + ' ';
-                        const testWidth = doc.getTextWidth(testLine);
-                        
-                        if (testWidth > getW() && i > 0) {
-                            // Imprimir línea actual
-                            if (y > pH - mBot) { 
-                                printPageNumber(numberType); newPage(); if(numberType==='arabic') docPage++; 
-                                y = mTop; doc.setFont("times", "normal"); doc.setFontSize(11); doc.setTextColor(20);
-                            }
-                            // JUSTIFICAR: Distribuir espacio extra entre palabras (básico)
-                            doc.text(line.trim(), getLeft(), y, { align: 'justify', maxWidth: getW() });
-                            line = words[i] + ' ';
-                            y += lineHeight;
-                        } else {
-                            line = testLine;
-                        }
-                    }
-                    // Última línea del párrafo (Alineada a la izquierda)
-                    if (line.trim().length > 0) {
+                    lines.forEach(line => {
                         if (y > pH - mBot) { 
-                            printPageNumber(numberType); newPage(); if(numberType==='arabic') docPage++;
-                            y = mTop; doc.setFont("times", "normal"); doc.setFontSize(11); doc.setTextColor(20); 
+                            printHF(); newPage(); if(docPage>0) docPage++; 
+                            y = mTop; doc.setFont("times", "normal"); doc.setFontSize(11); doc.setTextColor(30); 
                         }
-                        doc.text(line.trim(), getLeft(), y);
+                        // Renderizado de la línea
+                        doc.text(line, getX(), y);
                         y += lineHeight;
-                    }
-                    y += 3; // Espacio entre párrafos
+                    });
+                    y += 3; // Espacio extra entre párrafos (Sangría francesa o salto)
                 });
-                printPageNumber(numberType);
+                printHF();
             };
 
-            const printTitle = (title, yPos) => {
-                doc.setFont("times", "bold"); doc.setFontSize(22); doc.setTextColor(0);
-                doc.text(title, getLeft(), yPos);
+            const printTitle = (t, y) => {
+                doc.setFont("times", "bold"); doc.setFontSize(22); doc.setTextColor(10);
+                doc.text(t, getX(), y);
             };
 
-            // 1. PORTADA
-            if (book.coverUrl) {
-                doc.addImage(book.coverUrl, 'JPEG', 0, 0, pW, pH);
-            } else {
-                doc.setFillColor(30, 41, 59); doc.rect(0,0,pW,pH,'F');
-                doc.setTextColor(255); doc.setFontSize(24);
-                doc.text(book.title || "Sin Título", pW/2, pH/2, { align: 'center' });
+            // ----- ESTRUCTURA DEL LIBRO -----
+
+            // 1. Portada (Pág 1 - Impar)
+            if (data.cover) { doc.addImage(data.cover, 'JPEG', 0, 0, pW, pH); } 
+            else {
+                doc.setFillColor(15, 23, 42); doc.rect(0,0,pW,pH,'F');
+                doc.setTextColor(255); doc.setFont("times","bold"); doc.setFontSize(24);
+                doc.text(doc.splitTextToSize(data.title || "TÍTULO", getW()), pW/2, pH/2, { align: 'center' });
             }
             
-            // 2. BLANCA (Reverso portada)
+            // 2. Frontispicio / Blanca (Pág 2 - Par)
             newPage();
 
-            // 3. PORTADILLA
+            // 3. Portadilla (Pág 3 - Impar)
             newPage();
-            doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0);
-            doc.text(doc.splitTextToSize((book.title || "Libro").toUpperCase(), getW()), pW/2, pH/3, { align: 'center' });
-            doc.setFontSize(14); doc.setFont("times", "normal");
-            doc.text(book.author || "Anónimo", pW/2, pH/2, { align: 'center' });
+            doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(20);
+            doc.text(doc.splitTextToSize((data.title || "TÍTULO").toUpperCase(), getW()), pW/2, pH/3, { align: 'center' });
+            doc.setFontSize(12); doc.setFont("times", "italic");
+            doc.text(data.author || "Anónimo", pW/2, pH/2, { align: 'center' });
 
-            // 4. COPYRIGHT
+            // 4. Página Legal / Copyright (Pág 4 - Par)
             newPage();
-            doc.setFontSize(9); doc.setTextColor(80);
-            doc.text(`© ${new Date().getFullYear()} ${book.author}`, getLeft(), pH - 70);
-            doc.text(`ISBN: ${book.isbn}`, getLeft(), pH - 60);
-            doc.text("Todos los derechos reservados.", getLeft(), pH - 50);
+            doc.setFont("times", "normal"); doc.setFontSize(8); doc.setTextColor(80);
+            doc.text(`© ${new Date().getFullYear()} ${data.author || 'Autor'}`, getX(), pH - 80);
+            doc.text("Todos los derechos reservados. Queda rigurosamente prohibida,", getX(), pH - 70);
+            doc.text("sin la autorización escrita de los titulares del copyright, la", getX(), pH - 66);
+            doc.text("reproducción parcial o total de esta obra por cualquier medio.", getX(), pH - 62);
+            doc.text(`ISBN: ${data.isbn}`, getX(), pH - 50);
+            doc.text("Maquetación: AI Book Studio Perfection Edition", getX(), pH - 40);
 
-            // 5. ÍNDICE (Números Romanos)
-            newPage();
-            printTitle("ÍNDICE", 40);
-            doc.setFont("times", "normal"); doc.setFontSize(12);
-            let tocY = 60;
-            doc.text("Prólogo", getLeft(), tocY); tocY += 10;
-            book.chapters.forEach((ch, i) => { doc.text(`Capítulo ${i+1}: ${ch.title}`, getLeft(), tocY); tocY += 10; });
-            doc.text("Epílogo", getLeft(), tocY); tocY += 10;
-            doc.text("Glosario", getLeft(), tocY);
-            printPageNumber('roman');
-
-            // Pág 6: Blanca
-            newPage(); printPageNumber('roman');
-
-            // 7. PRÓLOGO (Romanos)
-            if(book.prologue) {
+            // 5. Dedicatoria (Pág 5 - Impar opcional)
+            if(data.dedication) {
                 newPage();
-                printTitle("Prólogo", 40);
-                printJustifiedText(book.prologue, 55, 'roman');
-                if (absPage % 2 !== 0) { newPage(); printPageNumber('roman'); } // Ajuste a par
+                doc.setFont("times", "italic"); doc.setFontSize(12); doc.setTextColor(30);
+                const dedLines = doc.splitTextToSize(data.dedication, getW()-20);
+                doc.text(dedLines, pW - mOuter, pH/2, { align: 'right' });
+                newPage(); // Pág 6 blanca
             }
 
-            // ================= INICIA LA NUMERACIÓN ARÁBIGA (1, 2, 3...) =================
-            
-            // CAPÍTULOS
-            book.chapters.forEach((ch, idx) => {
-                newPage(); 
-                if (docPage === 0) docPage = 1; else docPage++; // Inicia página 1 de lectura
+            // 7. Índice (Siempre en impar)
+            ensureRecto();
+            printTitle("Índice", 40);
+            doc.setFont("times", "normal"); doc.setFontSize(11);
+            let tocY = 60;
+            doc.text("Prólogo", getX(), tocY); tocY += 8;
+            data.chapters.forEach((ch, i) => { doc.text(`Capítulo ${i+1}: ${ch.title}`, getX(), tocY); tocY += 8; });
+            doc.text("Epílogo", getX(), tocY); tocY += 8;
+            doc.text("Glosario", getX(), tocY);
+
+            // 9. Prólogo (Siempre impar)
+            if(data.prologue) {
+                ensureRecto();
+                printTitle("Prólogo", 40);
+                renderBlock(data.prologue, 55);
+            }
+
+            // === INICIO DEL CUERPO (Arábigos) ===
+            // Los capítulos SIEMPRE inician en página impar.
+            data.chapters.forEach((ch, idx) => {
+                ensureRecto(); // Forzar salto a derecha si es necesario
+                if(docPage === 0) docPage = 1; // Arranca el conteo 1
                 
-                doc.setFont("times", "bold"); doc.setFontSize(24); doc.setTextColor(0);
-                doc.text(`Capítulo ${idx + 1}`, getLeft(), 45);
-                doc.setFontSize(16); doc.setFont("times", "italic");
-                doc.text(ch.title, getLeft(), 55);
+                doc.setFont("times", "bold"); doc.setFontSize(26); doc.setTextColor(20);
+                doc.text(`Capítulo ${idx + 1}`, getX(), 45);
+                doc.setFontSize(14); doc.setFont("times", "italic");
+                doc.text(ch.title, getX(), 55);
                 
-                printJustifiedText(ch.content, 75, 'arabic');
-                
-                // Forzar que el siguiente capítulo empiece en página impar (derecha)
-                if (absPage % 2 === 0) { 
-                    newPage(); docPage++; 
-                    printPageNumber('arabic'); 
-                }
+                renderBlock(ch.content, 75);
             });
 
-            // EPÍLOGO
-            if(book.epilogue) {
-                newPage(); docPage++;
-                printTitle("Epílogo", 40);
-                printJustifiedText(book.epilogue, 55, 'arabic');
-                if (absPage % 2 === 0) { newPage(); docPage++; printPageNumber('arabic'); }
-            }
+            // Epílogo
+            if(data.epilogue) { ensureRecto(); printTitle("Epílogo", 40); renderBlock(data.epilogue, 55); }
 
-            // GLOSARIO
-            if(book.glossary) {
-                newPage(); docPage++;
-                printTitle("Glosario", 40);
-                printJustifiedText(book.glossary, 55, 'arabic');
-            }
+            // Glosario
+            if(data.glossary) { ensureRecto(); printTitle("Glosario", 40); renderBlock(data.glossary, 55); }
 
-            // CONTRAPORTADA
-            newPage();
+            // Contraportada (Debe quedar en la última página exterior par)
+            ensureRecto(); newPage(); // Fuerza a que sea par y final
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, pW, pH, 'F');
             doc.setTextColor(255); doc.setFont("times", "bold"); doc.setFontSize(18);
-            doc.text(doc.splitTextToSize(book.title, pW - 40), pW/2, 50, { align: 'center' });
+            doc.text(doc.splitTextToSize(data.title, pW - 40), pW/2, 50, { align: 'center' });
             
-            const barcodeUrl = document.getElementById('barcodeCanvas').src;
-            if(barcodeUrl) {
-                doc.setFillColor(255); doc.rect((pW/2) - 25, pH - 55, 50, 25, 'F');
-                doc.addImage(barcodeUrl, 'PNG', (pW/2) - 22, pH - 52, 44, 18);
+            const barcode = document.getElementById('barcodeImg').src;
+            if(barcode && barcode.length > 100) {
+                doc.setFillColor(255); doc.rect((pW/2) - 25, pH - 50, 50, 25, 'F');
+                doc.addImage(barcode, 'PNG', (pW/2) - 22, pH - 47, 44, 18);
             }
 
             return doc;
         }
 
-        function updatePDFPreview() {
-            setStatus("Generando vista previa...");
-            document.getElementById('emptyPreview').classList.add('hidden');
+        function compilePDF() {
+            showUI("Maquetando PDF...");
+            document.getElementById('pdfOverlay').classList.add('hidden');
+            
+            // Usar setTimeout para permitir que el DOM se actualice antes de bloquear el hilo con jsPDF
             setTimeout(() => {
-                const doc = generateDoc();
-                const blob = doc.output('blob');
-                const url = URL.createObjectURL(blob);
-                document.getElementById('pdfPreviewFrame').src = url + "#toolbar=0&view=FitH";
-                setStatus();
-            }, 100); // Pequeño delay para que UI respire
+                try {
+                    const doc = createPDFEngine();
+                    const blob = doc.output('blob');
+                    const url = URL.createObjectURL(blob);
+                    document.getElementById('pdfFrame').src = url + "#toolbar=0&view=FitH";
+                    showUI();
+                } catch(e) {
+                    alert("Error compilando PDF: " + e);
+                    showUI();
+                }
+            }, 100);
         }
 
-        function downloadFinalPDF() {
-            const doc = generateDoc();
-            doc.save(`${(book.title || 'Libro').replace(/\s+/g, '_')}_Imprenta.pdf`);
+        function descargarPDF() {
+            const doc = createPDFEngine();
+            doc.save(`${(data.title || 'Manuscrito').replace(/\s+/g, '_')}_Editorial.pdf`);
         }
     </script>
 </body>
