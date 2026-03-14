@@ -195,7 +195,7 @@
             dayMini.innerText = day;
             timestamp.innerText = `ID: NF-${Math.random().toString(36).substr(2, 9).toUpperCase()}-DAY${day}-ULTRA`;
 
-            const systemPrompt = "Eres un maestro de sabiduría universal. Genera una frase de ánimos (máximo 20 palabras), poderosa y admirable con sabiduria. En español. Formato JSON: {\"q\": \"frase\", \"a\": \"autor\"}";
+            const systemPrompt = "Eres un maestro de sabiduría universal. Genera una frase de ánimos (máximo 10 palabras), poderosa y admirable con sabiduria. En español. Formato JSON: {\"q\": \"frase\", \"a\": \"autor\"}";
             const userPrompt = `Sabiduría perfecta para el día ${day}. No menciones el día en la frase.`;
 
             try {
