@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Inventario — Pintura</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --panel: #181818;
+    --border: #2a2a2a;
+    --accent: #e8a000;
+    --accent2: #ff4d00;
+    --text: #e0e0e0;
+    --muted: #666;
+    --green: #00c97a;
+    --red: #ff4444;
+    --blue: #3a9eff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ─── LOGIN ─── */
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 0%, #1a1000 0%, #0f0f0f 70%);
+  }
+  .login-box {
+    width: 360px;
+    border: 1px solid var(--accent);
+    background: var(--panel);
+    padding: 48px 36px;
+    text-align: center;
+  }
+  .login-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .login-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 6px;
+    margin-bottom: 36px;
+  }
+  .login-box label {
+    display: block;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  .login-box input {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .login-box input:focus { border-color: var(--accent); }
+  .btn-primary {
+    width: 100%;
+    margin-top: 28px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 3px;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .btn-primary:hover { background: #ffb800; }
+  .btn-primary:active { transform: scale(.98); }
+  #login-error {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ─── MAIN LAYOUT ─── */
+  #app { display: none; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 60px;
+  }
+  .topbar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 4px;
+    color: var(--accent);
+  }
+  .topbar-user {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .btn-logout {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    cursor: pointer;
+    margin-left: 16px;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+  /* ─── TABS ─── */
+  .tabs {
+    display: flex;
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    gap: 0;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--muted);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ─── CONTENT ─── */
+  .content { padding: 32px 28px; max-width: 1200px; margin: 0 auto; }
+  .tab-section { display: none; }
+  .tab-section.active { display: block; }
+
+  /* ─── CARDS / PANELS ─── */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ─── FORMS ─── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    background: #111;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 9px 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group select option { background: #111; }
+  .btn-add {
+    background: var(--accent);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    border: none;
+    padding: 10px 28px;
+    cursor: pointer;
+    transition: background .2s;
+    margin-top: 20px;
+  }
+  .btn-add:hover { background: #ffb800; }
+  .btn-sm {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-del { background: var(--red); color: #fff; }
+  .btn-del:hover { background: #cc2222; }
+
+  /* ─── TABLES ─── */
+  .tbl-wrap { overflow-x: auto; margin-top: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    background: #111;
+    color: var(--muted);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1e1e1e;
+    font-family: 'IBM Plex Mono', monospace;
+    vertical-align: middle;
+  }
+  tr:hover td { background: #1a1a1a; }
+  .badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 1px;
+  }
+  .badge-in { background: #002a1a; color: var(--green); border: 1px solid #004a2a; }
+  .badge-out { background: #2a0000; color: var(--red); border: 1px solid #4a0000; }
+
+  /* ─── REPORT ─── */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-box {
+    background: #111;
+    border: 1px solid var(--border);
+    padding: 20px 18px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; }
+  .filter-row .form-group { min-width: 160px; flex: 1; margin: 0; }
+  .btn-filter {
+    background: var(--blue);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: none;
+    padding: 9px 22px;
+    cursor: pointer;
+  }
+  .btn-filter:hover { background: #2278cc; }
+  .btn-report {
+    background: var(--green);
+    color: #000;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: none;
+    padding: 9px 22px;
+    cursor: pointer;
+  }
+  .btn-report:hover { background: #00a860; }
+
+  /* ─── TOAST ─── */
+  #toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--green);
+    color: #000;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    padding: 12px 24px;
+    display: none;
+    z-index: 9999;
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ─── FILE IMPORT ─── */
+  .file-note {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+  }
+  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+  /* ─── PRINT ─── */
+  @media print {
+    body { background: #fff; color: #000; }
+    .topbar, .tabs, .no-print { display: none !important; }
+    .card { border: 1px solid #ccc; }
+    .card-title, .stat-num { color: #000; }
+    .stat-label, th { color: #444; }
+    td, th { border-bottom: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-title">INVENTARIO</div>
+    <div class="login-sub">Sistema de Pintura</div>
+    <label>Usuario</label>
+    <input type="text" id="inp-user" autocomplete="off">
+    <label>Contraseña</label>
+    <input type="password" id="inp-pass">
+    <button class="btn-primary" onclick="doLogin()">INGRESAR</button>
+    <div id="login-error"></div>
+    <div class="file-note" style="margin-top:24px;">
+      ⚠ Seleccione su archivo <strong>data.txt</strong> para cargar datos:
+    </div>
+    <div style="margin-top:10px;">
+      <input type="file" id="file-loader" accept=".txt" style="color:var(--muted);font-size:12px;width:100%;">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-title">📦 INVENTARIO PINTURA</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="topbar-user" id="user-label"></span>
+      <button class="btn-logout" onclick="doLogout()">SALIR</button>
+      <button class="btn-report no-print" onclick="saveData()" style="background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;padding:8px 16px;cursor:pointer;">💾 GUARDAR TXT</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('cubetas')">🪣 Cubetas</button>
+    <button class="tab-btn" onclick="switchTab('estanon')">🛢 Estañones Solvente</button>
+    <button class="tab-btn" onclick="switchTab('trapos')">🧹 Trapos</button>
+    <button class="tab-btn" onclick="switchTab('pintado')">🎨 Pintado por Día</button>
+    <button class="tab-btn" onclick="switchTab('reporte')">📊 Reporte</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ TAB: CUBETAS ══ -->
+    <div class="tab-section active" id="tab-cubetas">
+      <div class="card">
+        <div class="card-title">ENTRADA DE CUBETAS</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo / Color de Pintura</label>
+            <input type="text" id="cub-tipo" placeholder="Ej: Blanco mate">
+          </div>
+          <div class="form-group">
+            <label>Cantidad de Cubetas</label>
+            <input type="number" id="cub-cant" min="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Fecha de Entrada</label>
+            <input type="date" id="cub-fecha-in">
+          </div>
+          <div class="form-group">
+            <label>Proveedor / Nota</label>
+            <input type="text" id="cub-nota" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addCubeta('in')">+ REGISTRAR ENTRADA</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">SALIDA DE CUBETAS (GASTO)</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo / Color de Pintura</label>
+            <input type="text" id="cub-tipo-out" placeholder="Ej: Blanco mate">
+          </div>
+          <div class="form-group">
+            <label>Cubetas Gastadas</label>
+            <input type="number" id="cub-cant-out" min="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Fecha de Salida</label>
+            <input type="date" id="cub-fecha-out">
+          </div>
+          <div class="form-group">
+            <label>Motivo / Nota</label>
+            <input type="text" id="cub-nota-out" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" style="background:var(--accent2);" onclick="addCubeta('out')">+ REGISTRAR GASTO</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">HISTORIAL DE CUBETAS</div>
+        <div class="filter-row">
+          <div class="form-group"><label>Desde</label><input type="date" id="f-cub-d1"></div>
+          <div class="form-group"><label>Hasta</label><input type="date" id="f-cub-d2"></div>
+          <div class="form-group"><label>Tipo</label><input type="text" id="f-cub-tipo" placeholder="Filtrar..."></div>
+          <button class="btn-filter" onclick="renderCubetas()">FILTRAR</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
+            <tbody id="tbl-cubetas"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);">
+          Stock actual estimado: <span id="stock-cubetas" style="color:var(--accent);font-size:16px;font-weight:600;"></span> cubetas
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: ESTAÑONES SOLVENTE ══ -->
+    <div class="tab-section" id="tab-estanon">
+      <div class="card">
+        <div class="card-title">ENTRADA DE ESTAÑÓN / BARRIL DE SOLVENTE</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo de Solvente</label>
+            <input type="text" id="est-tipo" placeholder="Ej: Thinner, Aguarrás">
+          </div>
+          <div class="form-group">
+            <label>Cantidad de Estañones</label>
+            <input type="number" id="est-cant" min="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Fecha de Entrada</label>
+            <input type="date" id="est-fecha">
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="est-nota" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addEstanon('in')">+ REGISTRAR ENTRADA</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">GASTO DE SOLVENTE — CUBETAS USADAS DEL ESTAÑÓN</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo de Solvente</label>
+            <input type="text" id="est-tipo-out" placeholder="Ej: Thinner">
+          </div>
+          <div class="form-group">
+            <label>Cubetas Gastadas del Estañón</label>
+            <input type="number" id="est-cub-out" min="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Estañones Lavados (con cubeta)</label>
+            <input type="number" id="est-lav" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Fecha de Uso</label>
+            <input type="date" id="est-fecha-out">
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="est-nota-out" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" style="background:var(--accent2);" onclick="addEstanon('out')">+ REGISTRAR GASTO</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">HISTORIAL ESTAÑONES</div>
+        <div class="filter-row">
+          <div class="form-group"><label>Desde</label><input type="date" id="f-est-d1"></div>
+          <div class="form-group"><label>Hasta</label><input type="date" id="f-est-d2"></div>
+          <button class="btn-filter" onclick="renderEstanones()">FILTRAR</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Estañones</th><th>Cubetas Usadas</th><th>Estañones Lavados</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
+            <tbody id="tbl-estanones"></tbody>
+          </table>
+        </div>
+        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);">
+          Total cubetas gastadas del solvente: <span id="stock-solvente" style="color:var(--accent);font-size:16px;font-weight:600;"></span> |
+          Estañones lavados: <span id="stock-lavados" style="color:var(--blue);font-size:16px;font-weight:600;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: TRAPOS ══ -->
+    <div class="tab-section" id="tab-trapos">
+      <div class="card">
+        <div class="card-title">ENTRADA DE TRAPOS</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo / Descripción</label>
+            <input type="text" id="tra-tipo" placeholder="Ej: Trapo industrial">
+          </div>
+          <div class="form-group">
+            <label>Cantidad (kg / unidades)</label>
+            <input type="number" id="tra-cant" min="0" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Unidad</label>
+            <select id="tra-unidad">
+              <option value="kg">Kilogramos (kg)</option>
+              <option value="unidades">Unidades</option>
+              <option value="rollos">Rollos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha de Entrada</label>
+            <input type="date" id="tra-fecha">
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="tra-nota" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addTrapo('in')">+ REGISTRAR ENTRADA</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">GASTO DE TRAPOS — PORCENTAJE USADO</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tipo / Descripción</label>
+            <input type="text" id="tra-tipo-out" placeholder="Ej: Trapo industrial">
+          </div>
+          <div class="form-group">
+            <label>% Gastado</label>
+            <input type="number" id="tra-pct" min="1" max="100" placeholder="Ej: 25">
+          </div>
+          <div class="form-group">
+            <label>Cantidad Gastada (opcional)</label>
+            <input type="number" id="tra-cant-out" min="0" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Unidad</label>
+            <select id="tra-unidad-out">
+              <option value="kg">Kilogramos (kg)</option>
+              <option value="unidades">Unidades</option>
+              <option value="rollos">Rollos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fecha de Gasto</label>
+            <input type="date" id="tra-fecha-out">
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="tra-nota-out" placeholder="Opcional">
+          </div>
+        </div>
+        <button class="btn-add" style="background:var(--accent2);" onclick="addTrapo('out')">+ REGISTRAR GASTO</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">HISTORIAL DE TRAPOS</div>
+        <div class="filter-row">
+          <div class="form-group"><label>Desde</label><input type="date" id="f-tra-d1"></div>
+          <div class="form-group"><label>Hasta</label><input type="date" id="f-tra-d2"></div>
+          <button class="btn-filter" onclick="renderTrapos()">FILTRAR</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Unidad</th><th>% Usado</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
+            <tbody id="tbl-trapos"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: PINTADO POR DÍA ══ -->
+    <div class="tab-section" id="tab-pintado">
+      <div class="card">
+        <div class="card-title">REGISTRO DIARIO DE PINTADO</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="pin-fecha">
+          </div>
+          <div class="form-group">
+            <label>Área / Zona Pintada</label>
+            <input type="text" id="pin-area" placeholder="Ej: Cuarto 3, Pasillo Norte">
+          </div>
+          <div class="form-group">
+            <label>Tipo / Color de Pintura</label>
+            <input type="text" id="pin-tipo" placeholder="Ej: Blanco mate">
+          </div>
+          <div class="form-group">
+            <label>Cubetas Usadas en Pintado</label>
+            <input type="number" id="pin-cubetas" min="0" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Estañones Pintados</label>
+            <input type="number" id="pin-estanones" min="0" step="1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Trabajadores</label>
+            <input type="number" id="pin-trabajadores" min="0" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Metros² (opcional)</label>
+            <input type="number" id="pin-m2" min="0" step="0.1" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Nota</label>
+            <input type="text" id="pin-nota" placeholder="Observaciones">
+          </div>
+        </div>
+        <button class="btn-add" onclick="addPintado()">+ REGISTRAR DÍA</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">HISTORIAL PINTADO</div>
+        <div class="filter-row">
+          <div class="form-group"><label>Desde</label><input type="date" id="f-pin-d1"></div>
+          <div class="form-group"><label>Hasta</label><input type="date" id="f-pin-d2"></div>
+          <div class="form-group"><label>Área</label><input type="text" id="f-pin-area" placeholder="Filtrar..."></div>
+          <button class="btn-filter" onclick="renderPintado()">FILTRAR</button>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Área</th><th>Tipo Pintura</th><th>Cubetas</th><th>Estañones</th><th>Trabajadores</th><th>m²</th><th>Nota</th><th></th></tr></thead>
+            <tbody id="tbl-pintado"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ TAB: REPORTE ══ -->
+    <div class="tab-section" id="tab-reporte">
+      <div class="card">
+        <div class="card-title">FILTRO DE REPORTE</div>
+        <div class="filter-row">
+          <div class="form-group"><label>Desde</label><input type="date" id="r-d1"></div>
+          <div class="form-group"><label>Hasta</label><input type="date" id="r-d2"></div>
+          <button class="btn-filter" onclick="genReporte()">GENERAR</button>
+          <button class="btn-report" onclick="window.print()">🖨 IMPRIMIR</button>
+        </div>
+      </div>
+
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="card" id="rep-cubetas-card">
+        <div class="card-title">CUBETAS DE PINTURA</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Movimiento</th><th>Nota</th></tr></thead>
+            <tbody id="rep-tbl-cubetas"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="rep-estanon-card">
+        <div class="card-title">ESTAÑONES DE SOLVENTE</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Estañones</th><th>Cubetas Usadas</th><th>Estañones Lavados</th><th>Movimiento</th></tr></thead>
+            <tbody id="rep-tbl-estanon"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="rep-pintado-card">
+        <div class="card-title">PINTADO POR DÍAS</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Área</th><th>Tipo Pintura</th><th>Cubetas</th><th>Estañones</th><th>Trabajadores</th><th>m²</th></tr></thead>
+            <tbody id="rep-tbl-pintado"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="rep-trapos-card">
+        <div class="card-title">TRAPOS</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Unidad</th><th>% Usado</th><th>Movimiento</th></tr></thead>
+            <tbody id="rep-tbl-trapos"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<div id="toast">✓ Guardado correctamente</div>
+
+<script>
+/* ════════════════════════════════════
+   DATA LAYER
+════════════════════════════════════ */
+let DB = {
+  users: [{ user: "JEFFRY", pass: "JEFFRY123" }],
+  cubetas: [],
+  estanones_solvente: [],
+  trapos: [],
+  pinturas_pintadas: []
+};
+let currentUser = null;
+
+/* ─── File load on startup ─── */
+document.getElementById('file-loader').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      DB = Object.assign(DB, parsed);
+      showToast('✓ data.txt cargado correctamente');
+    } catch(err) {
+      alert('Error leyendo data.txt: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+function saveData() {
+  const json = JSON.stringify(DB, null, 2);
+  const blob = new Blob([json], { type: 'text/plain' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'data.txt';
+  a.click();
+  showToast('💾 data.txt guardado');
+}
+
+/* ════════════════════════════════════
+   AUTH
+════════════════════════════════════ */
+function doLogin() {
+  const u = document.getElementById('inp-user').value.trim();
+  const p = document.getElementById('inp-pass').value.trim();
+  const found = DB.users.find(x => x.user === u && x.pass === p);
+  if (found) {
+    currentUser = u;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-label').textContent = '👤 ' + u;
+    setDefaultDates();
+    renderAll();
+  } else {
+    document.getElementById('login-error').textContent = '✗ Usuario o contraseña incorrectos';
+  }
+}
+document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+function doLogout() {
+  currentUser = null;
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('inp-user').value = '';
+  document.getElementById('inp-pass').value = '';
+  document.getElementById('login-error').textContent = '';
+}
+
+/* ════════════════════════════════════
+   TABS
+════════════════════════════════════ */
+function switchTab(name) {
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  renderAll();
+}
+
+/* ════════════════════════════════════
+   HELPERS
+════════════════════════════════════ */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmt(d) { if (!d) return '—'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; }
+function inRange(date, d1, d2) {
+  if (d1 && date < d1) return false;
+  if (d2 && date > d2) return false;
+  return true;
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg || '✓ Registrado';
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2400);
+}
+function setDefaultDates() {
+  const t = today();
+  ['cub-fecha-in','cub-fecha-out','est-fecha','est-fecha-out','tra-fecha','tra-fecha-out','pin-fecha'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = t;
+  });
+}
+
+/* ════════════════════════════════════
+   CUBETAS
+════════════════════════════════════ */
+function addCubeta(mov) {
+  if (mov === 'in') {
+    const tipo = document.getElementById('cub-tipo').value.trim();
+    const cant = parseFloat(document.getElementById('cub-cant').value);
+    const fecha = document.getElementById('cub-fecha-in').value;
+    const nota = document.getElementById('cub-nota').value.trim();
+    if (!tipo || !cant || !fecha) { alert('Complete todos los campos requeridos'); return; }
+    DB.cubetas.push({ id: uid(), tipo, cant, fecha, mov: 'ENTRADA', nota });
+    document.getElementById('cub-tipo').value = '';
+    document.getElementById('cub-cant').value = '';
+    document.getElementById('cub-nota').value = '';
+  } else {
+    const tipo = document.getElementById('cub-tipo-out').value.trim();
+    const cant = parseFloat(document.getElementById('cub-cant-out').value);
+    const fecha = document.getElementById('cub-fecha-out').value;
+    const nota = document.getElementById('cub-nota-out').value.trim();
+    if (!tipo || !cant || !fecha) { alert('Complete todos los campos requeridos'); return; }
+    DB.cubetas.push({ id: uid(), tipo, cant, fecha, mov: 'GASTO', nota });
+    document.getElementById('cub-tipo-out').value = '';
+    document.getElementById('cub-cant-out').value = '';
+    document.getElementById('cub-nota-out').value = '';
+  }
+  showToast('✓ Cubeta registrada');
+  renderCubetas();
+}
+
+function renderCubetas() {
+  const d1 = document.getElementById('f-cub-d1').value;
+  const d2 = document.getElementById('f-cub-d2').value;
+  const tf = document.getElementById('f-cub-tipo').value.toLowerCase();
+  let rows = DB.cubetas.filter(r =>
+    inRange(r.fecha, d1, d2) &&
+    (!tf || r.tipo.toLowerCase().includes(tf))
+  ).sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const tb = document.getElementById('tbl-cubetas');
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmt(r.fecha)}</td>
+      <td>${r.tipo}</td>
+      <td>${r.cant}</td>
+      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
+      <td>${r.nota||'—'}</td>
+      <td><button class="btn-sm btn-del" onclick="delRecord('cubetas','${r.id}')">✕</button></td>
+    </tr>`).join('');
+
+  const stock = DB.cubetas.reduce((s, r) => r.mov==='ENTRADA' ? s+r.cant : s-r.cant, 0);
+  document.getElementById('stock-cubetas').textContent = stock.toFixed(1);
+}
+
+/* ════════════════════════════════════
+   ESTAÑONES
+════════════════════════════════════ */
+function addEstanon(mov) {
+  if (mov === 'in') {
+    const tipo = document.getElementById('est-tipo').value.trim();
+    const cant = parseFloat(document.getElementById('est-cant').value);
+    const fecha = document.getElementById('est-fecha').value;
+    const nota = document.getElementById('est-nota').value.trim();
+    if (!tipo || !cant || !fecha) { alert('Complete los campos requeridos'); return; }
+    DB.estanones_solvente.push({ id: uid(), tipo, cant, cubetas_usadas: 0, lavados: 0, fecha, mov: 'ENTRADA', nota });
+    document.getElementById('est-tipo').value = '';
+    document.getElementById('est-cant').value = '';
+    document.getElementById('est-nota').value = '';
+  } else {
+    const tipo = document.getElementById('est-tipo-out').value.trim();
+    const cub = parseFloat(document.getElementById('est-cub-out').value) || 0;
+    const lav = parseFloat(document.getElementById('est-lav').value) || 0;
+    const fecha = document.getElementById('est-fecha-out').value;
+    const nota = document.getElementById('est-nota-out').value.trim();
+    if (!tipo || !fecha) { alert('Complete los campos requeridos'); return; }
+    DB.estanones_solvente.push({ id: uid(), tipo, cant: 0, cubetas_usadas: cub, lavados: lav, fecha, mov: 'GASTO', nota });
+    document.getElementById('est-tipo-out').value = '';
+    document.getElementById('est-cub-out').value = '';
+    document.getElementById('est-lav').value = '';
+    document.getElementById('est-nota-out').value = '';
+  }
+  showToast('✓ Estañón registrado');
+  renderEstanones();
+}
+
+function renderEstanones() {
+  const d1 = document.getElementById('f-est-d1').value;
+  const d2 = document.getElementById('f-est-d2').value;
+  let rows = DB.estanones_solvente.filter(r => inRange(r.fecha, d1, d2))
+    .sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const tb = document.getElementById('tbl-estanones');
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmt(r.fecha)}</td>
+      <td>${r.tipo}</td>
+      <td>${r.cant||'—'}</td>
+      <td>${r.cubetas_usadas||'—'}</td>
+      <td>${r.lavados||'—'}</td>
+      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
+      <td>${r.nota||'—'}</td>
+      <td><button class="btn-sm btn-del" onclick="delRecord('estanones_solvente','${r.id}')">✕</button></td>
+    </tr>`).join('');
+
+  const totalCub = DB.estanones_solvente.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cubetas_usadas,0);
+  const totalLav = DB.estanones_solvente.reduce((s,r)=>s+r.lavados,0);
+  document.getElementById('stock-solvente').textContent = totalCub.toFixed(1);
+  document.getElementById('stock-lavados').textContent = totalLav.toFixed(1);
+}
+
+/* ════════════════════════════════════
+   TRAPOS
+════════════════════════════════════ */
+function addTrapo(mov) {
+  if (mov === 'in') {
+    const tipo = document.getElementById('tra-tipo').value.trim();
+    const cant = parseFloat(document.getElementById('tra-cant').value);
+    const unidad = document.getElementById('tra-unidad').value;
+    const fecha = document.getElementById('tra-fecha').value;
+    const nota = document.getElementById('tra-nota').value.trim();
+    if (!tipo || !cant || !fecha) { alert('Complete los campos requeridos'); return; }
+    DB.trapos.push({ id: uid(), tipo, cant, pct: 0, unidad, fecha, mov: 'ENTRADA', nota });
+    document.getElementById('tra-tipo').value = '';
+    document.getElementById('tra-cant').value = '';
+    document.getElementById('tra-nota').value = '';
+  } else {
+    const tipo = document.getElementById('tra-tipo-out').value.trim();
+    const pct = parseFloat(document.getElementById('tra-pct').value) || 0;
+    const cant = parseFloat(document.getElementById('tra-cant-out').value) || 0;
+    const unidad = document.getElementById('tra-unidad-out').value;
+    const fecha = document.getElementById('tra-fecha-out').value;
+    const nota = document.getElementById('tra-nota-out').value.trim();
+    if (!tipo || !fecha) { alert('Complete los campos requeridos'); return; }
+    DB.trapos.push({ id: uid(), tipo, cant, pct, unidad, fecha, mov: 'GASTO', nota });
+    document.getElementById('tra-tipo-out').value = '';
+    document.getElementById('tra-pct').value = '';
+    document.getElementById('tra-cant-out').value = '';
+    document.getElementById('tra-nota-out').value = '';
+  }
+  showToast('✓ Trapo registrado');
+  renderTrapos();
+}
+
+function renderTrapos() {
+  const d1 = document.getElementById('f-tra-d1').value;
+  const d2 = document.getElementById('f-tra-d2').value;
+  let rows = DB.trapos.filter(r => inRange(r.fecha, d1, d2))
+    .sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const tb = document.getElementById('tbl-trapos');
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmt(r.fecha)}</td>
+      <td>${r.tipo}</td>
+      <td>${r.cant||'—'}</td>
+      <td>${r.unidad}</td>
+      <td>${r.pct ? r.pct+'%' : '—'}</td>
+      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
+      <td>${r.nota||'—'}</td>
+      <td><button class="btn-sm btn-del" onclick="delRecord('trapos','${r.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+/* ════════════════════════════════════
+   PINTADO
+════════════════════════════════════ */
+function addPintado() {
+  const fecha = document.getElementById('pin-fecha').value;
+  const area = document.getElementById('pin-area').value.trim();
+  const tipo = document.getElementById('pin-tipo').value.trim();
+  const cubetas = parseFloat(document.getElementById('pin-cubetas').value) || 0;
+  const estanones = parseFloat(document.getElementById('pin-estanones').value) || 0;
+  const trabajadores = parseFloat(document.getElementById('pin-trabajadores').value) || 0;
+  const m2 = parseFloat(document.getElementById('pin-m2').value) || 0;
+  const nota = document.getElementById('pin-nota').value.trim();
+  if (!fecha || !area) { alert('Fecha y Área son requeridos'); return; }
+  DB.pinturas_pintadas.push({ id: uid(), fecha, area, tipo, cubetas, estanones, trabajadores, m2, nota });
+  document.getElementById('pin-area').value = '';
+  document.getElementById('pin-tipo').value = '';
+  document.getElementById('pin-cubetas').value = '';
+  document.getElementById('pin-estanones').value = '';
+  document.getElementById('pin-trabajadores').value = '';
+  document.getElementById('pin-m2').value = '';
+  document.getElementById('pin-nota').value = '';
+  showToast('✓ Día de pintado registrado');
+  renderPintado();
+}
+
+function renderPintado() {
+  const d1 = document.getElementById('f-pin-d1').value;
+  const d2 = document.getElementById('f-pin-d2').value;
+  const af = document.getElementById('f-pin-area').value.toLowerCase();
+  let rows = DB.pinturas_pintadas.filter(r =>
+    inRange(r.fecha, d1, d2) &&
+    (!af || r.area.toLowerCase().includes(af))
+  ).sort((a,b) => b.fecha.localeCompare(a.fecha));
+
+  const tb = document.getElementById('tbl-pintado');
+  tb.innerHTML = rows.map(r => `
+    <tr>
+      <td>${fmt(r.fecha)}</td>
+      <td>${r.area}</td>
+      <td>${r.tipo||'—'}</td>
+      <td>${r.cubetas||'—'}</td>
+      <td>${r.estanones||'—'}</td>
+      <td>${r.trabajadores||'—'}</td>
+      <td>${r.m2||'—'}</td>
+      <td>${r.nota||'—'}</td>
+      <td><button class="btn-sm btn-del" onclick="delRecord('pinturas_pintadas','${r.id}')">✕</button></td>
+    </tr>`).join('');
+}
+
+/* ════════════════════════════════════
+   DELETE
+════════════════════════════════════ */
+function delRecord(table, id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  DB[table] = DB[table].filter(r => r.id !== id);
+  renderAll();
+  showToast('🗑 Eliminado');
+}
+
+/* ════════════════════════════════════
+   REPORTE
+════════════════════════════════════ */
+function genReporte() {
+  const d1 = document.getElementById('r-d1').value;
+  const d2 = document.getElementById('r-d2').value;
+
+  const cubFilt = DB.cubetas.filter(r => inRange(r.fecha, d1, d2));
+  const estFilt = DB.estanones_solvente.filter(r => inRange(r.fecha, d1, d2));
+  const pinFilt = DB.pinturas_pintadas.filter(r => inRange(r.fecha, d1, d2));
+  const traFilt = DB.trapos.filter(r => inRange(r.fecha, d1, d2));
+
+  const cubIn = cubFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+  const cubOut = cubFilt.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  const estIn = estFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+  const solCub = estFilt.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cubetas_usadas,0);
+  const lavados = estFilt.reduce((s,r)=>s+r.lavados,0);
+  const diasPintados = new Set(pinFilt.map(r=>r.fecha)).size;
+  const totalCubPintado = pinFilt.reduce((s,r)=>s+r.cubetas,0);
+  const totalM2 = pinFilt.reduce((s,r)=>s+r.m2,0);
+  const traIn = traFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat-box"><div class="stat-num">${cubIn.toFixed(0)}</div><div class="stat-label">Cubetas Entrada</div></div>
+    <div class="stat-box"><div class="stat-num">${cubOut.toFixed(0)}</div><div class="stat-label">Cubetas Gastadas</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${(cubIn-cubOut).toFixed(0)}</div><div class="stat-label">Stock Cubetas</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--blue)">${estIn.toFixed(0)}</div><div class="stat-label">Estañones Entrada</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent2)">${solCub.toFixed(0)}</div><div class="stat-label">Cubetas Solvente Usadas</div></div>
+    <div class="stat-box"><div class="stat-num">${lavados.toFixed(0)}</div><div class="stat-label">Estañones Lavados</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${diasPintados}</div><div class="stat-label">Días Pintados</div></div>
+    <div class="stat-box"><div class="stat-num">${totalCubPintado.toFixed(1)}</div><div class="stat-label">Cubetas en Pintado</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--muted)">${totalM2.toFixed(1)}</div><div class="stat-label">Metros² Pintados</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${traIn.toFixed(1)}</div><div class="stat-label">Trapos Entrada</div></div>
+  `;
+
+  // Tablas del reporte
+  document.getElementById('rep-tbl-cubetas').innerHTML = cubFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant}</td>
+    <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td><td>${r.nota||'—'}</td></tr>`).join('');
+
+  document.getElementById('rep-tbl-estanon').innerHTML = estFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant||'—'}</td><td>${r.cubetas_usadas||'—'}</td>
+    <td>${r.lavados||'—'}</td><td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td></tr>`).join('');
+
+  document.getElementById('rep-tbl-pintado').innerHTML = pinFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td>${r.area}</td><td>${r.tipo||'—'}</td><td>${r.cubetas||'—'}</td>
+    <td>${r.estanones||'—'}</td><td>${r.trabajadores||'—'}</td><td>${r.m2||'—'}</td></tr>`).join('');
+
+  document.getElementById('rep-tbl-trapos').innerHTML = traFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant||'—'}</td><td>${r.unidad}</td>
+    <td>${r.pct?r.pct+'%':'—'}</td><td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td></tr>`).join('');
+}
+
+function renderAll() {
+  renderCubetas();
+  renderEstanones();
+  renderTrapos();
+  renderPintado();
+}
+</script>
+</body>
+</html>
