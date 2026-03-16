@@ -2,1119 +2,1685 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sistema de Inventario — Pintura</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>REI — Reciclaje de Envases Industriales</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#060e1c;--bg2:#091220;--panel:#0d1b2e;--panel2:#102035;
+  --border:#163050;--border2:#1a4070;
+  --accent:#1b8cff;--accent2:#00d4ff;
+  --grad:linear-gradient(135deg,#1b8cff 0%,#00d4ff 100%);
+  --glow:0 0 24px rgba(27,140,255,.3);
+  --text:#c8dff5;--text2:#6a9ac0;--muted:#2a5070;
+  --green:#00e676;--red:#ff3d5a;--orange:#ff9800;--yellow:#ffe082;--purple:#ba68c8;
+  --r:14px;--rs:8px;--nav:62px;--bot:68px;
+  --shadow:0 8px 40px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;font-size:15px;}
+body{background:var(--bg);color:var(--text);}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
 
-  :root {
-    --bg: #0f0f0f;
-    --panel: #181818;
-    --border: #2a2a2a;
-    --accent: #e8a000;
-    --accent2: #ff4d00;
-    --text: #e0e0e0;
-    --muted: #666;
-    --green: #00c97a;
-    --red: #ff4444;
-    --blue: #3a9eff;
-  }
+/* ══ LAYOUT ══ */
+#app{display:none;height:100dvh;flex-direction:column;}
+#app.on{display:flex;}
+.topbar{height:var(--nav);min-height:var(--nav);background:var(--panel2);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  padding:0 14px;gap:10px;z-index:200;}
+.logo-zone{flex:1;display:flex;align-items:center;gap:10px;}
+.logo-icon{width:36px;height:36px;background:var(--grad);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:17px;
+  color:#fff;flex-shrink:0;box-shadow:var(--glow);}
+.logo-text{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;
+  letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;}
+.logo-sub{font-size:9px;color:var(--text2);letter-spacing:1px;margin-top:-2px;}
+.topbar-right{display:flex;gap:6px;align-items:center;}
+.tbtn{width:38px;height:38px;background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--rs);display:flex;align-items:center;justify-content:center;
+  color:var(--text2);font-size:16px;cursor:pointer;}
+.tbtn:active{background:var(--border2);color:var(--accent);}
+.save-btn{height:38px;background:var(--grad);color:#fff;border:none;
+  border-radius:var(--rs);font-family:'Rajdhani',sans-serif;font-size:15px;
+  font-weight:700;letter-spacing:1px;padding:0 12px;cursor:pointer;
+  display:flex;align-items:center;gap:5px;}
+.save-btn:active{opacity:.85;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
+  animation:pulse 2s infinite;flex-shrink:0;}
+.sync-dot.syncing{background:var(--orange);}
+.sync-dot.error{background:var(--red);animation:none;}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+.main{flex:1;overflow:hidden;}
+.scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:14px 14px 84px;}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-  }
+.botnav{height:var(--bot);min-height:var(--bot);background:var(--panel2);
+  border-top:1px solid var(--border);display:flex;align-items:stretch;z-index:200;}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;cursor:pointer;color:var(--muted);
+  font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  transition:color .2s;padding:6px 2px;position:relative;}
+.nitem i{font-size:20px;transition:transform .2s;}
+.nitem.act{color:var(--accent);}
+.nitem.act i{transform:scale(1.1);}
+.nitem.act::before{content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:32px;height:3px;
+  background:var(--grad);border-radius:0 0 4px 4px;}
 
-  /* ─── LOGIN ─── */
-  #login-screen {
-    display: flex; align-items: center; justify-content: center;
-    min-height: 100vh;
-    background: radial-gradient(ellipse at 50% 0%, #1a1000 0%, #0f0f0f 70%);
-  }
-  .login-box {
-    width: 360px;
-    border: 1px solid var(--accent);
-    background: var(--panel);
-    padding: 48px 36px;
-    text-align: center;
-  }
-  .login-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 42px;
-    letter-spacing: 4px;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .login-sub {
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-top: 6px;
-    margin-bottom: 36px;
-  }
-  .login-box label {
-    display: block;
-    text-align: left;
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-    margin-top: 16px;
-  }
-  .login-box input {
-    width: 100%;
-    background: #111;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .login-box input:focus { border-color: var(--accent); }
-  .btn-primary {
-    width: 100%;
-    margin-top: 28px;
-    background: var(--accent);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px;
-    letter-spacing: 3px;
-    border: none;
-    padding: 12px;
-    cursor: pointer;
-    transition: background .2s, transform .1s;
-  }
-  .btn-primary:hover { background: #ffb800; }
-  .btn-primary:active { transform: scale(.98); }
-  #login-error {
-    color: var(--red);
-    font-size: 12px;
-    margin-top: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-  }
+/* ══ PAGES ══ */
+.pg{display:none;animation:fadeIn .2s ease;}
+.pg.act{display:block;}
+.ph{margin-bottom:16px;}
+.ph h2{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;
+  letter-spacing:2px;color:#fff;}
+.ph p{color:var(--text2);font-size:12px;margin-top:2px;}
 
-  /* ─── MAIN LAYOUT ─── */
-  #app { display: none; }
-  .topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    height: 60px;
-  }
-  .topbar-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    letter-spacing: 4px;
-    color: var(--accent);
-  }
-  .topbar-user {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .btn-logout {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    padding: 6px 14px;
-    cursor: pointer;
-    margin-left: 16px;
-    transition: border-color .2s, color .2s;
-  }
-  .btn-logout:hover { border-color: var(--red); color: var(--red); }
+/* ══ CARDS ══ */
+.card{background:var(--panel);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px;
+  padding-bottom:12px;border-bottom:1px solid var(--border);}
+.ci{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;flex-shrink:0;}
+.ci.bl{background:rgba(27,140,255,.15);color:var(--accent);}
+.ci.gn{background:rgba(0,230,118,.12);color:var(--green);}
+.ci.rd{background:rgba(255,61,90,.12);color:var(--red);}
+.ci.or{background:rgba(255,152,0,.12);color:var(--orange);}
+.ci.cy{background:rgba(0,212,255,.12);color:var(--accent2);}
+.ci.pu{background:rgba(186,104,200,.12);color:var(--purple);}
+.ch h3{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;
+  letter-spacing:1px;color:#fff;flex:1;}
 
-  /* ─── TABS ─── */
-  .tabs {
-    display: flex;
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
-    padding: 0 28px;
-    gap: 0;
-    flex-wrap: wrap;
-  }
-  .tab-btn {
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    color: var(--muted);
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 16px 20px;
-    cursor: pointer;
-    transition: color .2s, border-color .2s;
-  }
-  .tab-btn:hover { color: var(--text); }
-  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+/* ══ SUBTABS ══ */
+.stabs{display:flex;gap:3px;background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--rs);padding:3px;margin-bottom:14px;flex-wrap:wrap;}
+.stab{flex:1;text-align:center;padding:8px 4px;border-radius:6px;cursor:pointer;
+  font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--muted);
+  transition:all .2s;white-space:nowrap;}
+.stab.act{background:var(--grad);color:#fff;box-shadow:var(--glow);}
 
-  /* ─── CONTENT ─── */
-  .content { padding: 32px 28px; max-width: 1200px; margin: 0 auto; }
-  .tab-section { display: none; }
-  .tab-section.active { display: block; }
+/* ══ FORMS ══ */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.frow.s1{grid-template-columns:1fr;}
+.frow.s3{grid-template-columns:1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);}
+.fg input,.fg select,.fg textarea{background:#070f1c;border:1.5px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:14px;padding:11px 12px;outline:none;transition:.2s;width:100%;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,140,255,.1);}
+.fg select option{background:#0d1b2e;}
+.fg textarea{resize:vertical;min-height:60px;}
+.hint{font-size:10px;color:var(--muted);margin-top:2px;}
 
-  /* ─── CARDS / PANELS ─── */
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-  .card-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--accent);
-    margin-bottom: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
-  }
+/* ══ BUTTONS ══ */
+.btn{width:100%;margin-top:12px;border:none;border-radius:var(--rs);
+  font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;
+  letter-spacing:2px;padding:13px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:opacity .2s,transform .1s;}
+.btn:active{transform:scale(.98);opacity:.9;}
+.btn.primary{background:var(--grad);color:#fff;box-shadow:var(--glow);}
+.btn.success{background:linear-gradient(135deg,#00c853,#00e676);color:#000;}
+.btn.danger{background:linear-gradient(135deg,#c62828,#ff3d5a);color:#fff;}
+.btn.warn{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff;}
+.btn.info{background:linear-gradient(135deg,#00838f,#00d4ff);color:#fff;}
+.btn.sm{font-size:13px;padding:9px;margin-top:8px;}
+.dbtn{width:30px;height:30px;background:rgba(255,61,90,.1);
+  border:1px solid rgba(255,61,90,.2);border-radius:6px;
+  color:var(--red);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+.dbtn:active{background:rgba(255,61,90,.25);}
+.ebtn{width:30px;height:30px;background:rgba(27,140,255,.1);
+  border:1px solid rgba(27,140,255,.2);border-radius:6px;
+  color:var(--accent);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
 
-  /* ─── FORMS ─── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-  }
-  .form-group { display: flex; flex-direction: column; }
-  .form-group label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .form-group input, .form-group select, .form-group textarea {
-    background: #111;
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    padding: 9px 12px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
-  .form-group select option { background: #111; }
-  .btn-add {
-    background: var(--accent);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 2px;
-    border: none;
-    padding: 10px 28px;
-    cursor: pointer;
-    transition: background .2s;
-    margin-top: 20px;
-  }
-  .btn-add:hover { background: #ffb800; }
-  .btn-sm {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    padding: 4px 10px;
-    border: none;
-    cursor: pointer;
-  }
-  .btn-del { background: var(--red); color: #fff; }
-  .btn-del:hover { background: #cc2222; }
+/* ══ STATS ══ */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sg.c3{grid-template-columns:repeat(3,1fr);}
+.sg.c1{grid-template-columns:1fr;}
+.sc{background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:-16px;right:-16px;
+  width:60px;height:60px;border-radius:50%;opacity:.07;}
+.sc.bl::before{background:var(--accent);}
+.sc.gn::before{background:var(--green);}
+.sc.rd::before{background:var(--red);}
+.sc.or::before{background:var(--orange);}
+.sc.cy::before{background:var(--accent2);}
+.sc i{font-size:18px;margin-bottom:6px;display:block;}
+.sc.bl i{color:var(--accent);}
+.sc.gn i{color:var(--green);}
+.sc.rd i{color:var(--red);}
+.sc.or i{color:var(--orange);}
+.sc.cy i{color:var(--accent2);}
+.sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
+  color:#fff;line-height:1;}
+.sl{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:.5px;}
 
-  /* ─── TABLES ─── */
-  .tbl-wrap { overflow-x: auto; margin-top: 20px; }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th {
-    background: #111;
-    color: var(--muted);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 10px 14px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-  }
-  td {
-    padding: 10px 14px;
-    border-bottom: 1px solid #1e1e1e;
-    font-family: 'IBM Plex Mono', monospace;
-    vertical-align: middle;
-  }
-  tr:hover td { background: #1a1a1a; }
-  .badge {
-    display: inline-block;
-    font-size: 10px;
-    padding: 2px 8px;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 1px;
-  }
-  .badge-in { background: #002a1a; color: var(--green); border: 1px solid #004a2a; }
-  .badge-out { background: #2a0000; color: var(--red); border: 1px solid #4a0000; }
+/* ══ TABLES ══ */
+.tw{overflow-x:auto;margin-top:8px;}
+table{width:100%;border-collapse:collapse;font-size:12px;min-width:320px;}
+th{background:#060e1c;color:var(--text2);font-size:9px;letter-spacing:1.5px;
+  text-transform:uppercase;padding:9px 10px;text-align:left;
+  border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:10px 10px;border-bottom:1px solid #0a1828;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+.badge{display:inline-flex;align-items:center;gap:3px;
+  font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;white-space:nowrap;}
+.b-in{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.b-out{background:rgba(255,61,90,.1);color:var(--red);border:1px solid rgba(255,61,90,.2);}
+.b-bl{background:rgba(27,140,255,.1);color:var(--accent);border:1px solid rgba(27,140,255,.2);}
+.b-or{background:rgba(255,152,0,.1);color:var(--orange);border:1px solid rgba(255,152,0,.2);}
+.b-pu{background:rgba(186,104,200,.1);color:var(--purple);border:1px solid rgba(186,104,200,.2);}
+.td-act{display:flex;gap:4px;align-items:center;}
 
-  /* ─── REPORT ─── */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
-  .stat-box {
-    background: #111;
-    border: 1px solid var(--border);
-    padding: 20px 18px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 44px;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .stat-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 6px;
-  }
-  .filter-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 20px; }
-  .filter-row .form-group { min-width: 160px; flex: 1; margin: 0; }
-  .btn-filter {
-    background: var(--blue);
-    color: #fff;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    border: none;
-    padding: 9px 22px;
-    cursor: pointer;
-  }
-  .btn-filter:hover { background: #2278cc; }
-  .btn-report {
-    background: var(--green);
-    color: #000;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 16px;
-    letter-spacing: 2px;
-    border: none;
-    padding: 9px 22px;
-    cursor: pointer;
-  }
-  .btn-report:hover { background: #00a860; }
+/* ══ PROGRESS ══ */
+.pbar-bg{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px;}
+.pbar{height:100%;border-radius:4px;transition:width .4s;}
+.pbar.ok{background:var(--grad);}
+.pbar.warn{background:linear-gradient(90deg,var(--orange),var(--yellow));}
+.pbar.low{background:linear-gradient(90deg,var(--red),var(--orange));}
 
-  /* ─── TOAST ─── */
-  #toast {
-    position: fixed;
-    bottom: 32px; right: 32px;
-    background: var(--green);
-    color: #000;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 13px;
-    padding: 12px 24px;
-    display: none;
-    z-index: 9999;
-    animation: slideUp .3s ease;
-  }
-  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+/* ══ FILTERS ══ */
+.fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.fbar .fg{flex:1;min-width:110px;}
+.fbtn{background:var(--panel2);border:1px solid var(--border2);color:var(--accent);
+  font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;
+  padding:11px 14px;border-radius:var(--rs);cursor:pointer;white-space:nowrap;align-self:flex-end;}
+.fbtn:active{background:var(--border2);}
 
-  /* ─── FILE IMPORT ─── */
-  .file-note {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    border-left: 2px solid var(--accent);
-    padding-left: 10px;
-  }
-  .divider { height: 1px; background: var(--border); margin: 24px 0; }
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rs);
+  padding:11px 18px;font-size:13px;font-weight:600;color:var(--text);
+  box-shadow:var(--shadow);z-index:9999;opacity:0;
+  transition:opacity .25s,transform .25s;white-space:nowrap;
+  display:flex;align-items:center;gap:8px;}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast.ok{border-color:var(--green);color:var(--green);}
+.toast.er{border-color:var(--red);color:var(--red);}
+.toast.in{border-color:var(--accent);color:var(--accent);}
+.toast.wa{border-color:var(--orange);color:var(--orange);}
 
-  /* ─── PRINT ─── */
-  @media print {
-    body { background: #fff; color: #000; }
-    .topbar, .tabs, .no-print { display: none !important; }
-    .card { border: 1px solid #ccc; }
-    .card-title, .stat-num { color: #000; }
-    .stat-label, th { color: #444; }
-    td, th { border-bottom: 1px solid #ddd; }
-  }
+/* ══ MODAL ══ */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;
+  display:none;align-items:flex-end;backdrop-filter:blur(4px);}
+.mbg.on{display:flex;}
+.modal{width:100%;background:var(--panel2);border-radius:var(--r) var(--r) 0 0;
+  border-top:1px solid var(--border2);padding:20px 18px 36px;
+  max-height:88dvh;overflow-y:auto;animation:slideUp .28s ease;}
+.mhandle{width:40px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 18px;}
+.modal h3{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;
+  color:#fff;margin-bottom:14px;}
+
+/* ══ SPECIAL BANNER ══ */
+.spec-banner{background:rgba(186,104,200,.12);border:1px solid rgba(186,104,200,.35);
+  border-radius:var(--rs);padding:10px 14px;margin-bottom:12px;
+  display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--purple);font-weight:600;}
+
+/* ══ SECTION LABELS ══ */
+.slbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.slbl::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ══ ESTAÑON CARD ══ */
+.est-card{background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.est-card.act-est{border-color:var(--accent);box-shadow:0 0 0 1px rgba(27,140,255,.15);}
+.est-card.done-est{border-color:var(--muted);opacity:.6;}
+
+/* ══ DASH ══ */
+.dash-hero{background:linear-gradient(135deg,var(--panel2) 0%,#0b1e3a 100%);
+  border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:14px;}
+.dash-date{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:6px;}
+.dash-hero h2{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;}
+.dash-hero p{color:var(--text2);font-size:12px;margin-top:3px;}
+
+/* ══ CFG ══ */
+.cfg-item{display:flex;align-items:center;gap:12px;padding:14px 0;
+  border-bottom:1px solid var(--border);}
+.cfg-item:last-child{border-bottom:none;}
+.cfg-ico{width:36px;height:36px;background:rgba(27,140,255,.12);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;color:var(--accent);
+  font-size:16px;flex-shrink:0;}
+.cfg-info{flex:1;}
+.cfg-info label{font-size:13px;font-weight:600;color:#fff;display:block;}
+.cfg-info small{font-size:11px;color:var(--text2);}
+.cfg-input{background:#070f1c;border:1.5px solid var(--border);border-radius:var(--rs);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+  padding:8px 10px;outline:none;width:90px;text-align:center;}
+.cfg-input:focus{border-color:var(--accent);}
+
+/* ══ KPI ══ */
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.kpi{background:var(--panel2);border:1px solid var(--border);
+  border-radius:var(--rs);padding:12px;text-align:center;}
+.kn{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;
+  color:#fff;line-height:1;}
+.ks{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:.5px;}
+
+/* ══ LOADING ══ */
+#loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+  background-image:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(27,140,255,.18),transparent);}
+.loading-logo{width:72px;height:72px;background:var(--grad);border-radius:20px;
+  display:flex;align-items:center;justify-content:center;font-size:34px;
+  color:#fff;box-shadow:var(--glow);animation:pulse 1.5s infinite;}
+.loading-text{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
+  letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;}
+.loading-sub{font-size:12px;color:var(--text2);letter-spacing:1.5px;}
+.loading-bar{width:200px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;}
+.loading-fill{height:100%;background:var(--grad);border-radius:4px;
+  animation:loadBar 1.5s ease infinite;}
+#loading-status{font-size:12px;color:var(--text2);margin-top:4px;}
+
+/* ══ LOGIN ══ */
+#login{position:fixed;inset:0;z-index:9998;display:none;align-items:center;
+  justify-content:center;background:var(--bg);
+  background-image:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(27,140,255,.2),transparent);}
+#login.on{display:flex;}
+.lbox{width:100%;max-width:380px;padding:20px;}
+.l-logo{text-align:center;margin-bottom:28px;}
+.l-logo .lico{width:68px;height:68px;background:var(--grad);border-radius:20px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:30px;color:#fff;box-shadow:var(--glow);margin-bottom:12px;}
+.l-logo h1{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
+  letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;}
+.l-logo p{color:var(--text2);font-size:11px;letter-spacing:1.5px;margin-top:3px;}
+.lcard{background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--r);padding:28px 22px;box-shadow:var(--shadow);}
+.iw{position:relative;margin-bottom:14px;}
+.iw label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text2);display:block;margin-bottom:6px;}
+.iw i.ico{position:absolute;left:14px;bottom:12px;color:var(--muted);
+  font-size:15px;pointer-events:none;}
+.iw input{width:100%;background:#070f1c;border:1.5px solid var(--border);
+  border-radius:var(--rs);color:var(--text);font-family:'DM Sans',sans-serif;
+  font-size:15px;padding:12px 12px 12px 44px;outline:none;transition:.2s;}
+.iw input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,140,255,.12);}
+.lbtn{width:100%;background:var(--grad);color:#fff;font-family:'Rajdhani',sans-serif;
+  font-size:19px;font-weight:700;letter-spacing:3px;border:none;
+  border-radius:var(--rs);padding:14px;cursor:pointer;box-shadow:var(--glow);
+  margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
+.lbtn:active{opacity:.88;}
+#lerr{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes loadBar{0%{width:0;margin-left:0}60%{width:80%}100%{width:100%;margin-left:100%}}
+.pulsing{animation:pulse 1.5s infinite;}
+
+/* ══ CHART ══ */
+.cw{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;margin-bottom:14px;}
+.cw h4{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
+  color:var(--text2);margin-bottom:12px;letter-spacing:1px;}
+canvas{max-height:180px;}
+
+@media print{
+  .topbar,.botnav,.toast,.mbg,.no-print,#loading-screen,#login{display:none!important;}
+  body,html{height:auto;overflow:auto;background:#fff;color:#000;}
+  .card,.kpi,.sc,.cw{border:1px solid #ccc;background:#fff;}
+  .sv,.kn,.ch h3,.ph h2{color:#000;}
+  .pg{display:block!important;}
+  .scroll{overflow:visible;padding:0;}
+}
 </style>
 </head>
 <body>
 
-<!-- ══════════ LOGIN ══════════ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-title">INVENTARIO</div>
-    <div class="login-sub">Sistema de Pintura</div>
-    <label>Usuario</label>
-    <input type="text" id="inp-user" autocomplete="off">
-    <label>Contraseña</label>
-    <input type="password" id="inp-pass">
-    <button class="btn-primary" onclick="doLogin()">INGRESAR</button>
-    <div id="login-error"></div>
-    <div class="file-note" style="margin-top:24px;">
-      ⚠ Seleccione su archivo <strong>data.txt</strong> para cargar datos:
+<!-- ══ LOADING SCREEN ══ -->
+<div id="loading-screen">
+  <div class="loading-logo"><i class="fa-solid fa-recycle"></i></div>
+  <div class="loading-text">REI</div>
+  <div class="loading-sub">RECICLAJE DE ENVASES INDUSTRIALES</div>
+  <div class="loading-bar"><div class="loading-fill"></div></div>
+  <div id="loading-status">Conectando base de datos...</div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="login">
+  <div class="lbox">
+    <div class="l-logo">
+      <div class="lico"><i class="fa-solid fa-recycle"></i></div>
+      <h1>REI</h1>
+      <p>RECICLAJE DE ENVASES INDUSTRIALES</p>
     </div>
-    <div style="margin-top:10px;">
-      <input type="file" id="file-loader" accept=".txt" style="color:var(--muted);font-size:12px;width:100%;">
+    <div class="lcard">
+      <div class="iw">
+        <label>Usuario</label>
+        <i class="ico fa-solid fa-user"></i>
+        <input type="text" id="lu" placeholder="Usuario" autocomplete="off">
+      </div>
+      <div class="iw">
+        <label>Contraseña</label>
+        <i class="ico fa-solid fa-lock"></i>
+        <input type="password" id="lp" placeholder="••••••••">
+      </div>
+      <button class="lbtn" onclick="doLogin()">
+        <i class="fa-solid fa-right-to-bracket"></i> INGRESAR
+      </button>
+      <div id="lerr"><i class="fa-solid fa-circle-exclamation"></i> <span id="lermsg"></span></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════ APP ══════════ -->
+<!-- ══ APP ══ -->
 <div id="app">
   <div class="topbar">
-    <div class="topbar-title">📦 INVENTARIO PINTURA</div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span class="topbar-user" id="user-label"></span>
-      <button class="btn-logout" onclick="doLogout()">SALIR</button>
-      <button class="btn-report no-print" onclick="saveData()" style="background:var(--green);color:#000;font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px;border:none;padding:8px 16px;cursor:pointer;">💾 GUARDAR TXT</button>
+    <div class="logo-zone">
+      <div class="logo-icon"><i class="fa-solid fa-recycle"></i></div>
+      <div><div class="logo-text">REI</div><div class="logo-sub">ENVASES INDUSTRIALES</div></div>
+    </div>
+    <div class="topbar-right">
+      <div class="sync-dot" id="sync-dot" title="Estado sincronización"></div>
+      <button class="save-btn" onclick="saveData(true)"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar</button>
+      <div class="tbtn" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></div>
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('cubetas')">🪣 Cubetas</button>
-    <button class="tab-btn" onclick="switchTab('estanon')">🛢 Estañones Solvente</button>
-    <button class="tab-btn" onclick="switchTab('trapos')">🧹 Trapos</button>
-    <button class="tab-btn" onclick="switchTab('pintado')">🎨 Pintado por Día</button>
-    <button class="tab-btn" onclick="switchTab('reporte')">📊 Reporte</button>
+  <div class="main">
+    <div class="scroll" id="sc">
+
+      <!-- DASHBOARD -->
+      <div class="pg act" id="pg-dash">
+        <div class="dash-hero">
+          <div class="dash-date" id="d-date"></div>
+          <h2>Bienvenido, <span id="d-user"></span> 👋</h2>
+          <p>REI — Reciclaje de Envases Industriales</p>
+        </div>
+        <div class="sg" id="d-stats"></div>
+        <div class="cw"><h4><i class="fa-solid fa-chart-bar" style="color:var(--accent);margin-right:6px;"></i>Movimientos últimos 7 días</h4><canvas id="ch-week"></canvas></div>
+        <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-triangle-exclamation"></i></div><h3>Alertas Activas</h3></div><div id="d-alerts"></div></div>
+        <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>Últimos Registros</h3></div><div id="d-recent"></div></div>
+      </div>
+
+      <!-- INVENTARIO GENERAL -->
+      <div class="pg" id="pg-inv">
+        <div class="ph"><h2><i class="fa-solid fa-warehouse" style="color:var(--accent);"></i> Inventario General</h2><p>Cualquier producto — entrada y salida</p></div>
+        <div class="stabs" id="stabs-inv">
+          <div class="stab act" onclick="stab('inv','stock',this)"><i class="fa-solid fa-list"></i> Stock</div>
+          <div class="stab" onclick="stab('inv','entrada',this)"><i class="fa-solid fa-arrow-down"></i> Entrada</div>
+          <div class="stab" onclick="stab('inv','salida',this)"><i class="fa-solid fa-arrow-up"></i> Salida</div>
+          <div class="stab" onclick="stab('inv','hist',this)"><i class="fa-solid fa-history"></i> Historial</div>
+        </div>
+        <div id="inv-stock"></div>
+        <div id="inv-entrada" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci gn"><i class="fa-solid fa-plus-circle"></i></div><h3>Registrar Entrada</h3></div>
+            <div class="frow"><div class="fg"><label>Nombre del Producto *</label><input type="text" id="in-nom" placeholder="Ej: Cemento, Herramienta..."></div><div class="fg"><label>Categoría *</label><input type="text" id="in-cat" placeholder="Ej: Materiales" list="dl-cat"><datalist id="dl-cat"></datalist></div></div>
+            <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="in-cant" min="0" step="0.01" placeholder="0"></div><div class="fg"><label>Unidad *</label><select id="in-uni"><option value="unidades">Unidades</option><option value="kg">Kilogramos</option><option value="lb">Libras</option><option value="litros">Litros</option><option value="galones">Galones</option><option value="metros">Metros</option><option value="m²">m²</option><option value="rollos">Rollos</option><option value="sacos">Sacos</option><option value="cajas">Cajas</option></select></div></div>
+            <div class="frow"><div class="fg"><label>Fecha de Entrada *</label><input type="date" id="in-fecha"></div><div class="fg"><label>Stock mínimo (alerta)</label><input type="number" id="in-min" min="0" step="0.01" placeholder="0"></div></div>
+            <div class="frow"><div class="fg"><label>Proveedor</label><input type="text" id="in-prov" placeholder="Opcional"></div><div class="fg"><label>Nota</label><input type="text" id="in-nota" placeholder="Opcional"></div></div>
+            <div class="frow s1">
+              <div class="fg" style="flex-direction:row;align-items:center;gap:10px;background:rgba(186,104,200,.08);border:1px solid rgba(186,104,200,.2);border-radius:var(--rs);padding:12px;">
+                <input type="checkbox" id="in-spec" style="width:20px;height:20px;accent-color:var(--purple);">
+                <div><label for="in-spec" style="font-size:13px;color:var(--purple);font-weight:600;text-transform:none;letter-spacing:0;">¿Es producto ESPECIAL?</label><div class="hint">Especiales tienen control de auditoría y salida propia</div></div>
+              </div>
+            </div>
+            <div id="spec-fields" style="display:none;">
+              <div class="spec-banner"><i class="fa-solid fa-star"></i><div>Producto especial — complete datos de auditoría</div></div>
+              <div class="frow"><div class="fg"><label>Código de Auditoría *</label><input type="text" id="in-spec-cod" placeholder="Ej: EST-001"></div><div class="fg"><label>Responsable</label><input type="text" id="in-spec-resp" placeholder="Nombre"></div></div>
+              <div class="frow"><div class="fg"><label>Capacidad máx. (cubetas)</label><input type="number" id="in-spec-max" min="0" step="0.5" placeholder="0"><div class="hint">0 = usar valor de configuración</div></div><div class="fg"><label>Tipo / Descripción</label><input type="text" id="in-spec-tipo" placeholder="Ej: Estañón thinner"></div></div>
+              <div class="frow s1"><div class="fg"><label>Observación inicial</label><textarea id="in-spec-obs" placeholder="Condición, procedencia..."></textarea></div></div>
+            </div>
+            <button class="btn success" onclick="addMovInv('in')"><i class="fa-solid fa-check-circle"></i> REGISTRAR ENTRADA</button>
+          </div>
+        </div>
+        <div id="inv-salida" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci rd"><i class="fa-solid fa-arrow-right-from-bracket"></i></div><h3>Registrar Salida Normal</h3></div>
+            <div style="background:rgba(27,140,255,.06);border:1px solid rgba(27,140,255,.15);border-radius:var(--rs);padding:10px;margin-bottom:12px;font-size:12px;color:var(--text2);">
+              <i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> Solo productos NO especiales. Los especiales tienen su sección propia.
+            </div>
+            <div class="frow"><div class="fg"><label>Producto *</label><input type="text" id="out-nom" placeholder="Nombre" list="dl-prod"><datalist id="dl-prod"></datalist></div><div class="fg"><label>Cantidad *</label><input type="number" id="out-cant" min="0" step="0.01" placeholder="0"></div></div>
+            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="out-fecha"></div><div class="fg"><label>Motivo</label><select id="out-mot"><option>Uso interno</option><option>Venta</option><option>Desperdicio</option><option>Devolución</option><option>Otro</option></select></div></div>
+            <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="out-nota" placeholder="Opcional"></div></div>
+            <button class="btn danger" onclick="addMovInv('out')"><i class="fa-solid fa-minus-circle"></i> REGISTRAR SALIDA</button>
+          </div>
+        </div>
+        <div id="inv-hist" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci bl"><i class="fa-solid fa-list-ul"></i></div><h3>Historial</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fh-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fh-d2"></div><button class="fbtn" onclick="renderInvHist()"><i class="fa-solid fa-search"></i></button></div>
+            <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Tipo</th><th>Nota</th><th></th></tr></thead><tbody id="tb-inv-hist"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESPECIALES -->
+      <div class="pg" id="pg-esp">
+        <div class="ph"><h2><i class="fa-solid fa-star" style="color:var(--purple);"></i> Productos Especiales</h2><p>Auditoría, seguimiento y control de límites</p></div>
+        <div class="stabs" id="stabs-esp">
+          <div class="stab act" onclick="stab('esp','lista',this)"><i class="fa-solid fa-boxes-stacked"></i> Activos</div>
+          <div class="stab" onclick="stab('esp','salida',this)"><i class="fa-solid fa-right-from-bracket"></i> Salida</div>
+          <div class="stab" onclick="stab('esp','pasivo',this)"><i class="fa-solid fa-archive"></i> Historial</div>
+        </div>
+        <div id="esp-lista"></div>
+        <div id="esp-salida" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci pu"><i class="fa-solid fa-star-half-stroke"></i></div><h3>Salida Especial del Día</h3></div>
+            <div class="spec-banner"><i class="fa-solid fa-circle-info"></i><div>Registra cubetas usadas, estañones pintados, lavados y responsables</div></div>
+            <div class="frow"><div class="fg"><label>Producto Especial Activo *</label><select id="esp-sel-prod"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="esp-fecha"></div></div>
+            <div id="esp-info-prod"></div>
+            <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="esp-cubetas" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="esp-estanones" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="esp-color" placeholder="Ej: Blanco"></div></div>
+            <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="esp-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="esp-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado Por</label><input type="text" id="esp-revisor" placeholder="Nombre"></div></div>
+            <div class="frow"><div class="fg"><label>Tipo de Envase Lavado</label><input type="text" id="esp-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="esp-nota-s" placeholder="Opcional"></div></div>
+            <div id="esp-limite-warn" style="display:none;" class="spec-banner" style="border-color:var(--orange);color:var(--orange);"><i class="fa-solid fa-exclamation-triangle"></i><span id="esp-warn-txt"></span></div>
+            <button class="btn warn" onclick="addEspSalida()"><i class="fa-solid fa-paper-plane"></i> REGISTRAR SALIDA ESPECIAL</button>
+          </div>
+        </div>
+        <div id="esp-pasivo" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci or"><i class="fa-solid fa-box-archive"></i></div><h3>Inventario Pasivo</h3></div>
+            <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Productos especiales terminados — historial completo</p>
+            <div id="esp-pasivo-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PINTURA -->
+      <div class="pg" id="pg-pin">
+        <div class="ph"><h2><i class="fa-solid fa-paint-roller" style="color:var(--accent);"></i> Control de Pintura</h2><p>Cubetas, Solvente, Trapos, Trabajo Diario</p></div>
+        <div class="stabs" id="stabs-pin">
+          <div class="stab act" onclick="stab('pin','cubetas',this)"><i class="fa-solid fa-bucket"></i> Cubetas</div>
+          <div class="stab" onclick="stab('pin','solvente',this)"><i class="fa-solid fa-oil-can"></i> Solvente</div>
+          <div class="stab" onclick="stab('pin','trapos',this)"><i class="fa-solid fa-mitten"></i> Trapos</div>
+          <div class="stab" onclick="stab('pin','trabajo',this)"><i class="fa-solid fa-calendar-check"></i> Trabajo</div>
+        </div>
+        <!-- CUBETAS -->
+        <div id="pin-cubetas">
+          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo" placeholder="Ej: Blanco mate" list="dl-cub-t"><datalist id="dl-cub-t"></datalist></div><div class="fg"><label>Cantidad *</label><input type="number" id="cub-cant" min="1" placeholder="0"></div></div>
+            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fin"></div><div class="fg"><label>Proveedor</label><input type="text" id="cub-prov" placeholder="Opcional"></div></div>
+            <button class="btn success sm" onclick="addCubeta('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
+          </div>
+          <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--red);"></i> Gasto</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo-o" placeholder="Seleccionar" list="dl-cub-t2"><datalist id="dl-cub-t2"></datalist></div><div class="fg"><label>Cubetas Gastadas *</label><input type="number" id="cub-cant-o" min="0" step="0.5" placeholder="0"></div></div>
+            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fout"></div><div class="fg"><label>Nota</label><input type="text" id="cub-nota-o" placeholder="Opcional"></div></div>
+            <button class="btn danger sm" onclick="addCubeta('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial Cubetas</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fcub-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fcub-d2"></div><button class="fbtn" onclick="renderCubetas()"><i class="fa-solid fa-search"></i></button></div>
+            <div class="sg"><div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv" id="cub-stk">0</div><div class="sl">Stock</div></div><div class="sc rd"><i class="fa-solid fa-fire"></i><div class="sv" id="cub-tot">0</div><div class="sl">Total Gastado</div></div></div>
+            <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Mov.</th><th>Nota</th><th></th></tr></thead><tbody id="tb-cub"></tbody></table></div>
+          </div>
+        </div>
+        <!-- SOLVENTE -->
+        <div id="pin-solvente" style="display:none;">
+          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada Estañón de Solvente</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Tipo de Solvente *</label><select id="sol-tipo"><option value="thinner">Thinner</option><option value="varsol">Varsol</option><option value="otro">Otro</option></select></div><div class="fg"><label>Código / ID *</label><input type="text" id="sol-cod" placeholder="Ej: TH-001"><div class="hint">Código único para identificar este estañón</div></div></div>
+            <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="sol-cant" min="1" value="1" placeholder="1"></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fin"></div></div>
+            <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota" placeholder="Opcional"></div></div>
+            <button class="btn success sm" onclick="addSolvente('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
+          </div>
+          <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--orange);"></i> Salida / Gasto del Día</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Estañón Activo *</label><select id="sol-sel"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fout"></div></div>
+            <div id="sol-info"></div>
+            <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="sol-cub-out" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="sol-est-pin" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="sol-color" placeholder="Ej: Blanco"></div></div>
+            <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="sol-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="sol-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado por</label><input type="text" id="sol-revisor" placeholder="Nombre"></div></div>
+            <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="sol-nota-o" placeholder="Opcional"></div></div>
+            <div id="sol-lim-warn" style="display:none;" class="spec-banner" style="color:var(--orange);border-color:var(--orange);"></div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn warn sm" style="flex:1;" onclick="addSolvente('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+              <button class="btn danger sm" style="flex:1;" onclick="terminarEst()"><i class="fa-solid fa-flag-checkered"></i> MARCAR TERMINADO</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci cy"><i class="fa-solid fa-oil-can"></i></div><h3>Estañones Activos</h3></div>
+            <div id="sol-activos"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci or"><i class="fa-solid fa-table-list"></i></div><h3>Historial de Movimientos</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fsol-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fsol-d2"></div><button class="fbtn" onclick="renderSolvente()"><i class="fa-solid fa-search"></i></button></div>
+            <div class="sg c3"><div class="sc bl"><i class="fa-solid fa-oil-can"></i><div class="sv" id="sol-stk">0</div><div class="sl">Activos</div></div><div class="sc rd"><i class="fa-solid fa-droplet"></i><div class="sv" id="sol-cub-t">0</div><div class="sl">Cubetas Usadas</div></div><div class="sc or"><i class="fa-solid fa-soap"></i><div class="sv" id="sol-lav-t">0</div><div class="sl">Lavados</div></div></div>
+            <div class="tw"><table><thead><tr><th>Fecha</th><th>Cód.</th><th>Tipo</th><th>Cub.Usadas</th><th>Est.Pin.</th><th>Lavados</th><th>Lavador</th><th>Revisor</th><th></th></tr></thead><tbody id="tb-sol"></tbody></table></div>
+          </div>
+        </div>
+        <!-- TRAPOS -->
+        <div id="pin-trapos" style="display:none;">
+          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada — Nuevo Lote</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Tipo *</label><input type="text" id="tra-tipo" placeholder="Ej: Trapo industrial"><div class="hint">Se genera un ID automático para este lote</div></div><div class="fg"><label>Cantidad *</label><input type="number" id="tra-cant" min="0" step="0.1" placeholder="0"></div></div>
+            <div class="frow"><div class="fg"><label>Unidad</label><select id="tra-uni"><option>kg</option><option>libras</option><option>unidades</option><option>rollos</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="tra-fin"></div></div>
+            <button class="btn success sm" onclick="addTrapo('in')"><i class="fa-solid fa-plus"></i> REGISTRAR LOTE</button>
+          </div>
+          <div class="slbl"><i class="fa-solid fa-percent" style="color:var(--orange);"></i> Gasto — % del Lote</div>
+          <div class="card">
+            <div class="frow"><div class="fg"><label>Seleccionar Lote *</label><select id="tra-sel-lot"><option value="">— Seleccione —</option></select></div><div class="fg"><label>% a Gastar *</label><input type="number" id="tra-pct" min="1" max="100" placeholder="Ej: 10"></div></div>
+            <div id="tra-lot-info"></div>
+            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tra-fout"></div><div class="fg"><label>Nota</label><input type="text" id="tra-nota-o" placeholder="Opcional"></div></div>
+            <button class="btn danger sm" onclick="addTrapo('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci or"><i class="fa-solid fa-layer-group"></i></div><h3>Lotes Activos</h3></div>
+            <div id="tra-lotes-list"></div>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial</h3></div>
+            <div class="tw"><table><thead><tr><th>Fecha</th><th>ID Lote</th><th>Tipo</th><th>Cant.</th><th>%</th><th>Mov.</th><th></th></tr></thead><tbody id="tb-tra"></tbody></table></div>
+          </div>
+        </div>
+        <!-- TRABAJO DIARIO -->
+        <div id="pin-trabajo" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci bl"><i class="fa-solid fa-calendar-plus"></i></div><h3>Registro del Día</h3></div>
+            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tr-fecha"></div><div class="fg"><label>Área / Zona *</label><input type="text" id="tr-area" placeholder="Ej: Galpón Norte"></div></div>
+            <div class="frow"><div class="fg"><label>Tipo Pintura</label><input type="text" id="tr-tipo" placeholder="Ej: Blanco mate" list="dl-cub-t3"><datalist id="dl-cub-t3"></datalist></div><div class="fg"><label>Cubetas Usadas</label><input type="number" id="tr-cub" min="0" step="0.5" placeholder="0"></div></div>
+            <div class="frow s3"><div class="fg"><label>Estañones Pintados</label><input type="number" id="tr-est" min="0" placeholder="0"></div><div class="fg"><label>Trabajadores</label><input type="number" id="tr-trab" min="0" placeholder="0"></div><div class="fg"><label>Metros²</label><input type="number" id="tr-m2" min="0" step="0.1" placeholder="0"></div></div>
+            <div class="frow s1"><div class="fg"><label>Observación</label><input type="text" id="tr-nota" placeholder="Opcional"></div></div>
+            <button class="btn primary" onclick="addTrabajo()"><i class="fa-solid fa-check"></i> REGISTRAR DÍA</button>
+          </div>
+          <div class="card">
+            <div class="ch"><div class="ci gn"><i class="fa-solid fa-calendar-week"></i></div><h3>Historial de Trabajo</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ftr-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ftr-d2"></div><button class="fbtn" onclick="renderTrabajo()"><i class="fa-solid fa-search"></i></button></div>
+            <div class="sg"><div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv" id="tr-dias">0</div><div class="sl">Días</div></div><div class="sc or"><i class="fa-solid fa-ruler-combined"></i><div class="sv" id="tr-m2t">0</div><div class="sl">m² Total</div></div></div>
+            <div class="tw"><table><thead><tr><th>Fecha</th><th>Área</th><th>Pintura</th><th>Cub.</th><th>Est.</th><th>m²</th><th>Trab.</th><th></th></tr></thead><tbody id="tb-trab"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REPORTES -->
+      <div class="pg" id="pg-rep">
+        <div class="ph"><h2><i class="fa-solid fa-chart-line" style="color:var(--accent);"></i> Reportes</h2><p>Inventario, gastos y análisis de pintura</p></div>
+        <div class="stabs" id="stabs-rep">
+          <div class="stab act" onclick="stab('rep','inv',this)"><i class="fa-solid fa-warehouse"></i> Inventario</div>
+          <div class="stab" onclick="stab('rep','gastos',this)"><i class="fa-solid fa-receipt"></i> Gastos</div>
+          <div class="stab" onclick="stab('rep','pin',this)"><i class="fa-solid fa-paint-roller"></i> Pintura</div>
+          <div class="stab" onclick="stab('rep','esp',this)"><i class="fa-solid fa-star"></i> Especiales</div>
+        </div>
+        <div id="rep-inv">
+          <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Inventario</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ri-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ri-d2"></div><div class="fg"><label>Categoría</label><select id="ri-cat"><option value="">Todas</option></select></div></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn primary sm" style="flex:1;" onclick="genRepInv()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+              <button class="btn info sm" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> IMPRIMIR</button>
+            </div>
+          </div><div id="rep-inv-out"></div>
+        </div>
+        <div id="rep-gastos" style="display:none;">
+          <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-sliders"></i></div><h3>Análisis de Gastos</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rg-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rg-d2"></div></div>
+            <button class="btn danger sm" onclick="genRepGastos()"><i class="fa-solid fa-magnifying-glass-chart"></i> ANALIZAR</button>
+          </div><div id="rep-gastos-out"></div>
+        </div>
+        <div id="rep-pin" style="display:none;">
+          <div class="card"><div class="ch"><div class="ci or"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Pintura</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rp-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rp-d2"></div></div>
+            <button class="btn warn sm" onclick="genRepPin()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+          </div><div id="rep-pin-out"></div>
+        </div>
+        <div id="rep-esp" style="display:none;">
+          <div class="card"><div class="ch"><div class="ci pu"><i class="fa-solid fa-star"></i></div><h3>Reporte Especiales</h3></div>
+            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="re-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="re-d2"></div></div>
+            <button class="btn sm" style="background:var(--purple);color:#fff;" onclick="genRepEsp()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+          </div><div id="rep-esp-out"></div>
+        </div>
+      </div>
+
+      <!-- CONFIGURACIÓN -->
+      <div class="pg" id="pg-cfg">
+        <div class="ph"><h2><i class="fa-solid fa-gear" style="color:var(--accent);"></i> Configuración</h2><p>Parámetros de producción y usuarios</p></div>
+        <div class="card">
+          <div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Parámetros de Producción</h3></div>
+          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-paint-roller"></i></div><div class="cfg-info"><label>Estañones pintados por cubeta</label><small>¿Cuántos estañones se pintan con 1 cubeta de pintura?</small></div><input type="number" class="cfg-input" id="cfg-est-por-cub" min="0" step="0.1" placeholder="0"></div>
+          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-soap"></i></div><div class="cfg-info"><label>Estañones lavados por cubeta de solvente</label><small>¿Cuántos estañones se lavan con 1 cubeta de solvente?</small></div><input type="number" class="cfg-input" id="cfg-lav-por-cub" min="0" step="0.1" placeholder="0"></div>
+          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-oil-can"></i></div><div class="cfg-info"><label>Máx. cubetas por estañón de solvente</label><small>Capacidad máxima antes de marcar terminado</small></div><input type="number" class="cfg-input" id="cfg-max-cub-est" min="0" step="0.5" placeholder="0"></div>
+          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-star"></i></div><div class="cfg-info"><label>Máx. cubetas por producto especial</label><small>Capacidad por defecto si no se especifica al crear</small></div><input type="number" class="cfg-input" id="cfg-max-esp" min="0" step="0.5" placeholder="0"></div>
+          <button class="btn primary" onclick="saveCfg()"><i class="fa-solid fa-save"></i> GUARDAR CONFIGURACIÓN</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci gn"><i class="fa-solid fa-calculator"></i></div><h3>Promedios Reales del Sistema</h3></div>
+          <div id="cfg-promedios"></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci cy"><i class="fa-solid fa-database"></i></div><h3>Estado de Sincronización</h3></div>
+          <div id="sync-status-panel"></div>
+          <button class="btn info sm" onclick="loadData(true)"><i class="fa-solid fa-rotate"></i> RECARGAR DATOS</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci rd"><i class="fa-solid fa-shield-halved"></i></div><h3>Gestión de Usuarios</h3></div>
+          <div class="frow"><div class="fg"><label>Nuevo Usuario</label><input type="text" id="new-user" placeholder="Usuario"></div><div class="fg"><label>Contraseña</label><input type="password" id="new-pass" placeholder="Contraseña"></div></div>
+          <button class="btn success sm" onclick="addUser()"><i class="fa-solid fa-user-plus"></i> AGREGAR</button>
+          <div class="tw" style="margin-top:10px;"><table><thead><tr><th>Usuario</th><th></th></tr></thead><tbody id="tb-users"></tbody></table></div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="content">
+  <div class="botnav">
+    <div class="nitem act" id="n-dash" onclick="showPg('dash')"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
+    <div class="nitem" id="n-inv" onclick="showPg('inv')"><i class="fa-solid fa-warehouse"></i><span>Inventario</span></div>
+    <div class="nitem" id="n-esp" onclick="showPg('esp')"><i class="fa-solid fa-star"></i><span>Especiales</span></div>
+    <div class="nitem" id="n-pin" onclick="showPg('pin')"><i class="fa-solid fa-paint-roller"></i><span>Pintura</span></div>
+    <div class="nitem" id="n-rep" onclick="showPg('rep')"><i class="fa-solid fa-chart-line"></i><span>Reportes</span></div>
+    <div class="nitem" id="n-cfg" onclick="showPg('cfg')"><i class="fa-solid fa-gear"></i><span>Config</span></div>
+  </div>
+</div>
 
-    <!-- ══ TAB: CUBETAS ══ -->
-    <div class="tab-section active" id="tab-cubetas">
-      <div class="card">
-        <div class="card-title">ENTRADA DE CUBETAS</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo / Color de Pintura</label>
-            <input type="text" id="cub-tipo" placeholder="Ej: Blanco mate">
-          </div>
-          <div class="form-group">
-            <label>Cantidad de Cubetas</label>
-            <input type="number" id="cub-cant" min="1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Fecha de Entrada</label>
-            <input type="date" id="cub-fecha-in">
-          </div>
-          <div class="form-group">
-            <label>Proveedor / Nota</label>
-            <input type="text" id="cub-nota" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" onclick="addCubeta('in')">+ REGISTRAR ENTRADA</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">SALIDA DE CUBETAS (GASTO)</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo / Color de Pintura</label>
-            <input type="text" id="cub-tipo-out" placeholder="Ej: Blanco mate">
-          </div>
-          <div class="form-group">
-            <label>Cubetas Gastadas</label>
-            <input type="number" id="cub-cant-out" min="1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Fecha de Salida</label>
-            <input type="date" id="cub-fecha-out">
-          </div>
-          <div class="form-group">
-            <label>Motivo / Nota</label>
-            <input type="text" id="cub-nota-out" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" style="background:var(--accent2);" onclick="addCubeta('out')">+ REGISTRAR GASTO</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">HISTORIAL DE CUBETAS</div>
-        <div class="filter-row">
-          <div class="form-group"><label>Desde</label><input type="date" id="f-cub-d1"></div>
-          <div class="form-group"><label>Hasta</label><input type="date" id="f-cub-d2"></div>
-          <div class="form-group"><label>Tipo</label><input type="text" id="f-cub-tipo" placeholder="Filtrar..."></div>
-          <button class="btn-filter" onclick="renderCubetas()">FILTRAR</button>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
-            <tbody id="tbl-cubetas"></tbody>
-          </table>
-        </div>
-        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);">
-          Stock actual estimado: <span id="stock-cubetas" style="color:var(--accent);font-size:16px;font-weight:600;"></span> cubetas
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: ESTAÑONES SOLVENTE ══ -->
-    <div class="tab-section" id="tab-estanon">
-      <div class="card">
-        <div class="card-title">ENTRADA DE ESTAÑÓN / BARRIL DE SOLVENTE</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo de Solvente</label>
-            <input type="text" id="est-tipo" placeholder="Ej: Thinner, Aguarrás">
-          </div>
-          <div class="form-group">
-            <label>Cantidad de Estañones</label>
-            <input type="number" id="est-cant" min="1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Fecha de Entrada</label>
-            <input type="date" id="est-fecha">
-          </div>
-          <div class="form-group">
-            <label>Nota</label>
-            <input type="text" id="est-nota" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" onclick="addEstanon('in')">+ REGISTRAR ENTRADA</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">GASTO DE SOLVENTE — CUBETAS USADAS DEL ESTAÑÓN</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo de Solvente</label>
-            <input type="text" id="est-tipo-out" placeholder="Ej: Thinner">
-          </div>
-          <div class="form-group">
-            <label>Cubetas Gastadas del Estañón</label>
-            <input type="number" id="est-cub-out" min="1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Estañones Lavados (con cubeta)</label>
-            <input type="number" id="est-lav" min="0" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Fecha de Uso</label>
-            <input type="date" id="est-fecha-out">
-          </div>
-          <div class="form-group">
-            <label>Nota</label>
-            <input type="text" id="est-nota-out" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" style="background:var(--accent2);" onclick="addEstanon('out')">+ REGISTRAR GASTO</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">HISTORIAL ESTAÑONES</div>
-        <div class="filter-row">
-          <div class="form-group"><label>Desde</label><input type="date" id="f-est-d1"></div>
-          <div class="form-group"><label>Hasta</label><input type="date" id="f-est-d2"></div>
-          <button class="btn-filter" onclick="renderEstanones()">FILTRAR</button>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Estañones</th><th>Cubetas Usadas</th><th>Estañones Lavados</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
-            <tbody id="tbl-estanones"></tbody>
-          </table>
-        </div>
-        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);">
-          Total cubetas gastadas del solvente: <span id="stock-solvente" style="color:var(--accent);font-size:16px;font-weight:600;"></span> |
-          Estañones lavados: <span id="stock-lavados" style="color:var(--blue);font-size:16px;font-weight:600;"></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: TRAPOS ══ -->
-    <div class="tab-section" id="tab-trapos">
-      <div class="card">
-        <div class="card-title">ENTRADA DE TRAPOS</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo / Descripción</label>
-            <input type="text" id="tra-tipo" placeholder="Ej: Trapo industrial">
-          </div>
-          <div class="form-group">
-            <label>Cantidad (kg / unidades)</label>
-            <input type="number" id="tra-cant" min="0" step="0.1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Unidad</label>
-            <select id="tra-unidad">
-              <option value="kg">Kilogramos (kg)</option>
-              <option value="unidades">Unidades</option>
-              <option value="rollos">Rollos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Fecha de Entrada</label>
-            <input type="date" id="tra-fecha">
-          </div>
-          <div class="form-group">
-            <label>Nota</label>
-            <input type="text" id="tra-nota" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" onclick="addTrapo('in')">+ REGISTRAR ENTRADA</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">GASTO DE TRAPOS — PORCENTAJE USADO</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Tipo / Descripción</label>
-            <input type="text" id="tra-tipo-out" placeholder="Ej: Trapo industrial">
-          </div>
-          <div class="form-group">
-            <label>% Gastado</label>
-            <input type="number" id="tra-pct" min="1" max="100" placeholder="Ej: 25">
-          </div>
-          <div class="form-group">
-            <label>Cantidad Gastada (opcional)</label>
-            <input type="number" id="tra-cant-out" min="0" step="0.1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Unidad</label>
-            <select id="tra-unidad-out">
-              <option value="kg">Kilogramos (kg)</option>
-              <option value="unidades">Unidades</option>
-              <option value="rollos">Rollos</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Fecha de Gasto</label>
-            <input type="date" id="tra-fecha-out">
-          </div>
-          <div class="form-group">
-            <label>Nota</label>
-            <input type="text" id="tra-nota-out" placeholder="Opcional">
-          </div>
-        </div>
-        <button class="btn-add" style="background:var(--accent2);" onclick="addTrapo('out')">+ REGISTRAR GASTO</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">HISTORIAL DE TRAPOS</div>
-        <div class="filter-row">
-          <div class="form-group"><label>Desde</label><input type="date" id="f-tra-d1"></div>
-          <div class="form-group"><label>Hasta</label><input type="date" id="f-tra-d2"></div>
-          <button class="btn-filter" onclick="renderTrapos()">FILTRAR</button>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Unidad</th><th>% Usado</th><th>Mov.</th><th>Nota</th><th></th></tr></thead>
-            <tbody id="tbl-trapos"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: PINTADO POR DÍA ══ -->
-    <div class="tab-section" id="tab-pintado">
-      <div class="card">
-        <div class="card-title">REGISTRO DIARIO DE PINTADO</div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label>Fecha</label>
-            <input type="date" id="pin-fecha">
-          </div>
-          <div class="form-group">
-            <label>Área / Zona Pintada</label>
-            <input type="text" id="pin-area" placeholder="Ej: Cuarto 3, Pasillo Norte">
-          </div>
-          <div class="form-group">
-            <label>Tipo / Color de Pintura</label>
-            <input type="text" id="pin-tipo" placeholder="Ej: Blanco mate">
-          </div>
-          <div class="form-group">
-            <label>Cubetas Usadas en Pintado</label>
-            <input type="number" id="pin-cubetas" min="0" step="0.1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Estañones Pintados</label>
-            <input type="number" id="pin-estanones" min="0" step="1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Trabajadores</label>
-            <input type="number" id="pin-trabajadores" min="0" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Metros² (opcional)</label>
-            <input type="number" id="pin-m2" min="0" step="0.1" placeholder="0">
-          </div>
-          <div class="form-group">
-            <label>Nota</label>
-            <input type="text" id="pin-nota" placeholder="Observaciones">
-          </div>
-        </div>
-        <button class="btn-add" onclick="addPintado()">+ REGISTRAR DÍA</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">HISTORIAL PINTADO</div>
-        <div class="filter-row">
-          <div class="form-group"><label>Desde</label><input type="date" id="f-pin-d1"></div>
-          <div class="form-group"><label>Hasta</label><input type="date" id="f-pin-d2"></div>
-          <div class="form-group"><label>Área</label><input type="text" id="f-pin-area" placeholder="Filtrar..."></div>
-          <button class="btn-filter" onclick="renderPintado()">FILTRAR</button>
-        </div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Área</th><th>Tipo Pintura</th><th>Cubetas</th><th>Estañones</th><th>Trabajadores</th><th>m²</th><th>Nota</th><th></th></tr></thead>
-            <tbody id="tbl-pintado"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ══ TAB: REPORTE ══ -->
-    <div class="tab-section" id="tab-reporte">
-      <div class="card">
-        <div class="card-title">FILTRO DE REPORTE</div>
-        <div class="filter-row">
-          <div class="form-group"><label>Desde</label><input type="date" id="r-d1"></div>
-          <div class="form-group"><label>Hasta</label><input type="date" id="r-d2"></div>
-          <button class="btn-filter" onclick="genReporte()">GENERAR</button>
-          <button class="btn-report" onclick="window.print()">🖨 IMPRIMIR</button>
-        </div>
-      </div>
-
-      <div class="stat-grid" id="stat-grid"></div>
-
-      <div class="card" id="rep-cubetas-card">
-        <div class="card-title">CUBETAS DE PINTURA</div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Movimiento</th><th>Nota</th></tr></thead>
-            <tbody id="rep-tbl-cubetas"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" id="rep-estanon-card">
-        <div class="card-title">ESTAÑONES DE SOLVENTE</div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Estañones</th><th>Cubetas Usadas</th><th>Estañones Lavados</th><th>Movimiento</th></tr></thead>
-            <tbody id="rep-tbl-estanon"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" id="rep-pintado-card">
-        <div class="card-title">PINTADO POR DÍAS</div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Área</th><th>Tipo Pintura</th><th>Cubetas</th><th>Estañones</th><th>Trabajadores</th><th>m²</th></tr></thead>
-            <tbody id="rep-tbl-pintado"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="card" id="rep-trapos-card">
-        <div class="card-title">TRAPOS</div>
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr><th>Fecha</th><th>Tipo</th><th>Cantidad</th><th>Unidad</th><th>% Usado</th><th>Movimiento</th></tr></thead>
-            <tbody id="rep-tbl-trapos"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-  </div><!-- /content -->
-</div><!-- /app -->
-
-<div id="toast">✓ Guardado correctamente</div>
+<div class="toast" id="toast"></div>
+<div class="mbg" id="mbg" onclick="closeMod()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhandle"></div>
+    <h3 id="m-title"></h3>
+    <div id="m-body" style="color:var(--text2);margin-bottom:16px;font-size:13px;overflow-x:auto;"></div>
+    <button class="btn danger" id="m-ok"><i class="fa-solid fa-check"></i> Confirmar</button>
+    <button class="btn sm" style="background:var(--panel);border:1px solid var(--border);color:var(--text2);margin-top:8px;" onclick="closeMod()"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+  </div>
+</div>
 
 <script>
-/* ════════════════════════════════════
-   DATA LAYER
-════════════════════════════════════ */
-let DB = {
-  users: [{ user: "JEFFRY", pass: "JEFFRY123" }],
-  cubetas: [],
-  estanones_solvente: [],
-  trapos: [],
-  pinturas_pintadas: []
-};
-let currentUser = null;
+/* ══════════════════════════════════════════
+   JSONBIN CONFIG — CAMBIAR ESTOS VALORES
+   1. Ir a https://jsonbin.io → crear cuenta gratis
+   2. Crear un Bin con el JSON inicial de abajo
+   3. Copiar BIN_ID y API_KEY aquí
+══════════════════════════════════════════ */
+const BIN_ID  = "$2a$10$fXvRYIGIc8JKtqvJZnvLyeV1UnjX2ky6mw.3OsiXeDB12FK93lZna";
+const API_KEY = "$2a$10$I0ZO4Bj9GLbni1OuUiSTOOIVQIOhqIFalk/YUDcy2/q3Sb2MQTkK.";
+const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-/* ─── File load on startup ─── */
-document.getElementById('file-loader').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(ev) {
-    try {
-      const parsed = JSON.parse(ev.target.result);
-      DB = Object.assign(DB, parsed);
-      showToast('✓ data.txt cargado correctamente');
-    } catch(err) {
-      alert('Error leyendo data.txt: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-});
-
-function saveData() {
-  const json = JSON.stringify(DB, null, 2);
-  const blob = new Blob([json], { type: 'text/plain' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'data.txt';
-  a.click();
-  showToast('💾 data.txt guardado');
+/* JSON INICIAL PARA EL BIN:
+{
+  "users":[{"user":"JEFFRY","pass":"JEFFRY123"}],
+  "config":{"estPorCub":10,"lavPorCub":5,"maxCubEst":20,"maxEsp":20},
+  "inventario":[],"especiales":[],"cubetas":[],
+  "solvente":[],"trapos":[],"trabajo":[]
 }
+*/
 
-/* ════════════════════════════════════
-   AUTH
-════════════════════════════════════ */
-function doLogin() {
-  const u = document.getElementById('inp-user').value.trim();
-  const p = document.getElementById('inp-pass').value.trim();
-  const found = DB.users.find(x => x.user === u && x.pass === p);
-  if (found) {
-    currentUser = u;
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    document.getElementById('user-label').textContent = '👤 ' + u;
-    setDefaultDates();
-    renderAll();
-  } else {
-    document.getElementById('login-error').textContent = '✗ Usuario o contraseña incorrectos';
+/* ══════════════════════════════════════════
+   DATABASE
+══════════════════════════════════════════ */
+let DB = {
+  users:[{user:"JEFFRY",pass:"JEFFRY123"}],
+  config:{estPorCub:10,lavPorCub:5,maxCubEst:20,maxEsp:20},
+  inventario:[],especiales:[],cubetas:[],solvente:[],trapos:[],trabajo:[]
+};
+let currentUser=null, chWeek=null, lastSaved=null, saveTimer=null;
+
+/* ── Cloud Load ── */
+async function loadData(forceToast=false){
+  setSyncState('syncing');
+  setStatus('Conectando con base de datos...');
+  try{
+    const res = await fetch(BIN_URL+'/latest',{
+      headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':false}
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    // jsonbin wraps in {record:{...}} — handle both
+    DB = data.record || data;
+    if(!DB.users) DB.users=[{user:"JEFFRY",pass:"JEFFRY123"}];
+    if(!DB.config) DB.config={estPorCub:10,lavPorCub:5,maxCubEst:20,maxEsp:20};
+    ['inventario','especiales','cubetas','solvente','trapos','trabajo'].forEach(k=>{ if(!DB[k]) DB[k]=[]; });
+    lastSaved = JSON.stringify(DB);
+    setSyncState('ok');
+    if(forceToast) showToast('✓ Datos actualizados','ok');
+    hideLoading();
+    showLogin();
+  } catch(err){
+    setSyncState('error');
+    setStatus('Error: '+err.message+'. Verificar BIN_ID y API_KEY.');
+    // Si el BIN no está configurado, igual mostrar login con datos vacíos
+    hideLoading();
+    showLogin();
+    showToast('⚠ Sin conexión — datos locales','wa');
   }
 }
-document.getElementById('inp-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
-function doLogout() {
-  currentUser = null;
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('inp-user').value = '';
-  document.getElementById('inp-pass').value = '';
-  document.getElementById('login-error').textContent = '';
+/* ── Cloud Save ── */
+async function saveData(forceToast=false){
+  setSyncState('syncing');
+  try{
+    const res = await fetch(BIN_URL,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
+      body:JSON.stringify(DB)
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    lastSaved = JSON.stringify(DB);
+    setSyncState('ok');
+    updateSyncPanel();
+    if(forceToast) showToast('✓ Guardado en la nube','ok');
+  } catch(err){
+    setSyncState('error');
+    showToast('✗ Error al guardar: '+err.message,'er');
+  }
 }
 
-/* ════════════════════════════════════
-   TABS
-════════════════════════════════════ */
-function switchTab(name) {
-  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-  renderAll();
+/* Auto-save 30s after any change */
+function scheduleSave(){
+  if(saveTimer) clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>saveData(false),30000);
 }
 
-/* ════════════════════════════════════
+function setSyncState(state){
+  const dot=document.getElementById('sync-dot');
+  if(!dot) return;
+  dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
+}
+function setStatus(msg){
+  const el=document.getElementById('loading-status');
+  if(el) el.textContent=msg;
+}
+function hideLoading(){
+  document.getElementById('loading-screen').style.display='none';
+}
+function showLogin(){
+  document.getElementById('login').classList.add('on');
+}
+function updateSyncPanel(){
+  const el=document.getElementById('sync-status-panel');
+  if(!el) return;
+  el.innerHTML=`<div style="font-size:13px;color:var(--text2);padding:8px 0;">
+    <div><i class="fa-solid fa-cloud" style="color:var(--accent);margin-right:6px;"></i>JSONBin.io — datos en la nube</div>
+    <div style="margin-top:4px;font-size:11px;color:var(--muted);">BIN ID: ${BIN_ID.slice(0,8)}... | Último guardado: ${lastSaved?new Date().toLocaleTimeString('es-CR'):'—'}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   AUTH
+══════════════════════════════════════════ */
+function doLogin(){
+  const u=gv('lu').trim(), p=gv('lp').trim();
+  const ok=DB.users.find(x=>x.user===u&&x.pass===p);
+  if(ok){
+    currentUser=u;
+    document.getElementById('login').classList.remove('on');
+    document.getElementById('app').classList.add('on');
+    document.getElementById('d-user').textContent=u;
+    setDates(); updateLists(); renderDash(); renderSolActivos(); renderTraLotes(); updateSyncPanel();
+  } else {
+    document.getElementById('lerr').style.display='block';
+    document.getElementById('lermsg').textContent='Usuario o contraseña incorrectos';
+  }
+}
+document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('lu').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function doLogout(){
+  saveData(false);
+  currentUser=null;
+  document.getElementById('app').classList.remove('on');
+  document.getElementById('login').classList.add('on');
+  gs('lu','');gs('lp','');
+  document.getElementById('lerr').style.display='none';
+}
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════ */
+function showPg(name){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('act'));
+  document.getElementById('pg-'+name).classList.add('act');
+  document.getElementById('n-'+name).classList.add('act');
+  document.getElementById('sc').scrollTop=0;
+  if(name==='dash') renderDash();
+  if(name==='inv'){renderInvStock();updateLists();}
+  if(name==='esp'){renderEspLista();renderEspPasivo();updateEspSel();}
+  if(name==='pin'){renderCubetas();renderSolvente();renderSolActivos();renderTraLotes();renderTrabajo();}
+  if(name==='rep') updateRepCats();
+  if(name==='cfg'){loadCfg();renderCfgPromedios();renderUsers();updateSyncPanel();}
+}
+
+function stab(pg,name,el){
+  const map={inv:['stock','entrada','salida','hist'],esp:['lista','salida','pasivo'],
+    pin:['cubetas','solvente','trapos','trabajo'],rep:['inv','gastos','pin','esp']};
+  (map[pg]||[]).forEach(id=>{
+    const target=document.getElementById(pg+'-'+id)||document.getElementById('rep-'+id)||
+                 document.getElementById('pin-'+id)||document.getElementById('esp-'+id)||
+                 document.getElementById('inv-'+id);
+    if(target) target.style.display='none';
+  });
+  const show=document.getElementById(pg+'-'+name)||document.getElementById('rep-'+name)||
+             document.getElementById('pin-'+name)||document.getElementById('esp-'+name)||
+             document.getElementById('inv-'+name);
+  if(show) show.style.display='block';
+  document.querySelectorAll('#stabs-'+pg+' .stab').forEach(s=>s.classList.remove('act'));
+  el.classList.add('act');
+  if(pg==='inv'&&name==='stock') renderInvStock();
+  if(pg==='inv'&&name==='hist') renderInvHist();
+  if(pg==='esp'&&name==='lista'){renderEspLista();updateEspSel();}
+  if(pg==='esp'&&name==='pasivo') renderEspPasivo();
+  if(pg==='pin'&&name==='cubetas') renderCubetas();
+  if(pg==='pin'&&name==='solvente'){renderSolvente();renderSolActivos();}
+  if(pg==='pin'&&name==='trapos'){renderTraLotes();renderTraHist();}
+  if(pg==='pin'&&name==='trabajo') renderTrabajo();
+}
+
+/* ══════════════════════════════════════════
    HELPERS
-════════════════════════════════════ */
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-function today() { return new Date().toISOString().split('T')[0]; }
-function fmt(d) { if (!d) return '—'; const [y,m,dd] = d.split('-'); return `${dd}/${m}/${y}`; }
-function inRange(date, d1, d2) {
-  if (d1 && date < d1) return false;
-  if (d2 && date > d2) return false;
-  return true;
+══════════════════════════════════════════ */
+const gv=id=>{const e=document.getElementById(id);return e?e.value:'';};
+const gs=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
+const s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const today=()=>new Date().toISOString().split('T')[0];
+const fmt=d=>{if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;};
+const inR=(d,d1,d2)=>(!d1||d>=d1)&&(!d2||d<=d2);
+const n=id=>{const e=document.getElementById(id);return e?parseFloat(e.value)||0:0;};
+function emptyR(c){return`<tr><td colspan="${c}" style="text-align:center;padding:24px;color:var(--muted);"><i class="fa-solid fa-inbox"></i> Sin registros</td></tr>`;}
+function changed(){scheduleSave();}
+
+function setDates(){
+  const t=today();
+  ['in-fecha','out-fecha','cub-fin','cub-fout','sol-fin','sol-fout',
+   'tra-fin','tra-fout','tr-fecha','esp-fecha'].forEach(id=>gs(id,t));
+  document.getElementById('d-date').textContent=new Date().toLocaleDateString('es-CR',
+    {weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
 }
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg || '✓ Registrado';
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2400);
+
+function showToast(msg,type='in'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast on '+type;
+  setTimeout(()=>t.className='toast',2800);
 }
-function setDefaultDates() {
-  const t = today();
-  ['cub-fecha-in','cub-fecha-out','est-fecha','est-fecha-out','tra-fecha','tra-fecha-out','pin-fecha'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = t;
+function openMod(title,body,cb,isHtml=false){
+  document.getElementById('m-title').textContent=title;
+  const mb=document.getElementById('m-body');
+  if(isHtml) mb.innerHTML=body; else mb.textContent=body;
+  document.getElementById('m-ok').onclick=()=>{cb();closeMod();};
+  document.getElementById('m-ok').style.display='flex';
+  document.getElementById('mbg').classList.add('on');
+}
+function closeMod(){document.getElementById('mbg').classList.remove('on');}
+
+/* SPEC CHECKBOX */
+document.getElementById('in-spec').addEventListener('change',function(){
+  document.getElementById('spec-fields').style.display=this.checked?'block':'none';
+});
+/* ESP SEL */
+document.getElementById('esp-sel-prod').addEventListener('change',function(){showEspInfo(this.value);});
+document.getElementById('sol-sel').addEventListener('change',function(){showSolInfo(this.value);});
+document.getElementById('tra-sel-lot').addEventListener('change',function(){showTraInfo(this.value);});
+
+function showEspInfo(id){
+  const p=DB.especiales.find(x=>x.id===id&&x.activo);
+  const el=document.getElementById('esp-info-prod');
+  const w=document.getElementById('esp-limite-warn');
+  if(!p){el.innerHTML='';w.style.display='none';return;}
+  const max=p.maxCub||DB.config.maxEsp;
+  const pct=max>0?Math.min(100,(p.cubUsadas||0)/max*100):0;
+  const cls=pct>=90?'low':pct>=70?'warn':'ok';
+  el.innerHTML=`<div style="background:rgba(186,104,200,.08);border:1px solid rgba(186,104,200,.2);border-radius:var(--rs);padding:12px;margin-bottom:10px;">
+    <div style="font-size:12px;color:var(--purple);font-weight:700;">[${p.codAudit}] ${p.nombre}</div>
+    <div style="font-size:11px;color:var(--text2);">Tipo: ${p.tipo||'—'} | Resp: ${p.resp||'—'}</div>
+    <div style="font-size:11px;margin-top:4px;">Cubetas: <strong style="color:var(--accent)">${p.cubUsadas||0}</strong> / ${max}</div>
+    <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div></div>`;
+  if(pct>=90){
+    w.style.display='flex';
+    document.getElementById('esp-warn-txt').textContent=pct>=100?'Límite alcanzado — se moverá a pasivo al guardar':'Cerca del límite ('+pct.toFixed(0)+'%)';
+  } else w.style.display='none';
+}
+
+function showSolInfo(id){
+  const s=DB.solvente.find(x=>x.id===id&&x.activo);
+  const el=document.getElementById('sol-info');
+  const w=document.getElementById('sol-lim-warn');
+  if(!s){el.innerHTML='';w.style.display='none';return;}
+  const max=DB.config.maxCubEst;
+  const pct=max>0?Math.min(100,(s.cubUsadas||0)/max*100):0;
+  const cls=pct>=90?'low':pct>=70?'warn':'ok';
+  const tc=s.tipo==='thinner'?'var(--accent)':'var(--accent2)';
+  el.innerHTML=`<div style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);border-radius:var(--rs);padding:12px;margin-bottom:10px;">
+    <div style="font-size:12px;color:${tc};font-weight:700;">${s.tipo.toUpperCase()} — ${s.cod}</div>
+    <div style="font-size:11px;color:var(--text2);">Cubetas: <strong style="color:var(--accent)">${s.cubUsadas||0}</strong> / ${max} | Lavados: ${s.lavTotal||0}</div>
+    <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div></div>`;
+  if(pct>=90){w.style.display='flex';w.textContent=pct>=100?'⚠ Límite alcanzado — registre y marque terminado':'⚠ Cerca del límite ('+pct.toFixed(0)+'%)';}
+  else w.style.display='none';
+}
+
+function showTraInfo(id){
+  const t=DB.trapos.find(x=>x.id===id);
+  const el=document.getElementById('tra-lot-info');
+  if(!t){el.innerHTML='';return;}
+  const pct=t.pctUsado||0;
+  const cls=pct>=90?'low':pct>=70?'warn':'ok';
+  el.innerHTML=`<div style="background:rgba(255,152,0,.07);border:1px solid rgba(255,152,0,.2);border-radius:var(--rs);padding:12px;margin-bottom:8px;">
+    <div style="font-size:12px;color:var(--orange);font-weight:700;">${t.tipo} — ID: ${t.id.slice(-6)}</div>
+    <div style="font-size:11px;color:var(--text2);">${t.cant} ${t.uni} | Entrada: ${fmt(t.fecha)}</div>
+    <div style="font-size:11px;margin-top:4px;">Usado: <strong style="color:var(--orange)">${pct.toFixed(1)}%</strong></div>
+    <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
+    ${pct>=100?'<div style="font-size:11px;color:var(--red);margin-top:4px;">🔴 Lote agotado</div>':''}</div>`;
+}
+
+/* ══════════════════════════════════════════
+   LISTAS
+══════════════════════════════════════════ */
+function updateLists(){
+  const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];
+  gs2dl('dl-cat',cats);
+  const prods=[...new Set(DB.inventario.filter(r=>r.mov==='ENTRADA'&&!r.especial).map(r=>r.nombre))];
+  gs2dl('dl-prod',prods);
+  const ct=[...new Set(DB.cubetas.map(r=>r.tipo))];
+  ['dl-cub-t','dl-cub-t2','dl-cub-t3'].forEach(id=>gs2dl(id,ct));
+  ['ri-cat'].forEach(id=>{
+    const e=document.getElementById(id);if(!e)return;
+    const cur=e.value;
+    e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+    e.value=cur;
+  });
+}
+function gs2dl(id,arr){const e=document.getElementById(id);if(e)e.innerHTML=arr.map(a=>`<option value="${a}">`).join('');}
+function updateRepCats(){const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];const e=document.getElementById('ri-cat');if(e)e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');}
+function updateEspSel(){
+  const a=DB.especiales.filter(p=>p.activo);
+  const e=document.getElementById('esp-sel-prod');
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre}</option>`).join('');
+  updateSolSel();
+}
+function updateSolSel(){
+  const a=DB.solvente.filter(s=>s.activo);
+  const e=document.getElementById('sol-sel');
+  const max=DB.config.maxCubEst;
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(s=>`<option value="${s.id}">[${s.cod}] ${s.tipo.toUpperCase()} (${s.cubUsadas||0}/${max} cub.)</option>`).join('');
+}
+function updateTraLotSel(){
+  const a=DB.trapos.filter(t=>t.mov==='ENTRADA'&&(t.pctUsado||0)<100);
+  const e=document.getElementById('tra-sel-lot');
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(t=>`<option value="${t.id}">[${t.id.slice(-6)}] ${t.tipo} (${(t.pctUsado||0).toFixed(0)}% usado)</option>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   INVENTARIO GENERAL
+══════════════════════════════════════════ */
+function addMovInv(mov){
+  if(mov==='in'){
+    const nom=gv('in-nom').trim(),cat=gv('in-cat').trim(),cant=n('in-cant'),uni=gv('in-uni'),
+          fecha=gv('in-fecha'),min=n('in-min'),prov=gv('in-prov').trim(),nota=gv('in-nota').trim();
+    const especial=document.getElementById('in-spec').checked;
+    if(!nom||!cant||!fecha){showToast('Complete los campos requeridos','er');return;}
+    if(especial){
+      const cod=gv('in-spec-cod').trim(),resp=gv('in-spec-resp').trim(),
+            maxCub=n('in-spec-max'),tipo=gv('in-spec-tipo').trim(),obs=gv('in-spec-obs').trim();
+      if(!cod){showToast('Código de auditoría requerido','er');return;}
+      DB.especiales.push({id:uid(),nombre:nom,cat,cant,uni,fecha,codAudit:cod,resp,maxCub,tipo,obs,
+        activo:true,cubUsadas:0,movimientos:[{fecha,tipo:'ENTRADA',cant,nota:'Entrada inicial. '+obs}]});
+      DB.inventario.push({id:uid(),nombre:nom,cat,cant,uni,fecha,min,prov,nota:'ESPECIAL:'+cod,mov:'ENTRADA',especial:true});
+      gs('in-spec-cod','');gs('in-spec-resp','');gs('in-spec-max','');gs('in-spec-tipo','');gs('in-spec-obs','');
+      document.getElementById('in-spec').checked=false;
+      document.getElementById('spec-fields').style.display='none';
+    } else {
+      DB.inventario.push({id:uid(),nombre:nom,cat,cant,uni,fecha,min,prov,nota,mov:'ENTRADA',especial:false});
+    }
+    ['in-nom','in-cat','in-cant','in-min','in-prov','in-nota'].forEach(id=>gs(id,''));
+    updateLists();showToast('✓ Entrada registrada','ok');renderInvStock();changed();
+  } else {
+    const nom=gv('out-nom').trim(),cant=n('out-cant'),fecha=gv('out-fecha'),mot=gv('out-mot'),nota=gv('out-nota').trim();
+    if(!nom||!cant||!fecha){showToast('Complete los campos requeridos','er');return;}
+    const esEsp=DB.especiales.find(p=>p.nombre.toLowerCase()===nom.toLowerCase()&&p.activo);
+    if(esEsp){showToast('⚠ Es producto especial — use sección Especiales','wa');return;}
+    const prev=DB.inventario.filter(r=>r.nombre.toLowerCase()===nom.toLowerCase()&&r.mov==='ENTRADA');
+    const uni=prev.length?prev[prev.length-1].uni:'unidades';
+    DB.inventario.push({id:uid(),nombre:nom,cat:prev.length?prev[0].cat:'',cant,uni,fecha,mot,nota,mov:'SALIDA',especial:false});
+    ['out-nom','out-cant','out-nota'].forEach(id=>gs(id,''));
+    showToast('✓ Salida registrada','ok');renderInvStock();renderInvHist();changed();
+  }
+}
+
+function getStock(){
+  const s={};
+  DB.inventario.filter(r=>!r.especial).forEach(r=>{
+    const k=r.nombre.toLowerCase();
+    if(!s[k])s[k]={nombre:r.nombre,cat:r.cat||'',cant:0,uni:r.uni||'unid',min:r.min||0};
+    s[k].cant+=r.mov==='ENTRADA'?r.cant:-r.cant;
+    if(r.min)s[k].min=r.min;if(r.uni)s[k].uni=r.uni;if(r.cat)s[k].cat=r.cat;
+  });
+  return Object.values(s).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+}
+
+function renderInvStock(){
+  const q=(gv('f-inv-q')||'').toLowerCase(), cf=gv('f-inv-cat');
+  const stock=getStock().filter(s=>(!q||s.nombre.toLowerCase().includes(q)||s.cat.toLowerCase().includes(q))&&(!cf||s.cat===cf));
+  const el=document.getElementById('inv-stock');
+  if(!stock.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-box-open"></i><p>Sin productos. Registre una entrada.</p></div>';return;}
+  el.innerHTML=stock.map(s=>{
+    const pct=s.min>0?Math.min(100,s.cant/s.min*100):100;
+    const cls=s.min>0?(s.cant<=s.min*.3?'low':s.cant<=s.min?'warn':'ok'):'ok';
+    const col=cls==='low'?'var(--red)':cls==='warn'?'var(--orange)':'var(--green)';
+    return`<div class="card" style="padding:14px;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:38px;height:38px;background:rgba(27,140,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">${catIco(s.cat)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.nombre}</div>
+          <div style="font-size:11px;color:var(--text2);">${s.cat||'Sin categoría'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:${col};">${s.cant.toFixed(2)}</div>
+          <div style="font-size:10px;color:var(--text2);">${s.uni}</div>
+        </div>
+      </div>
+      ${s.min>0?`<div class="pbar-bg" style="margin-top:8px;"><div class="pbar ${cls}" style="width:${pct}%"></div></div><div style="font-size:10px;color:var(--text2);margin-top:2px;">Mín: ${s.min} ${s.uni}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderInvHist(){
+  const d1=gv('fh-d1'),d2=gv('fh-d2');
+  const rows=DB.inventario.filter(r=>!r.especial&&inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-inv-hist').innerHTML=rows.length?rows.map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.nombre}</td>
+    <td>${r.cant} ${r.uni}</td>
+    <td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
+    <td style="font-size:11px;">${r.mot||r.nota||'—'}</td>
+    <td><button class="dbtn" onclick="delRec('inventario','${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(6);
+}
+function catIco(cat){
+  const c=(cat||'').toLowerCase();
+  if(c.includes('pintura')||c.includes('color'))return'<i class="fa-solid fa-palette" style="color:var(--accent);"></i>';
+  if(c.includes('herr'))return'<i class="fa-solid fa-wrench" style="color:var(--orange);"></i>';
+  if(c.includes('elec'))return'<i class="fa-solid fa-bolt" style="color:var(--yellow);"></i>';
+  return'<i class="fa-solid fa-box" style="color:var(--accent2);"></i>';
+}
+
+/* ══════════════════════════════════════════
+   PRODUCTOS ESPECIALES
+══════════════════════════════════════════ */
+function addEspSalida(){
+  const prodId=gv('esp-sel-prod'),fecha=gv('esp-fecha');
+  const cubetas=n('esp-cubetas'),estanones=n('esp-estanones'),color=gv('esp-color').trim();
+  const lavados=n('esp-lavados'),lavador=gv('esp-lavador').trim(),revisor=gv('esp-revisor').trim();
+  const tipoEnv=gv('esp-tipo-env').trim(),nota=gv('esp-nota-s').trim();
+  if(!prodId||!fecha){showToast('Seleccione producto y fecha','er');return;}
+  const prod=DB.especiales.find(p=>p.id===prodId&&p.activo);
+  if(!prod){showToast('Producto no encontrado','er');return;}
+  const max=prod.maxCub||DB.config.maxEsp;
+  prod.cubUsadas=(prod.cubUsadas||0)+cubetas;
+  prod.movimientos.push({fecha,tipo:'SALIDA',cubetas,estanones,color,lavados,lavador,revisor,tipoEnv,nota,cubetasTotal:prod.cubUsadas});
+  if(max>0&&prod.cubUsadas>=max){
+    prod.activo=false;prod.fechaFin=fecha;prod.motivoFin='Límite máximo alcanzado automáticamente';
+    showToast('⚠ Producto alcanzó el límite — pasado al historial','wa');
+  }
+  ['esp-cubetas','esp-estanones','esp-color','esp-lavados','esp-lavador','esp-revisor','esp-tipo-env','esp-nota-s'].forEach(id=>gs(id,''));
+  gs('esp-sel-prod','');document.getElementById('esp-info-prod').innerHTML='';
+  document.getElementById('esp-limite-warn').style.display='none';
+  updateEspSel();showToast('✓ Salida especial registrada','ok');
+  renderEspLista();changed();
+}
+
+function terminarEspManual(id){
+  openMod('Marcar como Terminado','¿Confirma? El producto pasará al inventario pasivo. Puede reactivarse.',()=>{
+    const p=DB.especiales.find(x=>x.id===id);
+    if(p){p.activo=false;p.fechaFin=today();p.motivoFin='Marcado manualmente';}
+    updateEspSel();renderEspLista();renderEspPasivo();showToast('✓ Producto finalizado','ok');changed();
+  });
+}
+function reactivarEsp(id){
+  const p=DB.especiales.find(x=>x.id===id);
+  if(p){p.activo=true;p.fechaFin=null;p.motivoFin=null;}
+  updateEspSel();renderEspLista();renderEspPasivo();showToast('✓ Reactivado','ok');changed();
+}
+
+function renderEspLista(){
+  const a=DB.especiales.filter(p=>p.activo);
+  const el=document.getElementById('esp-lista');
+  if(!a.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-star"></i><p>Sin especiales activos. Regístrelos en Inventario → Entrada marcando "Especial".</p></div>';return;}
+  el.innerHTML=a.map(p=>{
+    const max=p.maxCub||DB.config.maxEsp;
+    const pct=max>0?Math.min(100,(p.cubUsadas||0)/max*100):0;
+    const cls=pct>=90?'low':pct>=70?'warn':'ok';
+    const last=p.movimientos.filter(m=>m.tipo==='SALIDA').slice(-1)[0];
+    return`<div class="est-card act-est">
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
+        <div style="flex:1;">
+          <div style="font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#fff;">${p.nombre}</div>
+          <div style="font-size:11px;color:var(--purple);"><i class="fa-solid fa-star"></i> ${p.codAudit} | ${p.tipo||'—'} | Resp: ${p.resp||'—'}</div>
+          <div style="font-size:11px;color:var(--text2);">Entrada: ${fmt(p.fecha)}</div>
+        </div>
+        <span class="badge b-bl pulsing"><i class="fa-solid fa-circle"></i> ACTIVO</span>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">Cubetas: <strong style="color:var(--accent)">${p.cubUsadas||0}</strong> / ${max}</div>
+      <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
+      ${last?`<div style="font-size:11px;color:var(--text2);margin-top:6px;">Último: ${fmt(last.fecha)} — ${last.cubetas||0} cub. | ${last.estanones||0} est. | Color: ${last.color||'—'} | Lav: ${last.lavados||0}</div>`:''}
+      <div style="margin-top:10px;display:flex;gap:6px;">
+        <button class="btn danger sm" style="margin-top:0;flex:1;font-size:12px;padding:8px;" onclick="terminarEspManual('${p.id}')"><i class="fa-solid fa-flag-checkered"></i> Marcar Terminado</button>
+        <button class="ebtn" onclick="verMovEsp('${p.id}')"><i class="fa-solid fa-list"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEspPasivo(){
+  const p=DB.especiales.filter(x=>!x.activo);
+  const el=document.getElementById('esp-pasivo-list');
+  if(!p.length){el.innerHTML='<div class="empty" style="padding:20px;"><i class="fa-solid fa-archive"></i><p>Sin historial</p></div>';return;}
+  el.innerHTML=p.map(x=>{
+    const max=x.maxCub||DB.config.maxEsp;
+    return`<div class="est-card done-est">
+      <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
+        <div style="flex:1;">
+          <div style="font-weight:700;color:#fff;">${x.nombre}</div>
+          <div style="font-size:11px;color:var(--purple);">${x.codAudit} | ${x.tipo||'—'}</div>
+          <div style="font-size:11px;color:var(--text2);">Entrada: ${fmt(x.fecha)} | Fin: ${fmt(x.fechaFin)}</div>
+          <div style="font-size:11px;color:var(--text2);">Cubetas: ${x.cubUsadas||0}/${max} | ${x.motivoFin||''}</div>
+        </div>
+        <span class="badge b-or">TERMINADO</span>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button class="btn primary sm" style="margin-top:0;flex:1;font-size:12px;padding:8px;" onclick="reactivarEsp('${x.id}')"><i class="fa-solid fa-rotate-left"></i> Reactivar</button>
+        <button class="ebtn" onclick="verMovEsp('${x.id}')"><i class="fa-solid fa-list"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function verMovEsp(id){
+  const p=DB.especiales.find(x=>x.id===id);if(!p)return;
+  const rows=p.movimientos.map(m=>`
+    <tr><td>${fmt(m.fecha)}</td>
+    <td><span class="badge ${m.tipo==='ENTRADA'?'b-in':'b-out'}">${m.tipo}</span></td>
+    <td>${m.cubetas||'—'}</td><td>${m.estanones||'—'}</td>
+    <td>${m.color||'—'}</td><td>${m.lavados||'—'}</td>
+    <td>${m.lavador||'—'}</td><td>${m.revisor||'—'}</td></tr>`).join('');
+  openMod('Movimientos: '+p.nombre,
+    `<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:400px;">
+    <thead><tr><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;letter-spacing:1px;text-align:left;">Fecha</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Tipo</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Cub.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Est.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Color</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Lav.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Lavador</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Revisor</th></tr></thead>
+    <tbody>${rows||emptyR(8)}</tbody></table>`,
+    ()=>{},true);
+  document.getElementById('m-ok').style.display='none';
+}
+
+/* ══════════════════════════════════════════
+   CUBETAS
+══════════════════════════════════════════ */
+function addCubeta(mov){
+  if(mov==='in'){
+    const tipo=gv('cub-tipo').trim(),cant=n('cub-cant'),fecha=gv('cub-fin'),prov=gv('cub-prov').trim();
+    if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
+    DB.cubetas.push({id:uid(),tipo,cant,fecha,mov:'ENTRADA',prov});
+    gs('cub-tipo','');gs('cub-cant','');gs('cub-prov','');
+    updateLists();
+  } else {
+    const tipo=gv('cub-tipo-o').trim(),cant=n('cub-cant-o'),fecha=gv('cub-fout'),nota=gv('cub-nota-o').trim();
+    if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
+    DB.cubetas.push({id:uid(),tipo,cant,fecha,mov:'GASTO',nota});
+    gs('cub-tipo-o','');gs('cub-cant-o','');gs('cub-nota-o','');
+  }
+  showToast('✓ Cubeta registrada','ok');renderCubetas();changed();
+}
+function renderCubetas(){
+  const d1=gv('fcub-d1'),d2=gv('fcub-d2');
+  const rows=DB.cubetas.filter(r=>inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-cub').innerHTML=rows.length?rows.map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.tipo}</td><td>${r.cant}</td>
+    <td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
+    <td style="font-size:11px;">${r.prov||r.nota||'—'}</td>
+    <td><button class="dbtn" onclick="delRec('cubetas','${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(6);
+  const ti=DB.cubetas.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+  const to=DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  s2('cub-stk',(ti-to).toFixed(1));s2('cub-tot',to.toFixed(1));
+}
+
+/* ══════════════════════════════════════════
+   SOLVENTE
+══════════════════════════════════════════ */
+function addSolvente(mov){
+  if(mov==='in'){
+    const tipo=gv('sol-tipo'),cod=gv('sol-cod').trim(),cant=n('sol-cant'),fecha=gv('sol-fin'),nota=gv('sol-nota').trim();
+    if(!cod||!cant||!fecha){showToast('Campos requeridos','er');return;}
+    for(let i=0;i<cant;i++){
+      DB.solvente.push({id:uid(),tipo,cod:cant>1?cod+'-'+(i+1):cod,fecha,nota,activo:true,cubUsadas:0,lavTotal:0,movimientos:[]});
+    }
+    gs('sol-cod','');gs('sol-cant','');gs('sol-nota','');
+    updateSolSel();showToast('✓ '+cant+' estañón(es) registrado(s)','ok');
+  } else {
+    const solId=gv('sol-sel'),fecha=gv('sol-fout');
+    const cubOut=n('sol-cub-out'),estPin=n('sol-est-pin'),color=gv('sol-color').trim();
+    const lavados=n('sol-lavados'),lavador=gv('sol-lavador').trim(),revisor=gv('sol-revisor').trim();
+    const tipoEnv=gv('sol-tipo-env').trim(),nota=gv('sol-nota-o').trim();
+    if(!solId||!fecha){showToast('Seleccione estañón y fecha','er');return;}
+    const sol=DB.solvente.find(s=>s.id===solId&&s.activo);
+    if(!sol){showToast('Estañón no encontrado','er');return;}
+    sol.cubUsadas=(sol.cubUsadas||0)+cubOut;
+    sol.lavTotal=(sol.lavTotal||0)+lavados;
+    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,nota,cubTotal:sol.cubUsadas});
+    const max=DB.config.maxCubEst;
+    if(max>0&&sol.cubUsadas>=max){sol.activo=false;sol.fechaFin=fecha;sol.motivoFin='Límite máximo alcanzado';}
+    ['sol-cub-out','sol-est-pin','sol-color','sol-lavados','sol-lavador','sol-revisor','sol-tipo-env','sol-nota-o'].forEach(id=>gs(id,''));
+    gs('sol-sel','');document.getElementById('sol-info').innerHTML='';
+    document.getElementById('sol-lim-warn').style.display='none';
+    updateSolSel();showToast('✓ Gasto registrado','ok');
+  }
+  renderSolvente();renderSolActivos();changed();
+}
+
+function terminarEst(){
+  const solId=gv('sol-sel');
+  if(!solId){showToast('Seleccione un estañón','er');return;}
+  openMod('Marcar Terminado','¿Este estañón ha concluido? Pasará al historial pasivo. Puede reactivarse.',()=>{
+    const s=DB.solvente.find(x=>x.id===solId&&x.activo);
+    if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado manualmente';}
+    gs('sol-sel','');document.getElementById('sol-info').innerHTML='';
+    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Estañón finalizado','ok');changed();
+  });
+}
+function reactivarSol(id){
+  const s=DB.solvente.find(x=>x.id===id);
+  if(s){s.activo=true;s.fechaFin=null;s.motivoFin=null;}
+  updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Reactivado','ok');changed();
+}
+
+function renderSolActivos(){
+  const a=DB.solvente.filter(s=>s.activo);
+  const el=document.getElementById('sol-activos');if(!el)return;
+  if(!a.length){el.innerHTML='<div class="empty" style="padding:16px;"><i class="fa-solid fa-oil-can"></i><p>Sin estañones activos</p></div>';return;}
+  const max=DB.config.maxCubEst;
+  el.innerHTML=a.map(s=>{
+    const pct=max>0?Math.min(100,(s.cubUsadas||0)/max*100):0;
+    const cls=pct>=90?'low':pct>=70?'warn':'ok';
+    const tc=s.tipo==='thinner'?'var(--accent)':s.tipo==='varsol'?'var(--accent2)':'var(--orange)';
+    return`<div style="background:var(--bg2);border:1px solid var(--border2);border-left:3px solid ${tc};border-radius:var(--rs);padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="font-size:10px;font-weight:700;color:${tc};background:rgba(27,140,255,.08);padding:2px 8px;border-radius:10px;">${(s.tipo||'').toUpperCase()}</span>
+        <span style="font-weight:700;color:#fff;font-size:13px;">${s.cod}</span>
+        <span class="badge b-in" style="margin-left:auto;">ACTIVO</span>
+      </div>
+      <div style="font-size:11px;color:var(--text2);">Cubetas: <strong style="color:var(--accent)">${s.cubUsadas||0}</strong>/${max} | Lavados: ${s.lavTotal||0}</div>
+      <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
+      ${pct>=100?`<button class="btn danger sm" style="margin-top:8px;font-size:11px;padding:6px;" onclick="termEstById('${s.id}')"><i class="fa-solid fa-flag-checkered"></i> Marcar terminado</button>`:''}
+    </div>`;
+  }).join('');
+  // Historial pasivo compacto
+  const p=DB.solvente.filter(s=>!s.activo);
+  if(p.length) el.innerHTML+=`<div style="margin-top:12px;"><div class="slbl"><i class="fa-solid fa-archive" style="color:var(--muted);"></i> Terminados</div>`+
+    p.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--muted);border-radius:var(--rs);margin-bottom:6px;opacity:.65;">
+      <span style="font-size:10px;font-weight:700;color:var(--muted);">${(s.tipo||'').toUpperCase()}</span>
+      <span style="font-size:13px;font-weight:600;color:var(--text2);">${s.cod}</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:auto;">${s.cubUsadas||0} cub. | Fin: ${fmt(s.fechaFin)}</span>
+      <button class="ebtn" style="width:28px;height:28px;font-size:11px;" onclick="reactivarSol('${s.id}')"><i class="fa-solid fa-rotate-left"></i></button>
+    </div>`).join('')+'</div>';
+}
+function termEstById(id){
+  openMod('Marcar Terminado','¿Confirmar?',()=>{
+    const s=DB.solvente.find(x=>x.id===id);
+    if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado desde lista activos';}
+    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
   });
 }
 
-/* ════════════════════════════════════
-   CUBETAS
-════════════════════════════════════ */
-function addCubeta(mov) {
-  if (mov === 'in') {
-    const tipo = document.getElementById('cub-tipo').value.trim();
-    const cant = parseFloat(document.getElementById('cub-cant').value);
-    const fecha = document.getElementById('cub-fecha-in').value;
-    const nota = document.getElementById('cub-nota').value.trim();
-    if (!tipo || !cant || !fecha) { alert('Complete todos los campos requeridos'); return; }
-    DB.cubetas.push({ id: uid(), tipo, cant, fecha, mov: 'ENTRADA', nota });
-    document.getElementById('cub-tipo').value = '';
-    document.getElementById('cub-cant').value = '';
-    document.getElementById('cub-nota').value = '';
-  } else {
-    const tipo = document.getElementById('cub-tipo-out').value.trim();
-    const cant = parseFloat(document.getElementById('cub-cant-out').value);
-    const fecha = document.getElementById('cub-fecha-out').value;
-    const nota = document.getElementById('cub-nota-out').value.trim();
-    if (!tipo || !cant || !fecha) { alert('Complete todos los campos requeridos'); return; }
-    DB.cubetas.push({ id: uid(), tipo, cant, fecha, mov: 'GASTO', nota });
-    document.getElementById('cub-tipo-out').value = '';
-    document.getElementById('cub-cant-out').value = '';
-    document.getElementById('cub-nota-out').value = '';
-  }
-  showToast('✓ Cubeta registrada');
-  renderCubetas();
+function renderSolvente(){
+  const d1=gv('fsol-d1'),d2=gv('fsol-d2');
+  const allMov=[];
+  DB.solvente.forEach(s=>s.movimientos.filter(m=>inR(m.fecha,d1,d2)).forEach(m=>allMov.push({...m,cod:s.cod,tipo:s.tipo})));
+  allMov.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-sol').innerHTML=allMov.length?allMov.map(m=>`
+    <tr><td>${fmt(m.fecha)}</td>
+    <td><strong style="color:${m.tipo==='thinner'?'var(--accent)':'var(--accent2)'}">${m.cod}</strong></td>
+    <td>${m.tipo||'—'}</td><td>${m.cubOut||'—'}</td><td>${m.estPin||'—'}</td>
+    <td>${m.lavados||'—'}</td><td style="font-size:11px;">${m.lavador||'—'}</td>
+    <td style="font-size:11px;">${m.revisor||'—'}</td>
+    <td></td></tr>`).join(''):emptyR(9);
+  const tc=DB.solvente.reduce((s,r)=>s+(r.cubUsadas||0),0);
+  const tl=DB.solvente.reduce((s,r)=>s+(r.lavTotal||0),0);
+  s2('sol-stk',DB.solvente.filter(s=>s.activo).length);
+  s2('sol-cub-t',tc.toFixed(1));s2('sol-lav-t',tl.toFixed(1));
 }
 
-function renderCubetas() {
-  const d1 = document.getElementById('f-cub-d1').value;
-  const d2 = document.getElementById('f-cub-d2').value;
-  const tf = document.getElementById('f-cub-tipo').value.toLowerCase();
-  let rows = DB.cubetas.filter(r =>
-    inRange(r.fecha, d1, d2) &&
-    (!tf || r.tipo.toLowerCase().includes(tf))
-  ).sort((a,b) => b.fecha.localeCompare(a.fecha));
-
-  const tb = document.getElementById('tbl-cubetas');
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmt(r.fecha)}</td>
-      <td>${r.tipo}</td>
-      <td>${r.cant}</td>
-      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
-      <td>${r.nota||'—'}</td>
-      <td><button class="btn-sm btn-del" onclick="delRecord('cubetas','${r.id}')">✕</button></td>
-    </tr>`).join('');
-
-  const stock = DB.cubetas.reduce((s, r) => r.mov==='ENTRADA' ? s+r.cant : s-r.cant, 0);
-  document.getElementById('stock-cubetas').textContent = stock.toFixed(1);
-}
-
-/* ════════════════════════════════════
-   ESTAÑONES
-════════════════════════════════════ */
-function addEstanon(mov) {
-  if (mov === 'in') {
-    const tipo = document.getElementById('est-tipo').value.trim();
-    const cant = parseFloat(document.getElementById('est-cant').value);
-    const fecha = document.getElementById('est-fecha').value;
-    const nota = document.getElementById('est-nota').value.trim();
-    if (!tipo || !cant || !fecha) { alert('Complete los campos requeridos'); return; }
-    DB.estanones_solvente.push({ id: uid(), tipo, cant, cubetas_usadas: 0, lavados: 0, fecha, mov: 'ENTRADA', nota });
-    document.getElementById('est-tipo').value = '';
-    document.getElementById('est-cant').value = '';
-    document.getElementById('est-nota').value = '';
-  } else {
-    const tipo = document.getElementById('est-tipo-out').value.trim();
-    const cub = parseFloat(document.getElementById('est-cub-out').value) || 0;
-    const lav = parseFloat(document.getElementById('est-lav').value) || 0;
-    const fecha = document.getElementById('est-fecha-out').value;
-    const nota = document.getElementById('est-nota-out').value.trim();
-    if (!tipo || !fecha) { alert('Complete los campos requeridos'); return; }
-    DB.estanones_solvente.push({ id: uid(), tipo, cant: 0, cubetas_usadas: cub, lavados: lav, fecha, mov: 'GASTO', nota });
-    document.getElementById('est-tipo-out').value = '';
-    document.getElementById('est-cub-out').value = '';
-    document.getElementById('est-lav').value = '';
-    document.getElementById('est-nota-out').value = '';
-  }
-  showToast('✓ Estañón registrado');
-  renderEstanones();
-}
-
-function renderEstanones() {
-  const d1 = document.getElementById('f-est-d1').value;
-  const d2 = document.getElementById('f-est-d2').value;
-  let rows = DB.estanones_solvente.filter(r => inRange(r.fecha, d1, d2))
-    .sort((a,b) => b.fecha.localeCompare(a.fecha));
-
-  const tb = document.getElementById('tbl-estanones');
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmt(r.fecha)}</td>
-      <td>${r.tipo}</td>
-      <td>${r.cant||'—'}</td>
-      <td>${r.cubetas_usadas||'—'}</td>
-      <td>${r.lavados||'—'}</td>
-      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
-      <td>${r.nota||'—'}</td>
-      <td><button class="btn-sm btn-del" onclick="delRecord('estanones_solvente','${r.id}')">✕</button></td>
-    </tr>`).join('');
-
-  const totalCub = DB.estanones_solvente.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cubetas_usadas,0);
-  const totalLav = DB.estanones_solvente.reduce((s,r)=>s+r.lavados,0);
-  document.getElementById('stock-solvente').textContent = totalCub.toFixed(1);
-  document.getElementById('stock-lavados').textContent = totalLav.toFixed(1);
-}
-
-/* ════════════════════════════════════
+/* ══════════════════════════════════════════
    TRAPOS
-════════════════════════════════════ */
-function addTrapo(mov) {
-  if (mov === 'in') {
-    const tipo = document.getElementById('tra-tipo').value.trim();
-    const cant = parseFloat(document.getElementById('tra-cant').value);
-    const unidad = document.getElementById('tra-unidad').value;
-    const fecha = document.getElementById('tra-fecha').value;
-    const nota = document.getElementById('tra-nota').value.trim();
-    if (!tipo || !cant || !fecha) { alert('Complete los campos requeridos'); return; }
-    DB.trapos.push({ id: uid(), tipo, cant, pct: 0, unidad, fecha, mov: 'ENTRADA', nota });
-    document.getElementById('tra-tipo').value = '';
-    document.getElementById('tra-cant').value = '';
-    document.getElementById('tra-nota').value = '';
+══════════════════════════════════════════ */
+function addTrapo(mov){
+  if(mov==='in'){
+    const tipo=gv('tra-tipo').trim(),cant=n('tra-cant'),uni=gv('tra-uni'),fecha=gv('tra-fin');
+    if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
+    DB.trapos.push({id:uid(),tipo,cant,uni,fecha,mov:'ENTRADA',pctUsado:0,salidas:[]});
+    gs('tra-tipo','');gs('tra-cant','');
+    updateTraLotSel();showToast('✓ Lote registrado','ok');
   } else {
-    const tipo = document.getElementById('tra-tipo-out').value.trim();
-    const pct = parseFloat(document.getElementById('tra-pct').value) || 0;
-    const cant = parseFloat(document.getElementById('tra-cant-out').value) || 0;
-    const unidad = document.getElementById('tra-unidad-out').value;
-    const fecha = document.getElementById('tra-fecha-out').value;
-    const nota = document.getElementById('tra-nota-out').value.trim();
-    if (!tipo || !fecha) { alert('Complete los campos requeridos'); return; }
-    DB.trapos.push({ id: uid(), tipo, cant, pct, unidad, fecha, mov: 'GASTO', nota });
-    document.getElementById('tra-tipo-out').value = '';
-    document.getElementById('tra-pct').value = '';
-    document.getElementById('tra-cant-out').value = '';
-    document.getElementById('tra-nota-out').value = '';
+    const lotId=gv('tra-sel-lot'),pct=n('tra-pct'),fecha=gv('tra-fout'),nota=gv('tra-nota-o').trim();
+    if(!lotId||!pct||!fecha){showToast('Campos requeridos','er');return;}
+    const lot=DB.trapos.find(t=>t.id===lotId);
+    if(!lot){showToast('Lote no encontrado','er');return;}
+    lot.pctUsado=Math.min(100,(lot.pctUsado||0)+pct);
+    lot.salidas.push({fecha,pct,nota,pctAcum:lot.pctUsado});
+    gs('tra-pct','');gs('tra-nota-o','');gs('tra-sel-lot','');
+    document.getElementById('tra-lot-info').innerHTML='';
+    updateTraLotSel();
+    if(lot.pctUsado>=100) showToast('⚠ Lote agotado','wa');
+    else showToast('✓ Gasto de trapos registrado','ok');
   }
-  showToast('✓ Trapo registrado');
-  renderTrapos();
+  renderTraLotes();renderTraHist();changed();
+}
+function renderTraLotes(){
+  const lotes=DB.trapos.filter(t=>t.mov==='ENTRADA');
+  const el=document.getElementById('tra-lotes-list');if(!el)return;
+  if(!lotes.length){el.innerHTML='<div class="empty" style="padding:16px;"><i class="fa-solid fa-mitten"></i><p>Sin lotes</p></div>';return;}
+  el.innerHTML=lotes.map(t=>{
+    const pct=t.pctUsado||0;
+    const cls=pct>=90?'low':pct>=70?'warn':'ok';
+    return`<div style="background:var(--bg2);border:1px solid ${pct>=100?'var(--muted)':pct>=90?'var(--red)':'var(--border)'};border-radius:var(--rs);padding:12px;margin-bottom:8px;${pct>=100?'opacity:.6':''}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <div style="flex:1;"><div style="font-weight:600;color:#fff;">${t.tipo}</div>
+        <div style="font-size:11px;color:var(--text2);">ID: ${t.id.slice(-6)} | ${t.cant} ${t.uni} | ${fmt(t.fecha)}</div></div>
+        <span class="badge ${pct>=100?'b-out':'b-or'}">${pct>=100?'AGOTADO':pct.toFixed(0)+'%'}</span>
+      </div>
+      <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+  updateTraLotSel();
+}
+function renderTraHist(){
+  const all=[];
+  DB.trapos.forEach(t=>{
+    all.push({fecha:t.fecha,id:t.id.slice(-6),tipo:t.tipo,cant:t.cant,uni:t.uni,pct:0,mov:'ENTRADA'});
+    (t.salidas||[]).forEach(s=>all.push({fecha:s.fecha,id:t.id.slice(-6),tipo:t.tipo,cant:'—',uni:t.uni,pct:s.pct,mov:'GASTO'}));
+  });
+  all.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-tra').innerHTML=all.length?all.map(m=>`
+    <tr><td>${fmt(m.fecha)}</td><td>${m.id}</td><td>${m.tipo}</td>
+    <td>${m.cant}</td><td>${m.uni}</td>
+    <td>${m.pct?m.pct+'%':'—'}</td>
+    <td><span class="badge ${m.mov==='ENTRADA'?'b-in':'b-out'}">${m.mov}</span></td>
+    <td></td></tr>`).join(''):emptyR(8);
 }
 
-function renderTrapos() {
-  const d1 = document.getElementById('f-tra-d1').value;
-  const d2 = document.getElementById('f-tra-d2').value;
-  let rows = DB.trapos.filter(r => inRange(r.fecha, d1, d2))
-    .sort((a,b) => b.fecha.localeCompare(a.fecha));
-
-  const tb = document.getElementById('tbl-trapos');
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmt(r.fecha)}</td>
-      <td>${r.tipo}</td>
-      <td>${r.cant||'—'}</td>
-      <td>${r.unidad}</td>
-      <td>${r.pct ? r.pct+'%' : '—'}</td>
-      <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td>
-      <td>${r.nota||'—'}</td>
-      <td><button class="btn-sm btn-del" onclick="delRecord('trapos','${r.id}')">✕</button></td>
-    </tr>`).join('');
+/* ══════════════════════════════════════════
+   TRABAJO DIARIO
+══════════════════════════════════════════ */
+function addTrabajo(){
+  const fecha=gv('tr-fecha'),area=gv('tr-area').trim(),tipo=gv('tr-tipo').trim();
+  const cub=n('tr-cub'),est=n('tr-est'),trab=n('tr-trab'),m2=n('tr-m2'),nota=gv('tr-nota').trim();
+  if(!fecha||!area){showToast('Fecha y Área requeridos','er');return;}
+  DB.trabajo.push({id:uid(),fecha,area,tipo,cub,est,trab,m2,nota});
+  ['tr-area','tr-tipo','tr-cub','tr-est','tr-trab','tr-m2','tr-nota'].forEach(id=>gs(id,''));
+  showToast('✓ Día registrado','ok');renderTrabajo();changed();
+}
+function renderTrabajo(){
+  const d1=gv('ftr-d1'),d2=gv('ftr-d2');
+  const rows=DB.trabajo.filter(r=>inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-trab').innerHTML=rows.length?rows.map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.area}</td>
+    <td>${r.tipo||'—'}</td><td>${r.cub||'—'}</td><td>${r.est||'—'}</td>
+    <td>${r.m2||'—'}</td><td>${r.trab||'—'}</td>
+    <td><button class="dbtn" onclick="delRec('trabajo','${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(8);
+  const dias=new Set(rows.map(r=>r.fecha)).size;
+  const totM2=rows.reduce((s,r)=>s+r.m2,0);
+  s2('tr-dias',dias);s2('tr-m2t',totM2.toFixed(1));
 }
 
-/* ════════════════════════════════════
-   PINTADO
-════════════════════════════════════ */
-function addPintado() {
-  const fecha = document.getElementById('pin-fecha').value;
-  const area = document.getElementById('pin-area').value.trim();
-  const tipo = document.getElementById('pin-tipo').value.trim();
-  const cubetas = parseFloat(document.getElementById('pin-cubetas').value) || 0;
-  const estanones = parseFloat(document.getElementById('pin-estanones').value) || 0;
-  const trabajadores = parseFloat(document.getElementById('pin-trabajadores').value) || 0;
-  const m2 = parseFloat(document.getElementById('pin-m2').value) || 0;
-  const nota = document.getElementById('pin-nota').value.trim();
-  if (!fecha || !area) { alert('Fecha y Área son requeridos'); return; }
-  DB.pinturas_pintadas.push({ id: uid(), fecha, area, tipo, cubetas, estanones, trabajadores, m2, nota });
-  document.getElementById('pin-area').value = '';
-  document.getElementById('pin-tipo').value = '';
-  document.getElementById('pin-cubetas').value = '';
-  document.getElementById('pin-estanones').value = '';
-  document.getElementById('pin-trabajadores').value = '';
-  document.getElementById('pin-m2').value = '';
-  document.getElementById('pin-nota').value = '';
-  showToast('✓ Día de pintado registrado');
-  renderPintado();
-}
-
-function renderPintado() {
-  const d1 = document.getElementById('f-pin-d1').value;
-  const d2 = document.getElementById('f-pin-d2').value;
-  const af = document.getElementById('f-pin-area').value.toLowerCase();
-  let rows = DB.pinturas_pintadas.filter(r =>
-    inRange(r.fecha, d1, d2) &&
-    (!af || r.area.toLowerCase().includes(af))
-  ).sort((a,b) => b.fecha.localeCompare(a.fecha));
-
-  const tb = document.getElementById('tbl-pintado');
-  tb.innerHTML = rows.map(r => `
-    <tr>
-      <td>${fmt(r.fecha)}</td>
-      <td>${r.area}</td>
-      <td>${r.tipo||'—'}</td>
-      <td>${r.cubetas||'—'}</td>
-      <td>${r.estanones||'—'}</td>
-      <td>${r.trabajadores||'—'}</td>
-      <td>${r.m2||'—'}</td>
-      <td>${r.nota||'—'}</td>
-      <td><button class="btn-sm btn-del" onclick="delRecord('pinturas_pintadas','${r.id}')">✕</button></td>
-    </tr>`).join('');
-}
-
-/* ════════════════════════════════════
+/* ══════════════════════════════════════════
    DELETE
-════════════════════════════════════ */
-function delRecord(table, id) {
-  if (!confirm('¿Eliminar este registro?')) return;
-  DB[table] = DB[table].filter(r => r.id !== id);
-  renderAll();
-  showToast('🗑 Eliminado');
+══════════════════════════════════════════ */
+function delRec(table,id){
+  openMod('Eliminar registro','¿Eliminar? No se puede deshacer.',()=>{
+    DB[table]=DB[table].filter(r=>r.id!==id);
+    renderDash();updateLists();
+    if(table==='inventario')renderInvStock();
+    if(table==='cubetas')renderCubetas();
+    if(table==='trabajo')renderTrabajo();
+    showToast('🗑 Eliminado','in');changed();
+  });
 }
 
-/* ════════════════════════════════════
-   REPORTE
-════════════════════════════════════ */
-function genReporte() {
-  const d1 = document.getElementById('r-d1').value;
-  const d2 = document.getElementById('r-d2').value;
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+function renderDash(){
+  const stock=getStock();
+  const lowStock=stock.filter(s=>s.min>0&&s.cant<=s.min).length;
+  const espAct=DB.especiales.filter(p=>p.activo).length;
+  const solAct=DB.solvente.filter(s=>s.activo).length;
+  const cubStk=DB.cubetas.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0)-DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  const dias=new Set(DB.trabajo.map(r=>r.fecha)).size;
+  document.getElementById('d-stats').innerHTML=`
+    <div class="sc bl"><i class="fa-solid fa-warehouse"></i><div class="sv">${stock.length}</div><div class="sl">Productos</div></div>
+    <div class="sc ${lowStock>0?'rd':'gn'}"><i class="fa-solid fa-${lowStock>0?'triangle-exclamation':'circle-check'}"></i><div class="sv">${lowStock}</div><div class="sl">Stock Bajo</div></div>
+    <div class="sc cy"><i class="fa-solid fa-star"></i><div class="sv">${espAct}</div><div class="sl">Especiales Activos</div></div>
+    <div class="sc or"><i class="fa-solid fa-oil-can"></i><div class="sv">${solAct}</div><div class="sl">Estañones Activos</div></div>
+    <div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv">${cubStk.toFixed(0)}</div><div class="sl">Stock Cubetas</div></div>
+    <div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv">${dias}</div><div class="sl">Días Pintados</div></div>`;
 
-  const cubFilt = DB.cubetas.filter(r => inRange(r.fecha, d1, d2));
-  const estFilt = DB.estanones_solvente.filter(r => inRange(r.fecha, d1, d2));
-  const pinFilt = DB.pinturas_pintadas.filter(r => inRange(r.fecha, d1, d2));
-  const traFilt = DB.trapos.filter(r => inRange(r.fecha, d1, d2));
+  // Alertas
+  const max=DB.config.maxCubEst;
+  const alerts=[
+    ...stock.filter(s=>s.min>0&&s.cant<=s.min).map(s=>({col:'var(--red)',ico:'fa-triangle-exclamation',txt:`Stock bajo: ${s.nombre} (${s.cant.toFixed(2)} ${s.uni})`})),
+    ...DB.solvente.filter(s=>s.activo&&max>0&&(s.cubUsadas||0)>=max*.9).map(s=>({col:'var(--orange)',ico:'fa-oil-can',txt:`Estañón ${s.cod} cerca del límite (${s.cubUsadas||0}/${max} cub.)`})),
+    ...DB.especiales.filter(p=>p.activo&&(p.maxCub||DB.config.maxEsp)>0&&(p.cubUsadas||0)>=(p.maxCub||DB.config.maxEsp)*.9).map(p=>({col:'var(--purple)',ico:'fa-star',txt:`Especial "${p.nombre}" cerca del límite`})),
+    ...DB.trapos.filter(t=>t.mov==='ENTRADA'&&(t.pctUsado||0)>=90).map(t=>({col:'var(--orange)',ico:'fa-mitten',txt:`Trapos "${t.tipo}" al ${(t.pctUsado||0).toFixed(0)}%`}))
+  ];
+  document.getElementById('d-alerts').innerHTML=alerts.length?alerts.map(a=>
+    `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
+      <i class="fa-solid ${a.ico}" style="color:${a.col};font-size:16px;flex-shrink:0;"></i>
+      <span style="font-size:13px;">${a.txt}</span></div>`).join(''):
+    '<div class="empty" style="padding:16px;"><i class="fa-solid fa-check-circle" style="color:var(--green);"></i><p>Sin alertas — todo en orden</p></div>';
 
-  const cubIn = cubFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
-  const cubOut = cubFilt.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
-  const estIn = estFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
-  const solCub = estFilt.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cubetas_usadas,0);
-  const lavados = estFilt.reduce((s,r)=>s+r.lavados,0);
-  const diasPintados = new Set(pinFilt.map(r=>r.fecha)).size;
-  const totalCubPintado = pinFilt.reduce((s,r)=>s+r.cubetas,0);
-  const totalM2 = pinFilt.reduce((s,r)=>s+r.m2,0);
-  const traIn = traFilt.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
-
-  document.getElementById('stat-grid').innerHTML = `
-    <div class="stat-box"><div class="stat-num">${cubIn.toFixed(0)}</div><div class="stat-label">Cubetas Entrada</div></div>
-    <div class="stat-box"><div class="stat-num">${cubOut.toFixed(0)}</div><div class="stat-label">Cubetas Gastadas</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${(cubIn-cubOut).toFixed(0)}</div><div class="stat-label">Stock Cubetas</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--blue)">${estIn.toFixed(0)}</div><div class="stat-label">Estañones Entrada</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--accent2)">${solCub.toFixed(0)}</div><div class="stat-label">Cubetas Solvente Usadas</div></div>
-    <div class="stat-box"><div class="stat-num">${lavados.toFixed(0)}</div><div class="stat-label">Estañones Lavados</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--green)">${diasPintados}</div><div class="stat-label">Días Pintados</div></div>
-    <div class="stat-box"><div class="stat-num">${totalCubPintado.toFixed(1)}</div><div class="stat-label">Cubetas en Pintado</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--muted)">${totalM2.toFixed(1)}</div><div class="stat-label">Metros² Pintados</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--accent)">${traIn.toFixed(1)}</div><div class="stat-label">Trapos Entrada</div></div>
-  `;
-
-  // Tablas del reporte
-  document.getElementById('rep-tbl-cubetas').innerHTML = cubFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
-    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant}</td>
-    <td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td><td>${r.nota||'—'}</td></tr>`).join('');
-
-  document.getElementById('rep-tbl-estanon').innerHTML = estFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
-    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant||'—'}</td><td>${r.cubetas_usadas||'—'}</td>
-    <td>${r.lavados||'—'}</td><td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td></tr>`).join('');
-
-  document.getElementById('rep-tbl-pintado').innerHTML = pinFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
-    <tr><td>${fmt(r.fecha)}</td><td>${r.area}</td><td>${r.tipo||'—'}</td><td>${r.cubetas||'—'}</td>
-    <td>${r.estanones||'—'}</td><td>${r.trabajadores||'—'}</td><td>${r.m2||'—'}</td></tr>`).join('');
-
-  document.getElementById('rep-tbl-trapos').innerHTML = traFilt.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`
-    <tr><td>${fmt(r.fecha)}</td><td>${r.tipo}</td><td>${r.cant||'—'}</td><td>${r.unidad}</td>
-    <td>${r.pct?r.pct+'%':'—'}</td><td><span class="badge ${r.mov==='ENTRADA'?'badge-in':'badge-out'}">${r.mov}</span></td></tr>`).join('');
+  // Recientes
+  const rec=[
+    ...DB.inventario.slice(-4).map(r=>({fecha:r.fecha,txt:r.nombre,mov:r.mov})),
+    ...DB.solvente.flatMap(s=>s.movimientos.slice(-1).map(m=>({fecha:m.fecha,txt:'Solvente '+s.cod,mov:'GASTO'}))),
+    ...DB.cubetas.slice(-3).map(r=>({fecha:r.fecha,txt:'Cubeta '+r.tipo,mov:r.mov}))
+  ].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,8);
+  document.getElementById('d-recent').innerHTML=rec.length?rec.map(r=>
+    `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);">
+      <span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}" style="min-width:62px;justify-content:center;">${r.mov}</span>
+      <span style="flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.txt}</span>
+      <span style="font-size:11px;color:var(--text2);flex-shrink:0;">${fmt(r.fecha)}</span></div>`).join(''):
+    '<div class="empty" style="padding:16px;"><i class="fa-solid fa-inbox"></i><p>Sin movimientos</p></div>';
+  buildChartWeek();
 }
 
-function renderAll() {
-  renderCubetas();
-  renderEstanones();
-  renderTrapos();
-  renderPintado();
+function buildChartWeek(){
+  const ctx=document.getElementById('ch-week');
+  if(chWeek){chWeek.destroy();chWeek=null;}
+  const days=[],labels=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date();d.setDate(d.getDate()-i);
+    const k=d.toISOString().split('T')[0];
+    days.push(k);labels.push(d.toLocaleDateString('es-CR',{weekday:'short'}));
+  }
+  const inD=days.map(d=>DB.inventario.filter(r=>r.fecha===d&&r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0));
+  const outD=days.map(d=>DB.inventario.filter(r=>r.fecha===d&&r.mov==='SALIDA').reduce((s,r)=>s+r.cant,0));
+  chWeek=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+    {label:'Entradas',data:inD,backgroundColor:'rgba(0,230,118,.5)',borderColor:'#00e676',borderWidth:2,borderRadius:4},
+    {label:'Salidas',data:outD,backgroundColor:'rgba(255,61,90,.5)',borderColor:'#ff3d5a',borderWidth:2,borderRadius:4}
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#6a9ac0',font:{size:11}}}},
+    scales:{x:{ticks:{color:'#6a9ac0'},grid:{color:'#0a1828'}},y:{ticks:{color:'#6a9ac0'},grid:{color:'#0a1828'}}}}});
 }
+
+/* ══════════════════════════════════════════
+   REPORTES
+══════════════════════════════════════════ */
+function genRepInv(){
+  const d1=gv('ri-d1'),d2=gv('ri-d2'),cf=gv('ri-cat');
+  const rows=DB.inventario.filter(r=>!r.especial&&inR(r.fecha,d1,d2)&&(!cf||r.cat===cf)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const stock=getStock();
+  const ti=rows.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+  const to=rows.filter(r=>r.mov==='SALIDA').reduce((s,r)=>s+r.cant,0);
+  document.getElementById('rep-inv-out').innerHTML=`
+    <div class="kpi-row">
+      <div class="kpi"><div class="kn" style="color:var(--green)">${ti.toFixed(1)}</div><div class="ks">Entradas</div></div>
+      <div class="kpi"><div class="kn" style="color:var(--red)">${to.toFixed(1)}</div><div class="ks">Salidas</div></div>
+      <div class="kpi"><div class="kn" style="color:var(--accent)">${stock.length}</div><div class="ks">Productos</div></div>
+      <div class="kpi"><div class="kn" style="color:var(--orange)">${stock.filter(s=>s.min>0&&s.cant<=s.min).length}</div><div class="ks">Bajo stock</div></div>
+    </div>
+    <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-warehouse"></i></div><h3>Stock Actual</h3></div>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Stock</th><th>Unidad</th><th>Estado</th></tr></thead><tbody>
+    ${stock.map(s=>`<tr><td style="font-weight:600">${s.nombre}</td><td>${s.cat||'—'}</td>
+    <td style="color:${s.min>0&&s.cant<=s.min?'var(--red)':'var(--green)'};font-weight:700">${s.cant.toFixed(2)}</td>
+    <td>${s.uni}</td><td><span class="badge ${s.min>0&&s.cant<=s.min?'b-out':'b-in'}">${s.min>0&&s.cant<=s.min?'BAJO':'OK'}</span></td></tr>`).join('')}
+    </tbody></table></div></div>
+    <div class="card"><div class="ch"><div class="ci gn"><i class="fa-solid fa-list"></i></div><h3>Movimientos</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cat.</th><th>Cant.</th><th>Tipo</th><th>Motivo</th></tr></thead><tbody>
+    ${rows.length?rows.map(r=>`<tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.nombre}</td>
+    <td>${r.cat||'—'}</td><td>${r.cant} ${r.uni}</td>
+    <td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
+    <td style="font-size:11px;">${r.mot||r.nota||'—'}</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Sin datos</td></tr>'}
+    </tbody></table></div></div>`;
+}
+
+function genRepGastos(){
+  const d1=gv('rg-d1'),d2=gv('rg-d2');
+  const sal=DB.inventario.filter(r=>r.mov==='SALIDA'&&!r.especial&&inR(r.fecha,d1,d2));
+  const byP={};sal.forEach(r=>{
+    if(!byP[r.nombre])byP[r.nombre]={nombre:r.nombre,cat:r.cat,cant:0,uni:r.uni};
+    byP[r.nombre].cant+=r.cant;
+  });
+  const byM={};sal.forEach(r=>{const m=r.mot||'Sin motivo';byM[m]=(byM[m]||0)+1;});
+  const cubXdia={};DB.cubetas.filter(r=>r.mov==='GASTO'&&inR(r.fecha,d1,d2)).forEach(r=>{cubXdia[r.fecha]=(cubXdia[r.fecha]||0)+r.cant;});
+  const sorted=Object.values(byP).sort((a,b)=>b.cant-a.cant);
+  document.getElementById('rep-gastos-out').innerHTML=`
+    <div class="kpi-row">
+      <div class="kpi"><div class="kn" style="color:var(--red)">${sal.length}</div><div class="ks">Salidas</div></div>
+      <div class="kpi"><div class="kn" style="color:var(--orange)">${sorted.length}</div><div class="ks">Productos usados</div></div>
+    </div>
+    <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-fire"></i></div><h3>Gastos por Producto</h3></div>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Cantidad Usada</th><th>Unidad</th></tr></thead><tbody>
+    ${sorted.map(s=>`<tr><td style="font-weight:600">${s.nombre}</td><td>${s.cat||'—'}</td>
+    <td style="color:var(--red);font-weight:700">${s.cant.toFixed(2)}</td><td>${s.uni}</td></tr>`).join('')}
+    </tbody></table></div></div>
+    <div class="card"><div class="ch"><div class="ci or"><i class="fa-solid fa-tags"></i></div><h3>Por Motivo</h3></div>
+    <div class="tw"><table><thead><tr><th>Motivo</th><th>Veces</th></tr></thead><tbody>
+    ${Object.entries(byM).sort((a,b)=>b[1]-a[1]).map(([m,c])=>`<tr><td>${m}</td><td><span class="badge b-or">${c}</span></td></tr>`).join('')}
+    </tbody></table></div></div>
+    <div class="card"><div class="ch"><div class="ci cy"><i class="fa-solid fa-bucket"></i></div><h3>Cubetas Gastadas por Día</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Cubetas</th><th>Est. pintados aprox.</th><th>Est. lavados aprox.</th></tr></thead><tbody>
+    ${Object.entries(cubXdia).sort((a,b)=>b[0].localeCompare(a[0])).map(([f,c])=>`<tr>
+      <td>${fmt(f)}</td><td style="color:var(--accent);font-weight:700">${c}</td>
+      <td>${DB.config.estPorCub>0?(c*DB.config.estPorCub).toFixed(0):'-'}</td>
+      <td>${DB.config.lavPorCub>0?(c*DB.config.lavPorCub).toFixed(0):'-'}</td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+
+function genRepPin(){
+  const d1=gv('rp-d1'),d2=gv('rp-d2');
+  const cub=DB.cubetas.filter(r=>inR(r.fecha,d1,d2));
+  const trab=DB.trabajo.filter(r=>inR(r.fecha,d1,d2));
+  const solMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>inR(m.fecha,d1,d2)).forEach(m=>solMov.push({...m,cod:s.cod,tipo:s.tipo})));
+  const cubIn=cub.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
+  const cubOut=cub.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  const tLav=solMov.reduce((s,m)=>s+(m.lavados||0),0);
+  const tPin=solMov.reduce((s,m)=>s+(m.estPin||0),0);
+  const dias=new Set(trab.map(r=>r.fecha)).size;
+  const m2=trab.reduce((s,r)=>s+r.m2,0);
+  document.getElementById('rep-pin-out').innerHTML=`
+    <div class="sg c3">
+      <div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv">${cubIn.toFixed(0)}</div><div class="sl">Cub. Entrada</div></div>
+      <div class="sc rd"><i class="fa-solid fa-fire"></i><div class="sv">${cubOut.toFixed(0)}</div><div class="sl">Cub. Gastadas</div></div>
+      <div class="sc bl"><i class="fa-solid fa-boxes-stacked"></i><div class="sv">${(cubIn-cubOut).toFixed(0)}</div><div class="sl">Stock Cub.</div></div>
+      <div class="sc or"><i class="fa-solid fa-soap"></i><div class="sv">${tLav}</div><div class="sl">Est. Lavados</div></div>
+      <div class="sc cy"><i class="fa-solid fa-paint-roller"></i><div class="sv">${tPin}</div><div class="sl">Est. Pintados</div></div>
+      <div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv">${dias}</div><div class="sl">Días Pintados</div></div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kn">${m2.toFixed(1)}</div><div class="ks">m² Pintados</div></div>
+      <div class="kpi"><div class="kn" style="color:var(--accent)">${trab.reduce((s,r)=>s+r.cub,0).toFixed(1)}</div><div class="ks">Cubetas en Trabajo</div></div>
+    </div>
+    <div class="card"><div class="ch"><div class="ci cy"><i class="fa-solid fa-oil-can"></i></div><h3>Detalle Solvente por Día</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Cód.</th><th>Tipo</th><th>Cub.Usadas</th><th>Est.Pin.</th><th>Lavados</th><th>Lavador</th><th>Revisor</th><th>Envase</th></tr></thead><tbody>
+    ${solMov.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(m=>`<tr>
+      <td>${fmt(m.fecha)}</td>
+      <td style="font-weight:700;color:${m.tipo==='thinner'?'var(--accent)':'var(--accent2)'}">${m.cod}</td>
+      <td>${m.tipo||'—'}</td><td>${m.cubOut||'—'}</td><td>${m.estPin||'—'}</td>
+      <td>${m.lavados||'—'}</td><td>${m.lavador||'—'}</td><td>${m.revisor||'—'}</td>
+      <td style="font-size:11px;">${m.tipoEnv||'—'}</td></tr>`).join('')}
+    </tbody></table></div></div>
+    <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-calendar-week"></i></div><h3>Trabajo Diario</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Área</th><th>Tipo</th><th>Cub.</th><th>Est.</th><th>m²</th><th>Trab.</th></tr></thead><tbody>
+    ${trab.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`<tr>
+      <td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.area}</td>
+      <td>${r.tipo||'—'}</td><td>${r.cub||'—'}</td><td>${r.est||'—'}</td>
+      <td>${r.m2||'—'}</td><td>${r.trab||'—'}</td></tr>`).join('')}
+    </tbody></table></div></div>`;
+}
+
+function genRepEsp(){
+  const d1=gv('re-d1'),d2=gv('re-d2');
+  document.getElementById('rep-esp-out').innerHTML=DB.especiales.map(p=>{
+    const max=p.maxCub||DB.config.maxEsp;
+    const pct=max>0?Math.min(100,(p.cubUsadas||0)/max*100):0;
+    const movF=p.movimientos.filter(m=>m.tipo==='SALIDA'&&inR(m.fecha,d1,d2));
+    return`<div class="card">
+      <div class="ch"><div class="ci ${p.activo?'pu':'or'}"><i class="fa-solid fa-star"></i></div>
+      <h3>${p.nombre} <span style="font-size:12px;color:var(--text2);">[${p.codAudit}]</span></h3>
+      <span class="badge ${p.activo?'b-bl':'b-or'}" style="margin-left:auto;">${p.activo?'ACTIVO':'TERMINADO'}</span></div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Tipo: ${p.tipo||'—'} | Resp: ${p.resp||'—'} | Cubetas: ${p.cubUsadas||0}/${max}</div>
+      <div class="pbar-bg"><div class="pbar ${pct>=90?'low':pct>=70?'warn':'ok'}" style="width:${pct}%"></div></div>
+      <div class="tw" style="margin-top:10px;">
+      <table><thead><tr><th>Fecha</th><th>Cub.</th><th>Est.</th><th>Color</th><th>Lav.</th><th>Lavador</th><th>Revisado Por</th><th>Envase</th></tr></thead><tbody>
+      ${movF.length?movF.map(m=>`<tr>
+        <td>${fmt(m.fecha)}</td><td>${m.cubetas||'—'}</td><td>${m.estanones||'—'}</td>
+        <td>${m.color||'—'}</td><td>${m.lavados||'—'}</td>
+        <td>${m.lavador||'—'}</td><td>${m.revisor||'—'}</td>
+        <td>${m.tipoEnv||'—'}</td></tr>`).join(''):emptyR(8)}
+      </tbody></table></div>
+    </div>`;
+  }).join('')||'<div class="empty"><i class="fa-solid fa-star"></i><p>Sin productos especiales</p></div>';
+}
+
+/* ══════════════════════════════════════════
+   CONFIGURACIÓN
+══════════════════════════════════════════ */
+function loadCfg(){
+  gs('cfg-est-por-cub',DB.config.estPorCub||'');
+  gs('cfg-lav-por-cub',DB.config.lavPorCub||'');
+  gs('cfg-max-cub-est',DB.config.maxCubEst||'');
+  gs('cfg-max-esp',DB.config.maxEsp||'');
+}
+function saveCfg(){
+  DB.config.estPorCub=n('cfg-est-por-cub');
+  DB.config.lavPorCub=n('cfg-lav-por-cub');
+  DB.config.maxCubEst=n('cfg-max-cub-est');
+  DB.config.maxEsp=n('cfg-max-esp');
+  saveData(true);renderCfgPromedios();updateSolSel();
+}
+function renderCfgPromedios(){
+  const tCubG=DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  const tEstPin=DB.solvente.reduce((s,sol)=>s+sol.movimientos.reduce((ss,m)=>ss+(m.estPin||0),0),0);
+  const tLav=DB.solvente.reduce((s,sol)=>s+(sol.lavTotal||0),0);
+  const tDias=new Set(DB.trabajo.map(r=>r.fecha)).size;
+  const avgCubDia=tDias>0?(tCubG/tDias).toFixed(2):'—';
+  const avgEst=tCubG>0?(tEstPin/tCubG).toFixed(2):'—';
+  const avgLav=tCubG>0?(tLav/tCubG).toFixed(2):'—';
+  document.getElementById('cfg-promedios').innerHTML=`
+    <div class="sg c3">
+      <div class="sc bl"><i class="fa-solid fa-bucket"></i><div class="sv">${avgCubDia}</div><div class="sl">Cub./Día (real)</div></div>
+      <div class="sc or"><i class="fa-solid fa-paint-roller"></i><div class="sv">${avgEst}</div><div class="sl">Est.Pin/Cub (real)</div></div>
+      <div class="sc cy"><i class="fa-solid fa-soap"></i><div class="sv">${avgLav}</div><div class="sl">Lav/Cub (real)</div></div>
+    </div>
+    <div style="font-size:12px;color:var(--text2);padding:6px 0;">Basado en ${tDias} días, ${tCubG.toFixed(0)} cubetas, ${tEstPin} pintados, ${tLav} lavados.</div>`;
+}
+function renderUsers(){
+  document.getElementById('tb-users').innerHTML=DB.users.map(u=>`
+    <tr><td style="font-weight:600">${u.user}</td>
+    <td>${u.user!=='JEFFRY'?`<button class="dbtn" onclick="delUser('${u.user}')"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');
+}
+function addUser(){
+  const u=gv('new-user').trim(),p=gv('new-pass').trim();
+  if(!u||!p){showToast('Campos requeridos','er');return;}
+  if(DB.users.find(x=>x.user===u)){showToast('Usuario ya existe','wa');return;}
+  DB.users.push({user:u,pass:p});gs('new-user','');gs('new-pass','');
+  renderUsers();showToast('✓ Usuario creado','ok');changed();
+}
+function delUser(u){
+  openMod('Eliminar usuario','¿Eliminar usuario '+u+'?',()=>{
+    DB.users=DB.users.filter(x=>x.user!==u);renderUsers();showToast('🗑 Eliminado','in');changed();
+  });
+}
+
+/* ══════════════════════════════════════════
+   INIT — carga automática al abrir
+══════════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', ()=>{ loadData(); });
 </script>
 </body>
 </html>
