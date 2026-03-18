@@ -24,8 +24,6 @@ html,body{height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;font-size
 body{background:var(--bg);color:var(--text);}
 ::-webkit-scrollbar{width:3px;height:3px;}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-
-/* ══ LAYOUT ══ */
 #app{display:none;height:100dvh;flex-direction:column;}
 #app.on{display:flex;}
 .topbar{height:var(--nav);min-height:var(--nav);background:var(--panel2);
@@ -33,76 +31,54 @@ body{background:var(--bg);color:var(--text);}
   padding:0 14px;gap:10px;z-index:200;}
 .logo-zone{flex:1;display:flex;align-items:center;gap:10px;}
 .logo-icon{width:36px;height:36px;background:var(--grad);border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:17px;
-  color:#fff;flex-shrink:0;box-shadow:var(--glow);}
-.logo-text{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;
-  letter-spacing:2px;background:var(--grad);-webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;}
+  display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;flex-shrink:0;box-shadow:var(--glow);}
+.logo-text{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .logo-sub{font-size:9px;color:var(--text2);letter-spacing:1px;margin-top:-2px;}
 .topbar-right{display:flex;gap:6px;align-items:center;}
 .tbtn{width:38px;height:38px;background:var(--panel);border:1px solid var(--border2);
   border-radius:var(--rs);display:flex;align-items:center;justify-content:center;
   color:var(--text2);font-size:16px;cursor:pointer;}
 .tbtn:active{background:var(--border2);color:var(--accent);}
-.save-btn{height:38px;background:var(--grad);color:#fff;border:none;
-  border-radius:var(--rs);font-family:'Rajdhani',sans-serif;font-size:15px;
-  font-weight:700;letter-spacing:1px;padding:0 12px;cursor:pointer;
-  display:flex;align-items:center;gap:5px;}
+.save-btn{height:38px;background:var(--grad);color:#fff;border:none;border-radius:var(--rs);
+  font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;
+  padding:0 12px;cursor:pointer;display:flex;align-items:center;gap:5px;}
 .save-btn:active{opacity:.85;}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);
-  animation:pulse 2s infinite;flex-shrink:0;}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;flex-shrink:0;}
 .sync-dot.syncing{background:var(--orange);}
 .sync-dot.error{background:var(--red);animation:none;}
-
 .main{flex:1;overflow:hidden;}
 .scroll{height:100%;overflow-y:auto;overflow-x:hidden;padding:14px 14px 84px;}
-
 .botnav{height:var(--bot);min-height:var(--bot);background:var(--panel2);
   border-top:1px solid var(--border);display:flex;align-items:stretch;z-index:200;}
-.nitem{flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:3px;cursor:pointer;color:var(--muted);
-  font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
-  transition:color .2s;padding:6px 2px;position:relative;}
+.nitem{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;color:var(--muted);font-size:9px;font-weight:700;
+  letter-spacing:.5px;text-transform:uppercase;transition:color .2s;padding:6px 2px;position:relative;}
 .nitem i{font-size:20px;transition:transform .2s;}
 .nitem.act{color:var(--accent);}
 .nitem.act i{transform:scale(1.1);}
-.nitem.act::before{content:'';position:absolute;top:0;left:50%;
-  transform:translateX(-50%);width:32px;height:3px;
-  background:var(--grad);border-radius:0 0 4px 4px;}
-
-/* ══ PAGES ══ */
+.nitem.act::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:32px;height:3px;background:var(--grad);border-radius:0 0 4px 4px;}
 .pg{display:none;animation:fadeIn .2s ease;}
 .pg.act{display:block;}
 .ph{margin-bottom:16px;}
-.ph h2{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;
-  letter-spacing:2px;color:#fff;}
+.ph h2{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;letter-spacing:2px;color:#fff;}
 .ph p{color:var(--text2);font-size:12px;margin-top:2px;}
-
-/* ══ CARDS ══ */
-.card{background:var(--panel);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;margin-bottom:14px;}
-.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px;
-  padding-bottom:12px;border-bottom:1px solid var(--border);}
-.ci{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;
-  justify-content:center;font-size:16px;flex-shrink:0;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.ci{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
 .ci.bl{background:rgba(27,140,255,.15);color:var(--accent);}
 .ci.gn{background:rgba(0,230,118,.12);color:var(--green);}
 .ci.rd{background:rgba(255,61,90,.12);color:var(--red);}
 .ci.or{background:rgba(255,152,0,.12);color:var(--orange);}
 .ci.cy{background:rgba(0,212,255,.12);color:var(--accent2);}
 .ci.pu{background:rgba(186,104,200,.12);color:var(--purple);}
-.ch h3{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;
-  letter-spacing:1px;color:#fff;flex:1;}
-
-/* ══ SUBTABS ══ */
+.ch h3{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:1px;color:#fff;flex:1;}
 .stabs{display:flex;gap:3px;background:var(--panel2);border:1px solid var(--border);
   border-radius:var(--rs);padding:3px;margin-bottom:14px;flex-wrap:wrap;}
 .stab{flex:1;text-align:center;padding:8px 4px;border-radius:6px;cursor:pointer;
-  font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--muted);
-  transition:all .2s;white-space:nowrap;}
+  font-size:11px;font-weight:700;letter-spacing:.3px;color:var(--muted);transition:all .2s;white-space:nowrap;}
 .stab.act{background:var(--grad);color:#fff;box-shadow:var(--glow);}
-
-/* ══ FORMS ══ */
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
 .frow.s1{grid-template-columns:1fr;}
 .frow.s3{grid-template-columns:1fr 1fr 1fr;}
@@ -111,91 +87,74 @@ body{background:var(--bg);color:var(--text);}
 .fg input,.fg select,.fg textarea{background:#070f1c;border:1.5px solid var(--border);
   border-radius:var(--rs);color:var(--text);font-family:'DM Sans',sans-serif;
   font-size:14px;padding:11px 12px;outline:none;transition:.2s;width:100%;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{
-  border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,140,255,.1);}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,140,255,.1);}
 .fg select option{background:#0d1b2e;}
 .fg textarea{resize:vertical;min-height:60px;}
 .hint{font-size:10px;color:var(--muted);margin-top:2px;}
-
-/* ══ BUTTONS ══ */
 .btn{width:100%;margin-top:12px;border:none;border-radius:var(--rs);
-  font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;
-  letter-spacing:2px;padding:13px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:opacity .2s,transform .1s;}
+  font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;letter-spacing:2px;
+  padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  gap:8px;transition:opacity .2s,transform .1s;}
 .btn:active{transform:scale(.98);opacity:.9;}
 .btn.primary{background:var(--grad);color:#fff;box-shadow:var(--glow);}
 .btn.success{background:linear-gradient(135deg,#00c853,#00e676);color:#000;}
 .btn.danger{background:linear-gradient(135deg,#c62828,#ff3d5a);color:#fff;}
 .btn.warn{background:linear-gradient(135deg,#e65100,#ff9800);color:#fff;}
 .btn.info{background:linear-gradient(135deg,#00838f,#00d4ff);color:#fff;}
+.btn.purple{background:linear-gradient(135deg,#7b1fa2,#ba68c8);color:#fff;}
+.btn.whatsapp{background:linear-gradient(135deg,#075e54,#25d366);color:#fff;}
 .btn.sm{font-size:13px;padding:9px;margin-top:8px;}
-.dbtn{width:30px;height:30px;background:rgba(255,61,90,.1);
-  border:1px solid rgba(255,61,90,.2);border-radius:6px;
-  color:var(--red);font-size:12px;cursor:pointer;
+.btn.xs{font-size:11px;padding:6px 10px;margin-top:0;width:auto;}
+.dbtn{width:30px;height:30px;background:rgba(255,61,90,.1);border:1px solid rgba(255,61,90,.2);
+  border-radius:6px;color:var(--red);font-size:12px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;}
 .dbtn:active{background:rgba(255,61,90,.25);}
-.ebtn{width:30px;height:30px;background:rgba(27,140,255,.1);
-  border:1px solid rgba(27,140,255,.2);border-radius:6px;
-  color:var(--accent);font-size:12px;cursor:pointer;
+.ebtn{width:30px;height:30px;background:rgba(27,140,255,.1);border:1px solid rgba(27,140,255,.2);
+  border-radius:6px;color:var(--accent);font-size:12px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;}
-
-/* ══ STATS ══ */
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .sg.c3{grid-template-columns:repeat(3,1fr);}
 .sg.c1{grid-template-columns:1fr;}
-.sc{background:var(--panel2);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px;position:relative;overflow:hidden;}
-.sc::before{content:'';position:absolute;top:-16px;right:-16px;
-  width:60px;height:60px;border-radius:50%;opacity:.07;}
+.sc{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:14px;position:relative;overflow:hidden;}
+.sc::before{content:'';position:absolute;top:-16px;right:-16px;width:60px;height:60px;border-radius:50%;opacity:.07;}
 .sc.bl::before{background:var(--accent);}
 .sc.gn::before{background:var(--green);}
 .sc.rd::before{background:var(--red);}
 .sc.or::before{background:var(--orange);}
 .sc.cy::before{background:var(--accent2);}
+.sc.pu::before{background:var(--purple);}
 .sc i{font-size:18px;margin-bottom:6px;display:block;}
 .sc.bl i{color:var(--accent);}
 .sc.gn i{color:var(--green);}
 .sc.rd i{color:var(--red);}
 .sc.or i{color:var(--orange);}
 .sc.cy i{color:var(--accent2);}
-.sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
-  color:#fff;line-height:1;}
+.sc.pu i{color:var(--purple);}
+.sv{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#fff;line-height:1;}
 .sl{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:.5px;}
-
-/* ══ TABLES ══ */
 .tw{overflow-x:auto;margin-top:8px;}
 table{width:100%;border-collapse:collapse;font-size:12px;min-width:320px;}
-th{background:#060e1c;color:var(--text2);font-size:9px;letter-spacing:1.5px;
-  text-transform:uppercase;padding:9px 10px;text-align:left;
-  border-bottom:1px solid var(--border);white-space:nowrap;}
+th{background:#060e1c;color:var(--text2);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;
+  padding:9px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;}
 td{padding:10px 10px;border-bottom:1px solid #0a1828;vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
-.badge{display:inline-flex;align-items:center;gap:3px;
-  font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;white-space:nowrap;}
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:700;padding:3px 7px;border-radius:20px;white-space:nowrap;}
 .b-in{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2);}
 .b-out{background:rgba(255,61,90,.1);color:var(--red);border:1px solid rgba(255,61,90,.2);}
 .b-bl{background:rgba(27,140,255,.1);color:var(--accent);border:1px solid rgba(27,140,255,.2);}
 .b-or{background:rgba(255,152,0,.1);color:var(--orange);border:1px solid rgba(255,152,0,.2);}
 .b-pu{background:rgba(186,104,200,.1);color:var(--purple);border:1px solid rgba(186,104,200,.2);}
-.td-act{display:flex;gap:4px;align-items:center;}
-
-/* ══ PROGRESS ══ */
 .pbar-bg{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-top:6px;}
 .pbar{height:100%;border-radius:4px;transition:width .4s;}
 .pbar.ok{background:var(--grad);}
 .pbar.warn{background:linear-gradient(90deg,var(--orange),var(--yellow));}
 .pbar.low{background:linear-gradient(90deg,var(--red),var(--orange));}
-
-/* ══ FILTERS ══ */
 .fbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
 .fbar .fg{flex:1;min-width:110px;}
 .fbtn{background:var(--panel2);border:1px solid var(--border2);color:var(--accent);
   font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;
   padding:11px 14px;border-radius:var(--rs);cursor:pointer;white-space:nowrap;align-self:flex-end;}
 .fbtn:active{background:var(--border2);}
-
-/* ══ TOAST ══ */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(16px);
   background:var(--panel2);border:1px solid var(--border2);border-radius:var(--rs);
   padding:11px 18px;font-size:13px;font-weight:600;color:var(--text);
@@ -207,49 +166,30 @@ tr:last-child td{border-bottom:none;}
 .toast.er{border-color:var(--red);color:var(--red);}
 .toast.in{border-color:var(--accent);color:var(--accent);}
 .toast.wa{border-color:var(--orange);color:var(--orange);}
-
-/* ══ MODAL ══ */
-.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;
-  display:none;align-items:flex-end;backdrop-filter:blur(4px);}
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:8000;display:none;align-items:flex-end;backdrop-filter:blur(4px);}
 .mbg.on{display:flex;}
 .modal{width:100%;background:var(--panel2);border-radius:var(--r) var(--r) 0 0;
-  border-top:1px solid var(--border2);padding:20px 18px 36px;
-  max-height:88dvh;overflow-y:auto;animation:slideUp .28s ease;}
+  border-top:1px solid var(--border2);padding:20px 18px 36px;max-height:88dvh;overflow-y:auto;animation:slideUp .28s ease;}
 .mhandle{width:40px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 18px;}
-.modal h3{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;
-  color:#fff;margin-bottom:14px;}
-
-/* ══ SPECIAL BANNER ══ */
+.modal h3{font-family:'Rajdhani',sans-serif;font-size:21px;font-weight:700;color:#fff;margin-bottom:14px;}
 .spec-banner{background:rgba(186,104,200,.12);border:1px solid rgba(186,104,200,.35);
   border-radius:var(--rs);padding:10px 14px;margin-bottom:12px;
   display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--purple);font-weight:600;}
-
-/* ══ SECTION LABELS ══ */
 .slbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);
   margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .slbl::after{content:'';flex:1;height:1px;background:var(--border);}
-
-/* ══ ESTAÑON CARD ══ */
-.est-card{background:var(--panel2);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.est-card{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;}
 .est-card.act-est{border-color:var(--accent);box-shadow:0 0 0 1px rgba(27,140,255,.15);}
 .est-card.done-est{border-color:var(--muted);opacity:.6;}
-
-/* ══ DASH ══ */
 .dash-hero{background:linear-gradient(135deg,var(--panel2) 0%,#0b1e3a 100%);
   border:1px solid var(--border2);border-radius:var(--r);padding:18px;margin-bottom:14px;}
-.dash-date{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:6px;}
+.dash-date{font-size:10px;color:var(--accent);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;}
 .dash-hero h2{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;}
 .dash-hero p{color:var(--text2);font-size:12px;margin-top:3px;}
-
-/* ══ CFG ══ */
-.cfg-item{display:flex;align-items:center;gap:12px;padding:14px 0;
-  border-bottom:1px solid var(--border);}
+.cfg-item{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);}
 .cfg-item:last-child{border-bottom:none;}
 .cfg-ico{width:36px;height:36px;background:rgba(27,140,255,.12);border-radius:10px;
-  display:flex;align-items:center;justify-content:center;color:var(--accent);
-  font-size:16px;flex-shrink:0;}
+  display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:16px;flex-shrink:0;}
 .cfg-info{flex:1;}
 .cfg-info label{font-size:13px;font-weight:600;color:#fff;display:block;}
 .cfg-info small{font-size:11px;color:var(--text2);}
@@ -257,16 +197,10 @@ tr:last-child td{border-bottom:none;}
   color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
   padding:8px 10px;outline:none;width:90px;text-align:center;}
 .cfg-input:focus{border-color:var(--accent);}
-
-/* ══ KPI ══ */
 .kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
-.kpi{background:var(--panel2);border:1px solid var(--border);
-  border-radius:var(--rs);padding:12px;text-align:center;}
-.kn{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;
-  color:#fff;line-height:1;}
+.kpi{background:var(--panel2);border:1px solid var(--border);border-radius:var(--rs);padding:12px;text-align:center;}
+.kn{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:#fff;line-height:1;}
 .ks{font-size:10px;color:var(--text2);margin-top:3px;letter-spacing:.5px;}
-
-/* ══ LOADING ══ */
 #loading-screen{position:fixed;inset:0;z-index:9999;background:var(--bg);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;
   background-image:radial-gradient(ellipse 70% 40% at 50% 0%,rgba(27,140,255,.18),transparent);}
@@ -274,60 +208,46 @@ tr:last-child td{border-bottom:none;}
   display:flex;align-items:center;justify-content:center;font-size:34px;
   color:#fff;box-shadow:var(--glow);animation:pulse 1.5s infinite;}
 .loading-text{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
-  letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;}
+  letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .loading-sub{font-size:12px;color:var(--text2);letter-spacing:1.5px;}
 .loading-bar{width:200px;height:4px;background:var(--border);border-radius:4px;overflow:hidden;}
-.loading-fill{height:100%;background:var(--grad);border-radius:4px;
-  animation:loadBar 1.5s ease infinite;}
+.loading-fill{height:100%;background:var(--grad);border-radius:4px;animation:loadBar 1.5s ease infinite;}
 #loading-status{font-size:12px;color:var(--text2);margin-top:4px;}
-
-/* ══ LOGIN ══ */
-#login{position:fixed;inset:0;z-index:9998;display:none;align-items:center;
-  justify-content:center;background:var(--bg);
-  background-image:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(27,140,255,.2),transparent);}
+#login{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;
+  background:var(--bg);background-image:radial-gradient(ellipse 80% 50% at 50% -5%,rgba(27,140,255,.2),transparent);}
 #login.on{display:flex;}
 .lbox{width:100%;max-width:380px;padding:20px;}
 .l-logo{text-align:center;margin-bottom:28px;}
 .l-logo .lico{width:68px;height:68px;background:var(--grad);border-radius:20px;
-  display:inline-flex;align-items:center;justify-content:center;
-  font-size:30px;color:#fff;box-shadow:var(--glow);margin-bottom:12px;}
-.l-logo h1{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;
-  letter-spacing:4px;background:var(--grad);-webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;}
+  display:inline-flex;align-items:center;justify-content:center;font-size:30px;color:#fff;box-shadow:var(--glow);margin-bottom:12px;}
+.l-logo h1{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;letter-spacing:4px;
+  background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
 .l-logo p{color:var(--text2);font-size:11px;letter-spacing:1.5px;margin-top:3px;}
-.lcard{background:var(--panel);border:1px solid var(--border2);
-  border-radius:var(--r);padding:28px 22px;box-shadow:var(--shadow);}
+.lcard{background:var(--panel);border:1px solid var(--border2);border-radius:var(--r);padding:28px 22px;box-shadow:var(--shadow);}
 .iw{position:relative;margin-bottom:14px;}
-.iw label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
-  color:var(--text2);display:block;margin-bottom:6px;}
-.iw i.ico{position:absolute;left:14px;bottom:12px;color:var(--muted);
-  font-size:15px;pointer-events:none;}
-.iw input{width:100%;background:#070f1c;border:1.5px solid var(--border);
-  border-radius:var(--rs);color:var(--text);font-family:'DM Sans',sans-serif;
-  font-size:15px;padding:12px 12px 12px 44px;outline:none;transition:.2s;}
+.iw label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:6px;}
+.iw i.ico{position:absolute;left:14px;bottom:12px;color:var(--muted);font-size:15px;pointer-events:none;}
+.iw input{width:100%;background:#070f1c;border:1.5px solid var(--border);border-radius:var(--rs);
+  color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;padding:12px 12px 12px 44px;outline:none;transition:.2s;}
 .iw input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(27,140,255,.12);}
-.lbtn{width:100%;background:var(--grad);color:#fff;font-family:'Rajdhani',sans-serif;
-  font-size:19px;font-weight:700;letter-spacing:3px;border:none;
-  border-radius:var(--rs);padding:14px;cursor:pointer;box-shadow:var(--glow);
+.lbtn{width:100%;background:var(--grad);color:#fff;font-family:'Rajdhani',sans-serif;font-size:19px;font-weight:700;
+  letter-spacing:3px;border:none;border-radius:var(--rs);padding:14px;cursor:pointer;box-shadow:var(--glow);
   margin-top:6px;display:flex;align-items:center;justify-content:center;gap:8px;}
 .lbtn:active{opacity:.88;}
 #lerr{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
-
-/* ══ ANIMATIONS ══ */
+/* REPORT TXT BOX */
+.rep-txt{background:#030810;border:1px solid var(--border2);border-radius:var(--rs);
+  padding:14px;font-family:monospace;font-size:12px;color:var(--text);
+  white-space:pre-wrap;line-height:1.6;margin-bottom:10px;max-height:340px;overflow-y:auto;}
+.share-row{display:flex;gap:8px;flex-wrap:wrap;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes loadBar{0%{width:0;margin-left:0}60%{width:80%}100%{width:100%;margin-left:100%}}
 .pulsing{animation:pulse 1.5s infinite;}
-
-/* ══ CHART ══ */
-.cw{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);
-  padding:14px;margin-bottom:14px;}
-.cw h4{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;
-  color:var(--text2);margin-bottom:12px;letter-spacing:1px;}
+.cw{background:var(--panel2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px;}
+.cw h4{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--text2);margin-bottom:12px;letter-spacing:1px;}
 canvas{max-height:180px;}
-
 @media print{
   .topbar,.botnav,.toast,.mbg,.no-print,#loading-screen,#login{display:none!important;}
   body,html{height:auto;overflow:auto;background:#fff;color:#000;}
@@ -340,7 +260,6 @@ canvas{max-height:180px;}
 </head>
 <body>
 
-<!-- ══ LOADING SCREEN ══ -->
 <div id="loading-screen">
   <div class="loading-logo"><i class="fa-solid fa-recycle"></i></div>
   <div class="loading-text">REI</div>
@@ -349,34 +268,21 @@ canvas{max-height:180px;}
   <div id="loading-status">Conectando base de datos...</div>
 </div>
 
-<!-- ══ LOGIN ══ -->
 <div id="login">
   <div class="lbox">
     <div class="l-logo">
       <div class="lico"><i class="fa-solid fa-recycle"></i></div>
-      <h1>REI</h1>
-      <p>RECICLAJE DE ENVASES INDUSTRIALES</p>
+      <h1>REI</h1><p>RECICLAJE DE ENVASES INDUSTRIALES</p>
     </div>
     <div class="lcard">
-      <div class="iw">
-        <label>Usuario</label>
-        <i class="ico fa-solid fa-user"></i>
-        <input type="text" id="lu" placeholder="Usuario" autocomplete="off">
-      </div>
-      <div class="iw">
-        <label>Contraseña</label>
-        <i class="ico fa-solid fa-lock"></i>
-        <input type="password" id="lp" placeholder="••••••••">
-      </div>
-      <button class="lbtn" onclick="doLogin()">
-        <i class="fa-solid fa-right-to-bracket"></i> INGRESAR
-      </button>
+      <div class="iw"><label>Usuario</label><i class="ico fa-solid fa-user"></i><input type="text" id="lu" placeholder="Usuario" autocomplete="off"></div>
+      <div class="iw"><label>Contraseña</label><i class="ico fa-solid fa-lock"></i><input type="password" id="lp" placeholder="••••••••"></div>
+      <button class="lbtn" onclick="doLogin()"><i class="fa-solid fa-right-to-bracket"></i> INGRESAR</button>
       <div id="lerr"><i class="fa-solid fa-circle-exclamation"></i> <span id="lermsg"></span></div>
     </div>
   </div>
 </div>
 
-<!-- ══ APP ══ -->
 <div id="app">
   <div class="topbar">
     <div class="logo-zone">
@@ -384,286 +290,368 @@ canvas{max-height:180px;}
       <div><div class="logo-text">REI</div><div class="logo-sub">ENVASES INDUSTRIALES</div></div>
     </div>
     <div class="topbar-right">
-      <div class="sync-dot" id="sync-dot" title="Estado sincronización"></div>
+      <div class="sync-dot" id="sync-dot"></div>
       <button class="save-btn" onclick="saveData(true)"><i class="fa-solid fa-cloud-arrow-up"></i> Guardar</button>
       <div class="tbtn" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i></div>
     </div>
   </div>
+  <div class="main"><div class="scroll" id="sc">
 
-  <div class="main">
-    <div class="scroll" id="sc">
-
-      <!-- DASHBOARD -->
-      <div class="pg act" id="pg-dash">
-        <div class="dash-hero">
-          <div class="dash-date" id="d-date"></div>
-          <h2>Bienvenido, <span id="d-user"></span> 👋</h2>
-          <p>REI — Reciclaje de Envases Industriales</p>
-        </div>
-        <div class="sg" id="d-stats"></div>
-        <div class="cw"><h4><i class="fa-solid fa-chart-bar" style="color:var(--accent);margin-right:6px;"></i>Movimientos últimos 7 días</h4><canvas id="ch-week"></canvas></div>
-        <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-triangle-exclamation"></i></div><h3>Alertas Activas</h3></div><div id="d-alerts"></div></div>
-        <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>Últimos Registros</h3></div><div id="d-recent"></div></div>
+    <!-- ══ DASHBOARD ══ -->
+    <div class="pg act" id="pg-dash">
+      <div class="dash-hero">
+        <div class="dash-date" id="d-date"></div>
+        <h2>Bienvenido, <span id="d-user"></span> 👋</h2>
+        <p>REI — Reciclaje de Envases Industriales</p>
       </div>
-
-      <!-- INVENTARIO GENERAL -->
-      <div class="pg" id="pg-inv">
-        <div class="ph"><h2><i class="fa-solid fa-warehouse" style="color:var(--accent);"></i> Inventario General</h2><p>Cualquier producto — entrada y salida</p></div>
-        <div class="stabs" id="stabs-inv">
-          <div class="stab act" onclick="stab('inv','stock',this)"><i class="fa-solid fa-list"></i> Stock</div>
-          <div class="stab" onclick="stab('inv','entrada',this)"><i class="fa-solid fa-arrow-down"></i> Entrada</div>
-          <div class="stab" onclick="stab('inv','salida',this)"><i class="fa-solid fa-arrow-up"></i> Salida</div>
-          <div class="stab" onclick="stab('inv','hist',this)"><i class="fa-solid fa-history"></i> Historial</div>
-        </div>
-        <div id="inv-stock"></div>
-        <div id="inv-entrada" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci gn"><i class="fa-solid fa-plus-circle"></i></div><h3>Registrar Entrada</h3></div>
-            <div class="frow"><div class="fg"><label>Nombre del Producto *</label><input type="text" id="in-nom" placeholder="Ej: Cemento, Herramienta..."></div><div class="fg"><label>Categoría *</label><input type="text" id="in-cat" placeholder="Ej: Materiales" list="dl-cat"><datalist id="dl-cat"></datalist></div></div>
-            <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="in-cant" min="0" step="0.01" placeholder="0"></div><div class="fg"><label>Unidad *</label><select id="in-uni"><option value="unidades">Unidades</option><option value="kg">Kilogramos</option><option value="lb">Libras</option><option value="litros">Litros</option><option value="galones">Galones</option><option value="metros">Metros</option><option value="m²">m²</option><option value="rollos">Rollos</option><option value="sacos">Sacos</option><option value="cajas">Cajas</option></select></div></div>
-            <div class="frow"><div class="fg"><label>Fecha de Entrada *</label><input type="date" id="in-fecha"></div><div class="fg"><label>Stock mínimo (alerta)</label><input type="number" id="in-min" min="0" step="0.01" placeholder="0"></div></div>
-            <div class="frow"><div class="fg"><label>Proveedor</label><input type="text" id="in-prov" placeholder="Opcional"></div><div class="fg"><label>Nota</label><input type="text" id="in-nota" placeholder="Opcional"></div></div>
-            <div class="frow s1">
-              <div class="fg" style="flex-direction:row;align-items:center;gap:10px;background:rgba(186,104,200,.08);border:1px solid rgba(186,104,200,.2);border-radius:var(--rs);padding:12px;">
-                <input type="checkbox" id="in-spec" style="width:20px;height:20px;accent-color:var(--purple);">
-                <div><label for="in-spec" style="font-size:13px;color:var(--purple);font-weight:600;text-transform:none;letter-spacing:0;">¿Es producto ESPECIAL?</label><div class="hint">Especiales tienen control de auditoría y salida propia</div></div>
-              </div>
-            </div>
-            <div id="spec-fields" style="display:none;">
-              <div class="spec-banner"><i class="fa-solid fa-star"></i><div>Producto especial — complete datos de auditoría</div></div>
-              <div class="frow"><div class="fg"><label>Código de Auditoría *</label><input type="text" id="in-spec-cod" placeholder="Ej: EST-001"></div><div class="fg"><label>Responsable</label><input type="text" id="in-spec-resp" placeholder="Nombre"></div></div>
-              <div class="frow"><div class="fg"><label>Capacidad máx. (cubetas)</label><input type="number" id="in-spec-max" min="0" step="0.5" placeholder="0"><div class="hint">0 = usar valor de configuración</div></div><div class="fg"><label>Tipo / Descripción</label><input type="text" id="in-spec-tipo" placeholder="Ej: Estañón thinner"></div></div>
-              <div class="frow s1"><div class="fg"><label>Observación inicial</label><textarea id="in-spec-obs" placeholder="Condición, procedencia..."></textarea></div></div>
-            </div>
-            <button class="btn success" onclick="addMovInv('in')"><i class="fa-solid fa-check-circle"></i> REGISTRAR ENTRADA</button>
-          </div>
-        </div>
-        <div id="inv-salida" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci rd"><i class="fa-solid fa-arrow-right-from-bracket"></i></div><h3>Registrar Salida Normal</h3></div>
-            <div style="background:rgba(27,140,255,.06);border:1px solid rgba(27,140,255,.15);border-radius:var(--rs);padding:10px;margin-bottom:12px;font-size:12px;color:var(--text2);">
-              <i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> Solo productos NO especiales. Los especiales tienen su sección propia.
-            </div>
-            <div class="frow"><div class="fg"><label>Producto *</label><input type="text" id="out-nom" placeholder="Nombre" list="dl-prod"><datalist id="dl-prod"></datalist></div><div class="fg"><label>Cantidad *</label><input type="number" id="out-cant" min="0" step="0.01" placeholder="0"></div></div>
-            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="out-fecha"></div><div class="fg"><label>Motivo</label><select id="out-mot"><option>Uso interno</option><option>Venta</option><option>Desperdicio</option><option>Devolución</option><option>Otro</option></select></div></div>
-            <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="out-nota" placeholder="Opcional"></div></div>
-            <button class="btn danger" onclick="addMovInv('out')"><i class="fa-solid fa-minus-circle"></i> REGISTRAR SALIDA</button>
-          </div>
-        </div>
-        <div id="inv-hist" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci bl"><i class="fa-solid fa-list-ul"></i></div><h3>Historial</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fh-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fh-d2"></div><button class="fbtn" onclick="renderInvHist()"><i class="fa-solid fa-search"></i></button></div>
-            <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Tipo</th><th>Nota</th><th></th></tr></thead><tbody id="tb-inv-hist"></tbody></table></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ESPECIALES -->
-      <div class="pg" id="pg-esp">
-        <div class="ph"><h2><i class="fa-solid fa-star" style="color:var(--purple);"></i> Productos Especiales</h2><p>Auditoría, seguimiento y control de límites</p></div>
-        <div class="stabs" id="stabs-esp">
-          <div class="stab act" onclick="stab('esp','lista',this)"><i class="fa-solid fa-boxes-stacked"></i> Activos</div>
-          <div class="stab" onclick="stab('esp','salida',this)"><i class="fa-solid fa-right-from-bracket"></i> Salida</div>
-          <div class="stab" onclick="stab('esp','pasivo',this)"><i class="fa-solid fa-archive"></i> Historial</div>
-        </div>
-        <div id="esp-lista"></div>
-        <div id="esp-salida" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci pu"><i class="fa-solid fa-star-half-stroke"></i></div><h3>Salida Especial del Día</h3></div>
-            <div class="spec-banner"><i class="fa-solid fa-circle-info"></i><div>Registra cubetas usadas, estañones pintados, lavados y responsables</div></div>
-            <div class="frow"><div class="fg"><label>Producto Especial Activo *</label><select id="esp-sel-prod"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="esp-fecha"></div></div>
-            <div id="esp-info-prod"></div>
-            <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="esp-cubetas" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="esp-estanones" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="esp-color" placeholder="Ej: Blanco"></div></div>
-            <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="esp-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="esp-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado Por</label><input type="text" id="esp-revisor" placeholder="Nombre"></div></div>
-            <div class="frow"><div class="fg"><label>Tipo de Envase Lavado</label><input type="text" id="esp-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="esp-nota-s" placeholder="Opcional"></div></div>
-            <div id="esp-limite-warn" style="display:none;" class="spec-banner" style="border-color:var(--orange);color:var(--orange);"><i class="fa-solid fa-exclamation-triangle"></i><span id="esp-warn-txt"></span></div>
-            <button class="btn warn" onclick="addEspSalida()"><i class="fa-solid fa-paper-plane"></i> REGISTRAR SALIDA ESPECIAL</button>
-          </div>
-        </div>
-        <div id="esp-pasivo" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci or"><i class="fa-solid fa-box-archive"></i></div><h3>Inventario Pasivo</h3></div>
-            <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Productos especiales terminados — historial completo</p>
-            <div id="esp-pasivo-list"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PINTURA -->
-      <div class="pg" id="pg-pin">
-        <div class="ph"><h2><i class="fa-solid fa-paint-roller" style="color:var(--accent);"></i> Control de Pintura</h2><p>Cubetas, Solvente, Trapos, Trabajo Diario</p></div>
-        <div class="stabs" id="stabs-pin">
-          <div class="stab act" onclick="stab('pin','cubetas',this)"><i class="fa-solid fa-bucket"></i> Cubetas</div>
-          <div class="stab" onclick="stab('pin','solvente',this)"><i class="fa-solid fa-oil-can"></i> Solvente</div>
-          <div class="stab" onclick="stab('pin','trapos',this)"><i class="fa-solid fa-mitten"></i> Trapos</div>
-          <div class="stab" onclick="stab('pin','trabajo',this)"><i class="fa-solid fa-calendar-check"></i> Trabajo</div>
-        </div>
-        <!-- CUBETAS -->
-        <div id="pin-cubetas">
-          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo" placeholder="Ej: Blanco mate" list="dl-cub-t"><datalist id="dl-cub-t"></datalist></div><div class="fg"><label>Cantidad *</label><input type="number" id="cub-cant" min="1" placeholder="0"></div></div>
-            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fin"></div><div class="fg"><label>Proveedor</label><input type="text" id="cub-prov" placeholder="Opcional"></div></div>
-            <button class="btn success sm" onclick="addCubeta('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
-          </div>
-          <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--red);"></i> Gasto</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo-o" placeholder="Seleccionar" list="dl-cub-t2"><datalist id="dl-cub-t2"></datalist></div><div class="fg"><label>Cubetas Gastadas *</label><input type="number" id="cub-cant-o" min="0" step="0.5" placeholder="0"></div></div>
-            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fout"></div><div class="fg"><label>Nota</label><input type="text" id="cub-nota-o" placeholder="Opcional"></div></div>
-            <button class="btn danger sm" onclick="addCubeta('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial Cubetas</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fcub-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fcub-d2"></div><button class="fbtn" onclick="renderCubetas()"><i class="fa-solid fa-search"></i></button></div>
-            <div class="sg"><div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv" id="cub-stk">0</div><div class="sl">Stock</div></div><div class="sc rd"><i class="fa-solid fa-fire"></i><div class="sv" id="cub-tot">0</div><div class="sl">Total Gastado</div></div></div>
-            <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Mov.</th><th>Nota</th><th></th></tr></thead><tbody id="tb-cub"></tbody></table></div>
-          </div>
-        </div>
-        <!-- SOLVENTE -->
-        <div id="pin-solvente" style="display:none;">
-          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada Estañón de Solvente</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Tipo de Solvente *</label><select id="sol-tipo"><option value="thinner">Thinner</option><option value="varsol">Varsol</option><option value="otro">Otro</option></select></div><div class="fg"><label>Código / ID *</label><input type="text" id="sol-cod" placeholder="Ej: TH-001"><div class="hint">Código único para identificar este estañón</div></div></div>
-            <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="sol-cant" min="1" value="1" placeholder="1"></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fin"></div></div>
-            <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota" placeholder="Opcional"></div></div>
-            <button class="btn success sm" onclick="addSolvente('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
-          </div>
-          <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--orange);"></i> Salida / Gasto del Día</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Estañón Activo *</label><select id="sol-sel"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fout"></div></div>
-            <div id="sol-info"></div>
-            <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="sol-cub-out" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="sol-est-pin" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="sol-color" placeholder="Ej: Blanco"></div></div>
-            <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="sol-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="sol-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado por</label><input type="text" id="sol-revisor" placeholder="Nombre"></div></div>
-            <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="sol-nota-o" placeholder="Opcional"></div></div>
-            <div id="sol-lim-warn" style="display:none;" class="spec-banner" style="color:var(--orange);border-color:var(--orange);"></div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn warn sm" style="flex:1;" onclick="addSolvente('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
-              <button class="btn danger sm" style="flex:1;" onclick="terminarEst()"><i class="fa-solid fa-flag-checkered"></i> MARCAR TERMINADO</button>
-            </div>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci cy"><i class="fa-solid fa-oil-can"></i></div><h3>Estañones Activos</h3></div>
-            <div id="sol-activos"></div>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci or"><i class="fa-solid fa-table-list"></i></div><h3>Historial de Movimientos</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fsol-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fsol-d2"></div><button class="fbtn" onclick="renderSolvente()"><i class="fa-solid fa-search"></i></button></div>
-            <div class="sg c3"><div class="sc bl"><i class="fa-solid fa-oil-can"></i><div class="sv" id="sol-stk">0</div><div class="sl">Activos</div></div><div class="sc rd"><i class="fa-solid fa-droplet"></i><div class="sv" id="sol-cub-t">0</div><div class="sl">Cubetas Usadas</div></div><div class="sc or"><i class="fa-solid fa-soap"></i><div class="sv" id="sol-lav-t">0</div><div class="sl">Lavados</div></div></div>
-            <div class="tw"><table><thead><tr><th>Fecha</th><th>Cód.</th><th>Tipo</th><th>Cub.Usadas</th><th>Est.Pin.</th><th>Lavados</th><th>Lavador</th><th>Revisor</th><th></th></tr></thead><tbody id="tb-sol"></tbody></table></div>
-          </div>
-        </div>
-        <!-- TRAPOS -->
-        <div id="pin-trapos" style="display:none;">
-          <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada — Nuevo Lote</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Tipo *</label><input type="text" id="tra-tipo" placeholder="Ej: Trapo industrial"><div class="hint">Se genera un ID automático para este lote</div></div><div class="fg"><label>Cantidad *</label><input type="number" id="tra-cant" min="0" step="0.1" placeholder="0"></div></div>
-            <div class="frow"><div class="fg"><label>Unidad</label><select id="tra-uni"><option>kg</option><option>libras</option><option>unidades</option><option>rollos</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="tra-fin"></div></div>
-            <button class="btn success sm" onclick="addTrapo('in')"><i class="fa-solid fa-plus"></i> REGISTRAR LOTE</button>
-          </div>
-          <div class="slbl"><i class="fa-solid fa-percent" style="color:var(--orange);"></i> Gasto — % del Lote</div>
-          <div class="card">
-            <div class="frow"><div class="fg"><label>Seleccionar Lote *</label><select id="tra-sel-lot"><option value="">— Seleccione —</option></select></div><div class="fg"><label>% a Gastar *</label><input type="number" id="tra-pct" min="1" max="100" placeholder="Ej: 10"></div></div>
-            <div id="tra-lot-info"></div>
-            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tra-fout"></div><div class="fg"><label>Nota</label><input type="text" id="tra-nota-o" placeholder="Opcional"></div></div>
-            <button class="btn danger sm" onclick="addTrapo('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci or"><i class="fa-solid fa-layer-group"></i></div><h3>Lotes Activos</h3></div>
-            <div id="tra-lotes-list"></div>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial</h3></div>
-            <div class="tw"><table><thead><tr><th>Fecha</th><th>ID Lote</th><th>Tipo</th><th>Cant.</th><th>%</th><th>Mov.</th><th></th></tr></thead><tbody id="tb-tra"></tbody></table></div>
-          </div>
-        </div>
-        <!-- TRABAJO DIARIO -->
-        <div id="pin-trabajo" style="display:none;">
-          <div class="card">
-            <div class="ch"><div class="ci bl"><i class="fa-solid fa-calendar-plus"></i></div><h3>Registro del Día</h3></div>
-            <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tr-fecha"></div><div class="fg"><label>Área / Zona *</label><input type="text" id="tr-area" placeholder="Ej: Galpón Norte"></div></div>
-            <div class="frow"><div class="fg"><label>Tipo Pintura</label><input type="text" id="tr-tipo" placeholder="Ej: Blanco mate" list="dl-cub-t3"><datalist id="dl-cub-t3"></datalist></div><div class="fg"><label>Cubetas Usadas</label><input type="number" id="tr-cub" min="0" step="0.5" placeholder="0"></div></div>
-            <div class="frow s3"><div class="fg"><label>Estañones Pintados</label><input type="number" id="tr-est" min="0" placeholder="0"></div><div class="fg"><label>Trabajadores</label><input type="number" id="tr-trab" min="0" placeholder="0"></div><div class="fg"><label>Metros²</label><input type="number" id="tr-m2" min="0" step="0.1" placeholder="0"></div></div>
-            <div class="frow s1"><div class="fg"><label>Observación</label><input type="text" id="tr-nota" placeholder="Opcional"></div></div>
-            <button class="btn primary" onclick="addTrabajo()"><i class="fa-solid fa-check"></i> REGISTRAR DÍA</button>
-          </div>
-          <div class="card">
-            <div class="ch"><div class="ci gn"><i class="fa-solid fa-calendar-week"></i></div><h3>Historial de Trabajo</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ftr-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ftr-d2"></div><button class="fbtn" onclick="renderTrabajo()"><i class="fa-solid fa-search"></i></button></div>
-            <div class="sg"><div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv" id="tr-dias">0</div><div class="sl">Días</div></div><div class="sc or"><i class="fa-solid fa-ruler-combined"></i><div class="sv" id="tr-m2t">0</div><div class="sl">m² Total</div></div></div>
-            <div class="tw"><table><thead><tr><th>Fecha</th><th>Área</th><th>Pintura</th><th>Cub.</th><th>Est.</th><th>m²</th><th>Trab.</th><th></th></tr></thead><tbody id="tb-trab"></tbody></table></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- REPORTES -->
-      <div class="pg" id="pg-rep">
-        <div class="ph"><h2><i class="fa-solid fa-chart-line" style="color:var(--accent);"></i> Reportes</h2><p>Inventario, gastos y análisis de pintura</p></div>
-        <div class="stabs" id="stabs-rep">
-          <div class="stab act" onclick="stab('rep','inv',this)"><i class="fa-solid fa-warehouse"></i> Inventario</div>
-          <div class="stab" onclick="stab('rep','gastos',this)"><i class="fa-solid fa-receipt"></i> Gastos</div>
-          <div class="stab" onclick="stab('rep','pin',this)"><i class="fa-solid fa-paint-roller"></i> Pintura</div>
-          <div class="stab" onclick="stab('rep','esp',this)"><i class="fa-solid fa-star"></i> Especiales</div>
-        </div>
-        <div id="rep-inv">
-          <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Inventario</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ri-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ri-d2"></div><div class="fg"><label>Categoría</label><select id="ri-cat"><option value="">Todas</option></select></div></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn primary sm" style="flex:1;" onclick="genRepInv()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
-              <button class="btn info sm" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> IMPRIMIR</button>
-            </div>
-          </div><div id="rep-inv-out"></div>
-        </div>
-        <div id="rep-gastos" style="display:none;">
-          <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-sliders"></i></div><h3>Análisis de Gastos</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rg-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rg-d2"></div></div>
-            <button class="btn danger sm" onclick="genRepGastos()"><i class="fa-solid fa-magnifying-glass-chart"></i> ANALIZAR</button>
-          </div><div id="rep-gastos-out"></div>
-        </div>
-        <div id="rep-pin" style="display:none;">
-          <div class="card"><div class="ch"><div class="ci or"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Pintura</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rp-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rp-d2"></div></div>
-            <button class="btn warn sm" onclick="genRepPin()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
-          </div><div id="rep-pin-out"></div>
-        </div>
-        <div id="rep-esp" style="display:none;">
-          <div class="card"><div class="ch"><div class="ci pu"><i class="fa-solid fa-star"></i></div><h3>Reporte Especiales</h3></div>
-            <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="re-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="re-d2"></div></div>
-            <button class="btn sm" style="background:var(--purple);color:#fff;" onclick="genRepEsp()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
-          </div><div id="rep-esp-out"></div>
-        </div>
-      </div>
-
-      <!-- CONFIGURACIÓN -->
-      <div class="pg" id="pg-cfg">
-        <div class="ph"><h2><i class="fa-solid fa-gear" style="color:var(--accent);"></i> Configuración</h2><p>Parámetros de producción y usuarios</p></div>
-        <div class="card">
-          <div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Parámetros de Producción</h3></div>
-          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-paint-roller"></i></div><div class="cfg-info"><label>Estañones pintados por cubeta</label><small>¿Cuántos estañones se pintan con 1 cubeta de pintura?</small></div><input type="number" class="cfg-input" id="cfg-est-por-cub" min="0" step="0.1" placeholder="0"></div>
-          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-soap"></i></div><div class="cfg-info"><label>Estañones lavados por cubeta de solvente</label><small>¿Cuántos estañones se lavan con 1 cubeta de solvente?</small></div><input type="number" class="cfg-input" id="cfg-lav-por-cub" min="0" step="0.1" placeholder="0"></div>
-          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-oil-can"></i></div><div class="cfg-info"><label>Máx. cubetas por estañón de solvente</label><small>Capacidad máxima antes de marcar terminado</small></div><input type="number" class="cfg-input" id="cfg-max-cub-est" min="0" step="0.5" placeholder="0"></div>
-          <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-star"></i></div><div class="cfg-info"><label>Máx. cubetas por producto especial</label><small>Capacidad por defecto si no se especifica al crear</small></div><input type="number" class="cfg-input" id="cfg-max-esp" min="0" step="0.5" placeholder="0"></div>
-          <button class="btn primary" onclick="saveCfg()"><i class="fa-solid fa-save"></i> GUARDAR CONFIGURACIÓN</button>
-        </div>
-        <div class="card">
-          <div class="ch"><div class="ci gn"><i class="fa-solid fa-calculator"></i></div><h3>Promedios Reales del Sistema</h3></div>
-          <div id="cfg-promedios"></div>
-        </div>
-        <div class="card">
-          <div class="ch"><div class="ci cy"><i class="fa-solid fa-database"></i></div><h3>Estado de Sincronización</h3></div>
-          <div id="sync-status-panel"></div>
-          <button class="btn info sm" onclick="loadData(true)"><i class="fa-solid fa-rotate"></i> RECARGAR DATOS</button>
-        </div>
-        <div class="card">
-          <div class="ch"><div class="ci rd"><i class="fa-solid fa-shield-halved"></i></div><h3>Gestión de Usuarios</h3></div>
-          <div class="frow"><div class="fg"><label>Nuevo Usuario</label><input type="text" id="new-user" placeholder="Usuario"></div><div class="fg"><label>Contraseña</label><input type="password" id="new-pass" placeholder="Contraseña"></div></div>
-          <button class="btn success sm" onclick="addUser()"><i class="fa-solid fa-user-plus"></i> AGREGAR</button>
-          <div class="tw" style="margin-top:10px;"><table><thead><tr><th>Usuario</th><th></th></tr></thead><tbody id="tb-users"></tbody></table></div>
-        </div>
-      </div>
-
+      <div class="sg" id="d-stats"></div>
+      <div class="cw"><h4><i class="fa-solid fa-chart-bar" style="color:var(--accent);margin-right:6px;"></i>Movimientos últimos 7 días</h4><canvas id="ch-week"></canvas></div>
+      <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-triangle-exclamation"></i></div><h3>Alertas Activas</h3></div><div id="d-alerts"></div></div>
+      <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>Últimos Registros</h3></div><div id="d-recent"></div></div>
     </div>
-  </div>
+
+    <!-- ══ INVENTARIO GENERAL ══ -->
+    <div class="pg" id="pg-inv">
+      <div class="ph"><h2><i class="fa-solid fa-warehouse" style="color:var(--accent);"></i> Inventario General</h2><p>Todos los productos — incluye especiales</p></div>
+      <div class="stabs" id="stabs-inv">
+        <div class="stab act" onclick="stab('inv','stock',this)"><i class="fa-solid fa-list"></i> Stock</div>
+        <div class="stab" onclick="stab('inv','entrada',this)"><i class="fa-solid fa-arrow-down"></i> Entrada</div>
+        <div class="stab" onclick="stab('inv','salida',this)"><i class="fa-solid fa-arrow-up"></i> Salida</div>
+        <div class="stab" onclick="stab('inv','hist',this)"><i class="fa-solid fa-history"></i> Historial</div>
+      </div>
+
+      <!-- STOCK -->
+      <div id="inv-stock">
+        <div class="fbar">
+          <div class="fg" style="flex:2"><label>Buscar</label><input type="text" id="f-inv-q" placeholder="Nombre, categoría..." oninput="renderInvStock()"></div>
+          <div class="fg"><label>Categoría</label><select id="f-inv-cat" onchange="renderInvStock()"><option value="">Todas</option></select></div>
+        </div>
+        <div id="inv-stock-content"></div>
+      </div>
+
+      <!-- ENTRADA -->
+      <div id="inv-entrada" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci gn"><i class="fa-solid fa-plus-circle"></i></div><h3>Registrar Entrada</h3></div>
+          <div class="frow"><div class="fg"><label>Nombre del Producto *</label><input type="text" id="in-nom" placeholder="Ej: Cemento, Herramienta..."></div><div class="fg"><label>Categoría *</label><input type="text" id="in-cat" placeholder="Ej: Materiales" list="dl-cat"><datalist id="dl-cat"></datalist></div></div>
+          <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="in-cant" min="0" step="0.01" placeholder="0"></div><div class="fg"><label>Unidad *</label><select id="in-uni"><option>unidades</option><option>kg</option><option>lb</option><option>litros</option><option>galones</option><option>metros</option><option>m²</option><option>rollos</option><option>sacos</option><option>cajas</option></select></div></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="in-fecha"></div><div class="fg"><label>Stock mínimo (alerta)</label><input type="number" id="in-min" min="0" step="0.01" placeholder="0"></div></div>
+          <div class="frow"><div class="fg"><label>Proveedor</label><input type="text" id="in-prov" placeholder="Opcional"></div><div class="fg"><label>Nota</label><input type="text" id="in-nota" placeholder="Opcional"></div></div>
+          <div class="frow s1">
+            <div class="fg" style="flex-direction:row;align-items:center;gap:10px;background:rgba(186,104,200,.08);border:1px solid rgba(186,104,200,.2);border-radius:var(--rs);padding:12px;">
+              <input type="checkbox" id="in-spec" style="width:20px;height:20px;accent-color:var(--purple);">
+              <div><label for="in-spec" style="font-size:13px;color:var(--purple);font-weight:600;text-transform:none;letter-spacing:0;">¿Es producto ESPECIAL?</label><div class="hint">Especiales tienen auditoría y salida propia — NO se eliminan con salida normal</div></div>
+            </div>
+          </div>
+          <div id="spec-fields" style="display:none;">
+            <div class="spec-banner"><i class="fa-solid fa-star"></i><div>Complete datos de auditoría del producto especial</div></div>
+            <div class="frow"><div class="fg"><label>Código de Auditoría *</label><input type="text" id="in-spec-cod" placeholder="Ej: EST-001"></div><div class="fg"><label>Responsable</label><input type="text" id="in-spec-resp" placeholder="Nombre"></div></div>
+            <div class="frow"><div class="fg"><label>Capacidad máx. (cubetas)</label><input type="number" id="in-spec-max" min="0" step="0.5" placeholder="0"><div class="hint">0 = usar valor de configuración</div></div><div class="fg"><label>Tipo / Descripción</label><input type="text" id="in-spec-tipo" placeholder="Ej: Estañón thinner"></div></div>
+            <div class="frow s1"><div class="fg"><label>Observación inicial</label><textarea id="in-spec-obs" placeholder="Condición, procedencia..."></textarea></div></div>
+          </div>
+          <button class="btn success" onclick="addMovInv('in')"><i class="fa-solid fa-check-circle"></i> REGISTRAR ENTRADA</button>
+        </div>
+      </div>
+
+      <!-- SALIDA -->
+      <div id="inv-salida" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci rd"><i class="fa-solid fa-arrow-right-from-bracket"></i></div><h3>Registrar Salida Normal</h3></div>
+          <div style="background:rgba(27,140,255,.06);border:1px solid rgba(27,140,255,.15);border-radius:var(--rs);padding:10px;margin-bottom:12px;font-size:12px;color:var(--text2);">
+            <i class="fa-solid fa-circle-info" style="color:var(--accent);"></i> Solo productos NO especiales. Los especiales usan su sección propia.
+          </div>
+          <div class="frow s1"><div class="fg"><label>Seleccionar Producto *</label><select id="out-prod-sel"><option value="">— Seleccione producto —</option></select></div></div>
+          <div id="out-prod-info" style="display:none;margin-bottom:10px;"></div>
+          <div class="frow"><div class="fg"><label>Cantidad a Sacar *</label><input type="number" id="out-cant" min="0" step="0.01" placeholder="0"></div><div class="fg"><label>Fecha *</label><input type="date" id="out-fecha"></div></div>
+          <div class="frow"><div class="fg"><label>Motivo</label><select id="out-mot"><option>Uso interno</option><option>Venta</option><option>Desperdicio</option><option>Devolución</option><option>Otro</option></select></div><div class="fg"><label>Nota</label><input type="text" id="out-nota" placeholder="Opcional"></div></div>
+          <button class="btn danger" onclick="addMovInv('out')"><i class="fa-solid fa-minus-circle"></i> REGISTRAR SALIDA</button>
+        </div>
+      </div>
+
+      <!-- HISTORIAL -->
+      <div id="inv-hist" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci bl"><i class="fa-solid fa-list-ul"></i></div><h3>Historial de Movimientos</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fh-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fh-d2"></div><button class="fbtn" onclick="renderInvHist()"><i class="fa-solid fa-search"></i></button></div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Tipo</th><th>Nota</th><th></th></tr></thead><tbody id="tb-inv-hist"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ESPECIALES ══ -->
+    <div class="pg" id="pg-esp">
+      <div class="ph"><h2><i class="fa-solid fa-star" style="color:var(--purple);"></i> Productos Especiales</h2><p>Auditoría, control de límites, inventario pasivo</p></div>
+      <div class="stabs" id="stabs-esp">
+        <div class="stab act" onclick="stab('esp','lista',this)"><i class="fa-solid fa-boxes-stacked"></i> Activos</div>
+        <div class="stab" onclick="stab('esp','salida',this)"><i class="fa-solid fa-right-from-bracket"></i> Salida Esp.</div>
+        <div class="stab" onclick="stab('esp','pasivo',this)"><i class="fa-solid fa-archive"></i> Historial</div>
+      </div>
+      <div id="esp-lista"></div>
+      <div id="esp-salida" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci pu"><i class="fa-solid fa-star-half-stroke"></i></div><h3>Salida Especial del Día</h3></div>
+          <div class="spec-banner"><i class="fa-solid fa-circle-info"></i><div>Registra cubetas usadas, estañones pintados, lavados y responsables</div></div>
+          <div class="frow"><div class="fg"><label>Producto Especial *</label><select id="esp-sel-prod"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="esp-fecha"></div></div>
+          <div id="esp-info-prod"></div>
+          <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="esp-cubetas" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="esp-estanones" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="esp-color" placeholder="Ej: Azul"></div></div>
+          <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="esp-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="esp-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado Por</label><input type="text" id="esp-revisor" placeholder="Nombre"></div></div>
+          <div class="frow"><div class="fg"><label>Tipo de Envase Lavado</label><input type="text" id="esp-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="esp-nota-s" placeholder="Opcional"></div></div>
+          <div id="esp-limite-warn" style="display:none;" class="spec-banner"><i class="fa-solid fa-exclamation-triangle"></i><span id="esp-warn-txt"></span></div>
+          <button class="btn warn" onclick="addEspSalida()"><i class="fa-solid fa-paper-plane"></i> REGISTRAR SALIDA ESPECIAL</button>
+        </div>
+      </div>
+      <div id="esp-pasivo" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci or"><i class="fa-solid fa-box-archive"></i></div><h3>Inventario Pasivo / Historial</h3></div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:10px;">Productos especiales terminados — historial completo con opción de reactivar</p>
+          <div id="esp-pasivo-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PINTURA ══ -->
+    <div class="pg" id="pg-pin">
+      <div class="ph"><h2><i class="fa-solid fa-paint-roller" style="color:var(--accent);"></i> Control de Pintura</h2><p>Cubetas, Solvente, Trapos, Trabajo Diario</p></div>
+      <div class="stabs" id="stabs-pin">
+        <div class="stab act" onclick="stab('pin','cubetas',this)"><i class="fa-solid fa-bucket"></i> Cubetas</div>
+        <div class="stab" onclick="stab('pin','solvente',this)"><i class="fa-solid fa-oil-can"></i> Solvente</div>
+        <div class="stab" onclick="stab('pin','trapos',this)"><i class="fa-solid fa-mitten"></i> Trapos</div>
+        <div class="stab" onclick="stab('pin','trabajo',this)"><i class="fa-solid fa-calendar-check"></i> Trabajo</div>
+        <div class="stab" onclick="stab('pin','lavados',this)"><i class="fa-solid fa-soap"></i> Lavados</div>
+      </div>
+
+      <!-- CUBETAS -->
+      <div id="pin-cubetas">
+        <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo" placeholder="Ej: Blanco mate" list="dl-cub-t"><datalist id="dl-cub-t"></datalist></div><div class="fg"><label>Cantidad *</label><input type="number" id="cub-cant" min="1" placeholder="0"></div></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fin"></div><div class="fg"><label>Proveedor</label><input type="text" id="cub-prov" placeholder="Opcional"></div></div>
+          <button class="btn success sm" onclick="addCubeta('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
+        </div>
+        <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--red);"></i> Gasto</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Tipo / Color *</label><input type="text" id="cub-tipo-o" placeholder="Seleccionar" list="dl-cub-t2"><datalist id="dl-cub-t2"></datalist></div><div class="fg"><label>Cubetas Gastadas *</label><input type="number" id="cub-cant-o" min="0" step="0.5" placeholder="0"></div></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="cub-fout"></div><div class="fg"><label>Nota</label><input type="text" id="cub-nota-o" placeholder="Opcional"></div></div>
+          <button class="btn danger sm" onclick="addCubeta('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial Cubetas</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fcub-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fcub-d2"></div><button class="fbtn" onclick="renderCubetas()"><i class="fa-solid fa-search"></i></button></div>
+          <div class="sg"><div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv" id="cub-stk">0</div><div class="sl">Stock</div></div><div class="sc rd"><i class="fa-solid fa-fire"></i><div class="sv" id="cub-tot">0</div><div class="sl">Total Gastado</div></div></div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Cant.</th><th>Mov.</th><th>Nota</th><th></th></tr></thead><tbody id="tb-cub"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- SOLVENTE -->
+      <div id="pin-solvente" style="display:none;">
+        <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada Estañón</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Tipo *</label><select id="sol-tipo"><option value="thinner">Thinner</option><option value="varsol">Varsol</option><option value="otro">Otro</option></select></div><div class="fg"><label>Código / ID *</label><input type="text" id="sol-cod" placeholder="Ej: TH-001"><div class="hint">Código único para este estañón</div></div></div>
+          <div class="frow"><div class="fg"><label>Cantidad *</label><input type="number" id="sol-cant" min="1" value="1"></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fin"></div></div>
+          <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota" placeholder="Opcional"></div></div>
+          <button class="btn success sm" onclick="addSolvente('in')"><i class="fa-solid fa-plus"></i> REGISTRAR ENTRADA</button>
+        </div>
+        <div class="slbl"><i class="fa-solid fa-arrow-up" style="color:var(--orange);"></i> Salida / Gasto del Día</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Estañón Activo *</label><select id="sol-sel"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="sol-fout"></div></div>
+          <div id="sol-info"></div>
+          <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="sol-cub-out" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Est. Pintados</label><input type="number" id="sol-est-pin" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="sol-color" placeholder="Ej: Azul"></div></div>
+          <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="sol-lavados-s" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="sol-lavador-s" placeholder="Nombre lavador"></div><div class="fg"><label>Revisado Por</label><input type="text" id="sol-revisor-s" placeholder="Nombre revisor"></div></div>
+          <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env-s" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Entregado A / Para</label><input type="text" id="sol-entregado-a" placeholder="A quién se entregó la cubeta"></div></div>
+          <div id="sol-lim-warn" style="display:none;" class="spec-banner" style="color:var(--orange);border-color:var(--orange);"></div>
+          <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota-o" placeholder="Opcional"></div></div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn warn sm" style="flex:1;" onclick="addSolvente('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+            <button class="btn danger sm" style="flex:1;" onclick="terminarEst()"><i class="fa-solid fa-flag-checkered"></i> MARCAR TERMINADO</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci cy"><i class="fa-solid fa-oil-can"></i></div><h3>Estañones Activos</h3></div>
+          <div id="sol-activos"></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci or"><i class="fa-solid fa-table-list"></i></div><h3>Historial Movimientos</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="fsol-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="fsol-d2"></div><button class="fbtn" onclick="renderSolvente()"><i class="fa-solid fa-search"></i></button></div>
+          <div class="sg c3"><div class="sc bl"><i class="fa-solid fa-oil-can"></i><div class="sv" id="sol-stk">0</div><div class="sl">Activos</div></div><div class="sc rd"><i class="fa-solid fa-droplet"></i><div class="sv" id="sol-cub-t">0</div><div class="sl">Cubetas Usadas</div></div><div class="sc or"><i class="fa-solid fa-soap"></i><div class="sv" id="sol-lav-t">0</div><div class="sl">Total Lavados</div></div></div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Cód.</th><th>Tipo</th><th>Cub.Used.</th><th>Est.Pin.</th><th>Color</th><th>Lav.</th><th>Lavador</th><th>Revisor</th><th>Entregado A</th><th>Envase</th></tr></thead><tbody id="tb-sol"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- TRAPOS -->
+      <div id="pin-trapos" style="display:none;">
+        <div class="slbl"><i class="fa-solid fa-arrow-down" style="color:var(--green);"></i> Entrada — Nuevo Lote</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Tipo *</label><input type="text" id="tra-tipo" placeholder="Ej: Trapo industrial"><div class="hint">Se genera un ID automático</div></div><div class="fg"><label>Cantidad *</label><input type="number" id="tra-cant" min="0" step="0.1" placeholder="0"></div></div>
+          <div class="frow"><div class="fg"><label>Unidad</label><select id="tra-uni"><option>kg</option><option>libras</option><option>unidades</option><option>rollos</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="tra-fin"></div></div>
+          <button class="btn success sm" onclick="addTrapo('in')"><i class="fa-solid fa-plus"></i> REGISTRAR LOTE</button>
+        </div>
+        <div class="slbl"><i class="fa-solid fa-percent" style="color:var(--orange);"></i> Gasto — % del Lote</div>
+        <div class="card">
+          <div class="frow"><div class="fg"><label>Seleccionar Lote *</label><select id="tra-sel-lot"><option value="">— Seleccione —</option></select></div><div class="fg"><label>% a Gastar *</label><input type="number" id="tra-pct" min="1" max="100" placeholder="Ej: 10"></div></div>
+          <div id="tra-lot-info"></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tra-fout"></div><div class="fg"><label>Nota</label><input type="text" id="tra-nota-o" placeholder="Opcional"></div></div>
+          <button class="btn danger sm" onclick="addTrapo('out')"><i class="fa-solid fa-minus"></i> REGISTRAR GASTO</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci or"><i class="fa-solid fa-layer-group"></i></div><h3>Lotes Activos</h3></div>
+          <div id="tra-lotes-list"></div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci bl"><i class="fa-solid fa-table-list"></i></div><h3>Historial Trapos</h3></div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>ID Lote</th><th>Tipo</th><th>Cant.</th><th>%</th><th>Mov.</th></tr></thead><tbody id="tb-tra"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- TRABAJO DIARIO -->
+      <div id="pin-trabajo" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci bl"><i class="fa-solid fa-calendar-plus"></i></div><h3>Registro del Día</h3></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="tr-fecha"></div><div class="fg"><label>Área / Zona *</label><input type="text" id="tr-area" placeholder="Ej: Galpón Norte"></div></div>
+          <div class="frow"><div class="fg"><label>Tipo Pintura</label><input type="text" id="tr-tipo" placeholder="Ej: Azul" list="dl-cub-t3"><datalist id="dl-cub-t3"></datalist></div><div class="fg"><label>Cubetas Usadas</label><input type="number" id="tr-cub" min="0" step="0.5" placeholder="0"></div></div>
+          <div class="frow s3"><div class="fg"><label>Estañones Pintados</label><input type="number" id="tr-est" min="0" placeholder="0"></div><div class="fg"><label>Trabajadores</label><input type="number" id="tr-trab" min="0" placeholder="0"></div><div class="fg"><label>Metros²</label><input type="number" id="tr-m2" min="0" step="0.1" placeholder="0"></div></div>
+          <div class="frow s1"><div class="fg"><label>Observación</label><input type="text" id="tr-nota" placeholder="Opcional"></div></div>
+          <button class="btn primary" onclick="addTrabajo()"><i class="fa-solid fa-check"></i> REGISTRAR DÍA</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci gn"><i class="fa-solid fa-calendar-week"></i></div><h3>Historial de Trabajo</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ftr-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ftr-d2"></div><button class="fbtn" onclick="renderTrabajo()"><i class="fa-solid fa-search"></i></button></div>
+          <div class="sg"><div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv" id="tr-dias">0</div><div class="sl">Días</div></div><div class="sc or"><i class="fa-solid fa-ruler-combined"></i><div class="sv" id="tr-m2t">0</div><div class="sl">m² Total</div></div></div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Área</th><th>Pintura</th><th>Cub.</th><th>Est.</th><th>m²</th><th>Trab.</th><th></th></tr></thead><tbody id="tb-trab"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- LAVADOS POR DÍA — SISTEMA APARTE -->
+      <div id="pin-lavados" style="display:none;">
+        <div class="ph" style="margin-bottom:10px;"><h2 style="font-size:20px;"><i class="fa-solid fa-soap" style="color:var(--accent2);"></i> Registro de Lavados por Día</h2><p>Control diario — lavador, revisor, tipo de envase</p></div>
+        <div class="card">
+          <div class="ch"><div class="ci cy"><i class="fa-solid fa-plus-circle"></i></div><h3>Nuevo Registro de Lavado</h3></div>
+          <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="lav-fecha"></div><div class="fg"><label>Cantidad Lavados *</label><input type="number" id="lav-cant" min="1" placeholder="0"></div></div>
+          <div class="frow"><div class="fg"><label>Tipo de Envase Lavado *</label><input type="text" id="lav-tipo-env" placeholder="Ej: Estañón 55 gal, Barril..."></div><div class="fg"><label>Estañón de Solvente Usado</label><select id="lav-sol-sel"><option value="">— Opcional —</option></select></div></div>
+          <div class="frow"><div class="fg"><label>Lavador *</label><input type="text" id="lav-lavador" placeholder="Nombre del lavador"></div><div class="fg"><label>Revisado Por *</label><input type="text" id="lav-revisor" placeholder="Nombre del revisor"></div></div>
+          <div class="frow s3"><div class="fg"><label>Cubetas Solvente Usadas</label><input type="number" id="lav-cub-sol" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Hora Inicio</label><input type="time" id="lav-hora-i" placeholder="07:00"></div><div class="fg"><label>Hora Fin</label><input type="time" id="lav-hora-f" placeholder="17:00"></div></div>
+          <div class="frow s1"><div class="fg"><label>Observación</label><textarea id="lav-obs" placeholder="Condición de los envases, incidentes, notas..."></textarea></div></div>
+          <button class="btn info" onclick="addLavado()"><i class="fa-solid fa-soap"></i> REGISTRAR LAVADO</button>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ci cy"><i class="fa-solid fa-table-list"></i></div><h3>Historial de Lavados</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="flav-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="flav-d2"></div><button class="fbtn" onclick="renderLavados()"><i class="fa-solid fa-search"></i></button></div>
+          <div class="sg c3">
+            <div class="sc cy"><i class="fa-solid fa-soap"></i><div class="sv" id="lav-total-n">0</div><div class="sl">Total Lavados</div></div>
+            <div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv" id="lav-total-dias">0</div><div class="sl">Días Registrados</div></div>
+            <div class="sc gn"><i class="fa-solid fa-droplet"></i><div class="sv" id="lav-total-cub">0</div><div class="sl">Cubetas Solvente</div></div>
+          </div>
+          <div class="tw"><table><thead><tr><th>Fecha</th><th>Envase</th><th>Cant.</th><th>Solvente</th><th>Cub.Sol.</th><th>Lavador</th><th>Revisor</th><th>Horario</th><th></th></tr></thead><tbody id="tb-lav"></tbody></table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REPORTES ══ -->
+    <div class="pg" id="pg-rep">
+      <div class="ph"><h2><i class="fa-solid fa-chart-line" style="color:var(--accent);"></i> Reportes</h2><p>Inventario, gastos, pintura — compartir por WhatsApp</p></div>
+      <div class="stabs" id="stabs-rep">
+        <div class="stab act" onclick="stab('rep','inv',this)"><i class="fa-solid fa-warehouse"></i> Inventario</div>
+        <div class="stab" onclick="stab('rep','gastos',this)"><i class="fa-solid fa-receipt"></i> Gastos</div>
+        <div class="stab" onclick="stab('rep','pin',this)"><i class="fa-solid fa-paint-roller"></i> Pintura</div>
+        <div class="stab" onclick="stab('rep','esp',this)"><i class="fa-solid fa-star"></i> Especiales</div>
+        <div class="stab" onclick="stab('rep','diario',this)"><i class="fa-brands fa-whatsapp"></i> Diario</div>
+      </div>
+      <div id="rep-inv">
+        <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Inventario</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="ri-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="ri-d2"></div><div class="fg"><label>Categoría</label><select id="ri-cat"><option value="">Todas</option></select></div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn primary sm" style="flex:1;" onclick="genRepInv()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+            <button class="btn info sm" style="flex:1;" onclick="window.print()"><i class="fa-solid fa-print"></i> IMPRIMIR</button>
+          </div>
+        </div><div id="rep-inv-out"></div>
+      </div>
+      <div id="rep-gastos" style="display:none;">
+        <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-sliders"></i></div><h3>Análisis de Gastos</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rg-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rg-d2"></div></div>
+          <button class="btn danger sm" onclick="genRepGastos()"><i class="fa-solid fa-magnifying-glass-chart"></i> ANALIZAR</button>
+        </div><div id="rep-gastos-out"></div>
+      </div>
+      <div id="rep-pin" style="display:none;">
+        <div class="card"><div class="ch"><div class="ci or"><i class="fa-solid fa-sliders"></i></div><h3>Reporte de Pintura</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="rp-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="rp-d2"></div></div>
+          <button class="btn warn sm" onclick="genRepPin()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+        </div><div id="rep-pin-out"></div>
+      </div>
+      <div id="rep-esp" style="display:none;">
+        <div class="card"><div class="ch"><div class="ci pu"><i class="fa-solid fa-star"></i></div><h3>Reporte Especiales</h3></div>
+          <div class="fbar"><div class="fg"><label>Desde</label><input type="date" id="re-d1"></div><div class="fg"><label>Hasta</label><input type="date" id="re-d2"></div></div>
+          <button class="btn purple sm" onclick="genRepEsp()"><i class="fa-solid fa-magnifying-glass-chart"></i> GENERAR</button>
+        </div><div id="rep-esp-out"></div>
+      </div>
+
+      <!-- REPORTE DIARIO WHATSAPP -->
+      <div id="rep-diario" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ci gn"><i class="fa-brands fa-whatsapp"></i></div><h3>Informe para el Jefe</h3></div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:14px;">Resumen del día + consumo semanal. Opcionalmente agrega reporte de producto especial o estañón específico.</p>
+          <div class="frow"><div class="fg"><label>Fecha del Informe</label><input type="date" id="rd-fecha"></div></div>
+          <div class="frow"><div class="fg"><label>Semana Desde</label><input type="date" id="rd-sem-d1"></div><div class="fg"><label>Semana Hasta</label><input type="date" id="rd-sem-d2"></div></div>
+          <div style="background:rgba(186,104,200,.08);border:1px solid rgba(186,104,200,.2);border-radius:var(--rs);padding:12px;margin-top:10px;">
+            <div style="font-size:11px;color:var(--purple);font-weight:700;letter-spacing:1px;margin-bottom:10px;">OPCIONES DE REPORTE ADICIONAL</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <input type="checkbox" id="rd-incl-esp" style="width:18px;height:18px;accent-color:var(--purple);" onchange="document.getElementById('rd-esp-wrap').style.display=this.checked?'block':'none'">
+              <label for="rd-incl-esp" style="font-size:13px;color:var(--purple);font-weight:600;">Incluir reporte de Producto Especial</label>
+            </div>
+            <div id="rd-esp-wrap" style="display:none;margin-bottom:10px;">
+              <div class="fg"><label>Seleccionar Producto Especial</label><select id="rd-esp-sel"><option value="">— Seleccione —</option></select></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <input type="checkbox" id="rd-incl-sol" style="width:18px;height:18px;accent-color:var(--accent2);" onchange="document.getElementById('rd-sol-wrap').style.display=this.checked?'block':'none'">
+              <label for="rd-incl-sol" style="font-size:13px;color:var(--accent2);font-weight:600;">Incluir reporte de Estañón de Solvente</label>
+            </div>
+            <div id="rd-sol-wrap" style="display:none;">
+              <div class="fg"><label>Seleccionar Estañón</label><select id="rd-sol-sel"><option value="">— Seleccione —</option></select></div>
+            </div>
+          </div>
+          <button class="btn success" style="margin-top:14px;" onclick="genInformeDiario()"><i class="fa-solid fa-file-lines"></i> GENERAR INFORME</button>
+        </div>
+        <div id="rep-diario-out" style="display:none;">
+          <div class="card">
+            <div class="ch"><div class="ci gn"><i class="fa-solid fa-message"></i></div><h3>Informe Generado</h3></div>
+            <div class="rep-txt" id="informe-txt"></div>
+            <div class="share-row">
+              <button class="btn success sm" style="flex:1;" onclick="copiarInforme()"><i class="fa-solid fa-copy"></i> COPIAR</button>
+              <button class="btn whatsapp sm" style="flex:1;" onclick="compartirWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</button>
+              <button class="btn info sm" style="flex:1;" onclick="compartirSMS()"><i class="fa-solid fa-comment-sms"></i> SMS</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CONFIGURACIÓN ══ -->
+    <div class="pg" id="pg-cfg">
+      <div class="ph"><h2><i class="fa-solid fa-gear" style="color:var(--accent);"></i> Configuración</h2><p>Parámetros, promedios y usuarios</p></div>
+      <div class="card">
+        <div class="ch"><div class="ci bl"><i class="fa-solid fa-sliders"></i></div><h3>Parámetros de Producción</h3></div>
+        <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-paint-roller"></i></div><div class="cfg-info"><label>Estañones pintados por cubeta</label><small>¿Cuántos estañones se pintan con 1 cubeta?</small></div><input type="number" class="cfg-input" id="cfg-est-por-cub" min="0" step="0.1" placeholder="0"></div>
+        <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-soap"></i></div><div class="cfg-info"><label>Estañones lavados por cubeta de solvente</label><small>¿Cuántos estañones se lavan con 1 cubeta?</small></div><input type="number" class="cfg-input" id="cfg-lav-por-cub" min="0" step="0.1" placeholder="0"></div>
+        <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-oil-can"></i></div><div class="cfg-info"><label>Máx. cubetas por estañón de solvente</label><small>Capacidad máxima antes de terminarlo</small></div><input type="number" class="cfg-input" id="cfg-max-cub-est" min="0" step="0.5" placeholder="0"></div>
+        <div class="cfg-item"><div class="cfg-ico"><i class="fa-solid fa-star"></i></div><div class="cfg-info"><label>Máx. cubetas por producto especial</label><small>Capacidad por defecto para especiales</small></div><input type="number" class="cfg-input" id="cfg-max-esp" min="0" step="0.5" placeholder="0"></div>
+        <button class="btn primary" onclick="saveCfg()"><i class="fa-solid fa-save"></i> GUARDAR CONFIGURACIÓN</button>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci gn"><i class="fa-solid fa-calculator"></i></div><h3>Promedios Reales</h3></div>
+        <div id="cfg-promedios"></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci cy"><i class="fa-solid fa-database"></i></div><h3>Sincronización</h3></div>
+        <div id="sync-status-panel"></div>
+        <button class="btn info sm" onclick="loadData(true)"><i class="fa-solid fa-rotate"></i> RECARGAR DATOS</button>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ci rd"><i class="fa-solid fa-shield-halved"></i></div><h3>Gestión de Usuarios</h3></div>
+        <div class="frow"><div class="fg"><label>Nuevo Usuario</label><input type="text" id="new-user" placeholder="Usuario"></div><div class="fg"><label>Contraseña</label><input type="password" id="new-pass" placeholder="Contraseña"></div></div>
+        <button class="btn success sm" onclick="addUser()"><i class="fa-solid fa-user-plus"></i> AGREGAR</button>
+        <div class="tw" style="margin-top:10px;"><table><thead><tr><th>Usuario</th><th></th></tr></thead><tbody id="tb-users"></tbody></table></div>
+      </div>
+    </div>
+
+  </div></div><!-- /scroll /main -->
 
   <div class="botnav">
     <div class="nitem act" id="n-dash" onclick="showPg('dash')"><i class="fa-solid fa-house"></i><span>Inicio</span></div>
@@ -673,7 +661,7 @@ canvas{max-height:180px;}
     <div class="nitem" id="n-rep" onclick="showPg('rep')"><i class="fa-solid fa-chart-line"></i><span>Reportes</span></div>
     <div class="nitem" id="n-cfg" onclick="showPg('cfg')"><i class="fa-solid fa-gear"></i><span>Config</span></div>
   </div>
-</div>
+</div><!-- /app -->
 
 <div class="toast" id="toast"></div>
 <div class="mbg" id="mbg" onclick="closeMod()">
@@ -686,129 +674,89 @@ canvas{max-height:180px;}
   </div>
 </div>
 
+<!-- MODAL EDITAR PRODUCTO -->
+<div class="mbg" id="mbg-edit" onclick="closeEdit()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhandle"></div>
+    <h3>Editar Producto</h3>
+    <input type="hidden" id="edit-id">
+    <div class="frow"><div class="fg"><label>Nombre *</label><input type="text" id="edit-nom"></div><div class="fg"><label>Categoría</label><input type="text" id="edit-cat"></div></div>
+    <div class="frow"><div class="fg"><label>Unidad</label><select id="edit-uni"><option>unidades</option><option>kg</option><option>lb</option><option>litros</option><option>galones</option><option>metros</option><option>m²</option><option>rollos</option><option>sacos</option><option>cajas</option></select></div><div class="fg"><label>Stock mínimo</label><input type="number" id="edit-min" min="0" step="0.01" placeholder="0"></div></div>
+    <div class="frow s1"><div class="fg"><label>Proveedor</label><input type="text" id="edit-prov"></div></div>
+    <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="edit-nota-e"></div></div>
+    <button class="btn primary" onclick="saveEdit()"><i class="fa-solid fa-save"></i> GUARDAR CAMBIOS</button>
+    <button class="btn sm" style="background:var(--panel);border:1px solid var(--border);color:var(--text2);margin-top:8px;" onclick="closeEdit()"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+  </div>
+</div>
+
 <script>
-/* ══════════════════════════════════════════
-   JSONBIN CONFIG — CAMBIAR ESTOS VALORES
-   1. Ir a https://jsonbin.io → crear cuenta gratis
-   2. Crear un Bin con el JSON inicial de abajo
-   3. Copiar BIN_ID y API_KEY aquí
-══════════════════════════════════════════ */
+/* ══════════ CONFIG API ══════════ */
 const BIN_ID  = "69b75daeb7ec241ddc70738f";
-const API_KEY = "$2a$10$fXvRYIGIc8JKtqvJZnvLyeV1UnjX2ky6mw.3OsiXeDB12FK93lZna";
+const API_KEY = "$2a$10$I0ZO4Bj9GLbni1OuUiSTOOIVQIOhqIFalk/YUDcy2/q3Sb2MQTkK.";
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
-
-/* JSON INICIAL PARA EL BIN:
-{
-  "users":[{"user":"JEFFRY","pass":"JEFFRY123"}],
-  "config":{"estPorCub":10,"lavPorCub":5,"maxCubEst":20,"maxEsp":20},
-  "inventario":[],"especiales":[],"cubetas":[],
-  "solvente":[],"trapos":[],"trabajo":[]
-}
-*/
-
-/* ══════════════════════════════════════════
-   DATABASE
-══════════════════════════════════════════ */
+/* ══════════ DB ══════════ */
 let DB = {
   users:[{user:"JEFFRY",pass:"JEFFRY123"}],
   config:{estPorCub:10,lavPorCub:5,maxCubEst:20,maxEsp:20},
-  inventario:[],especiales:[],cubetas:[],solvente:[],trapos:[],trabajo:[]
+  inventario:[],especiales:[],cubetas:[],solvente:[],trapos:[],trabajo:[],lavados:[]
 };
 let currentUser=null, chWeek=null, lastSaved=null, saveTimer=null;
 
-/* ── Cloud Load ── */
+/* ══════════ CLOUD ══════════ */
 async function loadData(forceToast=false){
   setSyncState('syncing');
   setStatus('Conectando con base de datos...');
   try{
-    const res = await fetch(BIN_URL+'/latest',{
-      headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':false}
-    });
+    const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
     if(!res.ok) throw new Error('HTTP '+res.status);
-    const data = await res.json();
-    // jsonbin wraps in {record:{...}} — handle both
-    DB = data.record || data;
-    if(!DB.users) DB.users=[{user:"JEFFRY",pass:"JEFFRY123"}];
-    if(!DB.config) DB.config={estPorCub:10,lavPorCub:5,maxCubEst:20,maxEsp:20};
-    ['inventario','especiales','cubetas','solvente','trapos','trabajo'].forEach(k=>{ if(!DB[k]) DB[k]=[]; });
-    lastSaved = JSON.stringify(DB);
+    const data=await res.json();
+    const loaded=data.record||data;
+    DB=Object.assign({users:[{user:"JEFFRY",pass:"JEFFRY123"}],config:{estPorCub:10,lavPorCub:5,maxCubEst:20,maxEsp:20},
+      inventario:[],especiales:[],cubetas:[],solvente:[],trapos:[],trabajo:[],lavados:[]},loaded);
+    lastSaved=JSON.stringify(DB);
     setSyncState('ok');
     if(forceToast) showToast('✓ Datos actualizados','ok');
-    hideLoading();
-    showLogin();
+    hideLoading(); showLogin();
   } catch(err){
     setSyncState('error');
-    setStatus('Error: '+err.message+'. Verificar BIN_ID y API_KEY.');
-    // Si el BIN no está configurado, igual mostrar login con datos vacíos
-    hideLoading();
-    showLogin();
-    showToast('⚠ Sin conexión — datos locales','wa');
+    setStatus('⚠ Error: '+err.message);
+    hideLoading(); showLogin();
+    showToast('⚠ Sin conexión con servidor','wa');
   }
 }
-
-/* ── Cloud Save ── */
 async function saveData(forceToast=false){
   setSyncState('syncing');
   try{
-    const res = await fetch(BIN_URL,{
-      method:'PUT',
+    const res=await fetch(BIN_URL,{method:'PUT',
       headers:{'Content-Type':'application/json','X-Master-Key':API_KEY},
-      body:JSON.stringify(DB)
-    });
+      body:JSON.stringify(DB)});
     if(!res.ok) throw new Error('HTTP '+res.status);
-    lastSaved = JSON.stringify(DB);
-    setSyncState('ok');
-    updateSyncPanel();
+    lastSaved=JSON.stringify(DB);
+    setSyncState('ok'); updateSyncPanel();
     if(forceToast) showToast('✓ Guardado en la nube','ok');
   } catch(err){
     setSyncState('error');
     showToast('✗ Error al guardar: '+err.message,'er');
   }
 }
+function scheduleSave(){if(saveTimer)clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveData(false),30000);}
+function setSyncState(s){const d=document.getElementById('sync-dot');if(!d)return;d.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');}
+function setStatus(m){const e=document.getElementById('loading-status');if(e)e.textContent=m;}
+function hideLoading(){document.getElementById('loading-screen').style.display='none';}
+function showLogin(){document.getElementById('login').classList.add('on');}
+function updateSyncPanel(){const e=document.getElementById('sync-status-panel');if(!e)return;e.innerHTML=`<div style="font-size:13px;color:var(--text2);padding:8px 0;"><i class="fa-solid fa-cloud" style="color:var(--accent);margin-right:6px;"></i>JSONBin.io — nube<div style="font-size:11px;color:var(--muted);margin-top:4px;">Último guardado: ${lastSaved?new Date().toLocaleTimeString('es-CR'):'—'}</div></div>`;}
 
-/* Auto-save 30s after any change */
-function scheduleSave(){
-  if(saveTimer) clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>saveData(false),30000);
-}
-
-function setSyncState(state){
-  const dot=document.getElementById('sync-dot');
-  if(!dot) return;
-  dot.className='sync-dot'+(state==='syncing'?' syncing':state==='error'?' error':'');
-}
-function setStatus(msg){
-  const el=document.getElementById('loading-status');
-  if(el) el.textContent=msg;
-}
-function hideLoading(){
-  document.getElementById('loading-screen').style.display='none';
-}
-function showLogin(){
-  document.getElementById('login').classList.add('on');
-}
-function updateSyncPanel(){
-  const el=document.getElementById('sync-status-panel');
-  if(!el) return;
-  el.innerHTML=`<div style="font-size:13px;color:var(--text2);padding:8px 0;">
-    <div><i class="fa-solid fa-cloud" style="color:var(--accent);margin-right:6px;"></i>JSONBin.io — datos en la nube</div>
-    <div style="margin-top:4px;font-size:11px;color:var(--muted);">BIN ID: ${BIN_ID.slice(0,8)}... | Último guardado: ${lastSaved?new Date().toLocaleTimeString('es-CR'):'—'}</div>
-  </div>`;
-}
-
-/* ══════════════════════════════════════════
-   AUTH
-══════════════════════════════════════════ */
+/* ══════════ AUTH ══════════ */
 function doLogin(){
-  const u=gv('lu').trim(), p=gv('lp').trim();
+  const u=gv('lu').trim(),p=gv('lp').trim();
   const ok=DB.users.find(x=>x.user===u&&x.pass===p);
   if(ok){
     currentUser=u;
     document.getElementById('login').classList.remove('on');
     document.getElementById('app').classList.add('on');
-    document.getElementById('d-user').textContent=u;
-    setDates(); updateLists(); renderDash(); renderSolActivos(); renderTraLotes(); updateSyncPanel();
+    s2('d-user',u);
+    setDates(); updateLists(); renderDash(); renderSolActivos(); renderTraLotes(); updateLavSolSel(); updateSyncPanel();
   } else {
     document.getElementById('lerr').style.display='block';
     document.getElementById('lermsg').textContent='Usuario o contraseña incorrectos';
@@ -816,19 +764,9 @@ function doLogin(){
 }
 document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('lu').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function doLogout(){saveData(false);currentUser=null;document.getElementById('app').classList.remove('on');document.getElementById('login').classList.add('on');gs('lu','');gs('lp','');document.getElementById('lerr').style.display='none';}
 
-function doLogout(){
-  saveData(false);
-  currentUser=null;
-  document.getElementById('app').classList.remove('on');
-  document.getElementById('login').classList.add('on');
-  gs('lu','');gs('lp','');
-  document.getElementById('lerr').style.display='none';
-}
-
-/* ══════════════════════════════════════════
-   NAVIGATION
-══════════════════════════════════════════ */
+/* ══════════ NAV ══════════ */
 function showPg(name){
   document.querySelectorAll('.pg').forEach(p=>p.classList.remove('act'));
   document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('act'));
@@ -836,41 +774,39 @@ function showPg(name){
   document.getElementById('n-'+name).classList.add('act');
   document.getElementById('sc').scrollTop=0;
   if(name==='dash') renderDash();
-  if(name==='inv'){renderInvStock();updateLists();}
+  if(name==='inv'){renderInvStock();updateLists();updateOutProdSel();}
   if(name==='esp'){renderEspLista();renderEspPasivo();updateEspSel();}
-  if(name==='pin'){renderCubetas();renderSolvente();renderSolActivos();renderTraLotes();renderTrabajo();}
-  if(name==='rep') updateRepCats();
+  if(name==='pin'){renderCubetas();renderSolvente();renderSolActivos();renderTraLotes();renderTrabajo();renderLavados();updateLavSolSel();}
+  if(name==='rep'){updateRepCats();updateInformeSelects();}
   if(name==='cfg'){loadCfg();renderCfgPromedios();renderUsers();updateSyncPanel();}
 }
-
 function stab(pg,name,el){
   const map={inv:['stock','entrada','salida','hist'],esp:['lista','salida','pasivo'],
-    pin:['cubetas','solvente','trapos','trabajo'],rep:['inv','gastos','pin','esp']};
+    pin:['cubetas','solvente','trapos','trabajo','lavados'],rep:['inv','gastos','pin','esp','diario']};
   (map[pg]||[]).forEach(id=>{
-    const target=document.getElementById(pg+'-'+id)||document.getElementById('rep-'+id)||
-                 document.getElementById('pin-'+id)||document.getElementById('esp-'+id)||
-                 document.getElementById('inv-'+id);
-    if(target) target.style.display='none';
+    const t=document.getElementById(pg+'-'+id)||document.getElementById('rep-'+id)||
+             document.getElementById('pin-'+id)||document.getElementById('esp-'+id)||document.getElementById('inv-'+id);
+    if(t) t.style.display='none';
   });
   const show=document.getElementById(pg+'-'+name)||document.getElementById('rep-'+name)||
-             document.getElementById('pin-'+name)||document.getElementById('esp-'+name)||
-             document.getElementById('inv-'+name);
+              document.getElementById('pin-'+name)||document.getElementById('esp-'+name)||document.getElementById('inv-'+name);
   if(show) show.style.display='block';
   document.querySelectorAll('#stabs-'+pg+' .stab').forEach(s=>s.classList.remove('act'));
   el.classList.add('act');
-  if(pg==='inv'&&name==='stock') renderInvStock();
+  if(pg==='inv'&&name==='stock'){renderInvStock();updateOutProdSel();}
   if(pg==='inv'&&name==='hist') renderInvHist();
+  if(pg==='inv'&&name==='salida') updateOutProdSel();
   if(pg==='esp'&&name==='lista'){renderEspLista();updateEspSel();}
   if(pg==='esp'&&name==='pasivo') renderEspPasivo();
   if(pg==='pin'&&name==='cubetas') renderCubetas();
   if(pg==='pin'&&name==='solvente'){renderSolvente();renderSolActivos();}
   if(pg==='pin'&&name==='trapos'){renderTraLotes();renderTraHist();}
   if(pg==='pin'&&name==='trabajo') renderTrabajo();
+  if(pg==='pin'&&name==='lavados'){renderLavados();updateLavSolSel();}
+  if(pg==='rep'&&name==='diario'){gs('rd-fecha',today());setWeekRange();updateInformeSelects();}
 }
 
-/* ══════════════════════════════════════════
-   HELPERS
-══════════════════════════════════════════ */
+/* ══════════ HELPERS ══════════ */
 const gv=id=>{const e=document.getElementById(id);return e?e.value:'';};
 const gs=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
 const s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
@@ -881,38 +817,103 @@ const inR=(d,d1,d2)=>(!d1||d>=d1)&&(!d2||d<=d2);
 const n=id=>{const e=document.getElementById(id);return e?parseFloat(e.value)||0:0;};
 function emptyR(c){return`<tr><td colspan="${c}" style="text-align:center;padding:24px;color:var(--muted);"><i class="fa-solid fa-inbox"></i> Sin registros</td></tr>`;}
 function changed(){scheduleSave();}
+const diasES=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+const mesesES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fechaLarga(d){if(!d)return'';const dt=new Date(d+'T12:00:00');return diasES[dt.getDay()]+' '+dt.getDate()+' de '+mesesES[dt.getMonth()]+' '+dt.getFullYear();}
 
 function setDates(){
   const t=today();
-  ['in-fecha','out-fecha','cub-fin','cub-fout','sol-fin','sol-fout',
-   'tra-fin','tra-fout','tr-fecha','esp-fecha'].forEach(id=>gs(id,t));
-  document.getElementById('d-date').textContent=new Date().toLocaleDateString('es-CR',
-    {weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
+  ['in-fecha','out-fecha','cub-fin','cub-fout','sol-fin','sol-fout','tra-fin','tra-fout','tr-fecha','esp-fecha','lav-fecha'].forEach(id=>gs(id,t));
+  document.getElementById('d-date').textContent=new Date().toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
+}
+function setWeekRange(){
+  const d=new Date();
+  const day=d.getDay();
+  const mon=new Date(d);mon.setDate(d.getDate()-(day===0?6:day-1));
+  gs('rd-sem-d1',mon.toISOString().split('T')[0]);
+  gs('rd-sem-d2',today());
 }
 
-function showToast(msg,type='in'){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.className='toast on '+type;
-  setTimeout(()=>t.className='toast',2800);
-}
+function showToast(msg,type='in'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast on '+type;setTimeout(()=>t.className='toast',2800);}
 function openMod(title,body,cb,isHtml=false){
   document.getElementById('m-title').textContent=title;
   const mb=document.getElementById('m-body');
-  if(isHtml) mb.innerHTML=body; else mb.textContent=body;
+  if(isHtml)mb.innerHTML=body;else mb.textContent=body;
   document.getElementById('m-ok').onclick=()=>{cb();closeMod();};
   document.getElementById('m-ok').style.display='flex';
   document.getElementById('mbg').classList.add('on');
 }
 function closeMod(){document.getElementById('mbg').classList.remove('on');}
+function closeEdit(){document.getElementById('mbg-edit').classList.remove('on');}
 
 /* SPEC CHECKBOX */
 document.getElementById('in-spec').addEventListener('change',function(){
   document.getElementById('spec-fields').style.display=this.checked?'block':'none';
 });
-/* ESP SEL */
 document.getElementById('esp-sel-prod').addEventListener('change',function(){showEspInfo(this.value);});
 document.getElementById('sol-sel').addEventListener('change',function(){showSolInfo(this.value);});
 document.getElementById('tra-sel-lot').addEventListener('change',function(){showTraInfo(this.value);});
+document.getElementById('out-prod-sel').addEventListener('change',function(){showOutProdInfo(this.value);});
+
+/* ══════════ LISTAS ══════════ */
+function updateLists(){
+  const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];
+  gs2dl('dl-cat',cats);
+  const ct=[...new Set(DB.cubetas.map(r=>r.tipo))];
+  ['dl-cub-t','dl-cub-t2','dl-cub-t3'].forEach(id=>gs2dl(id,ct));
+  ['ri-cat','f-inv-cat'].forEach(id=>{
+    const e=document.getElementById(id);if(!e)return;
+    const cur=e.value;
+    e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+    e.value=cur;
+  });
+}
+function gs2dl(id,arr){const e=document.getElementById(id);if(e)e.innerHTML=arr.map(a=>`<option value="${a}">`).join('');}
+function updateRepCats(){const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];const e=document.getElementById('ri-cat');if(e)e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');}
+
+function updateOutProdSel(){
+  // Selección de productos normales (no especiales) con stock
+  const stock=getStock().filter(s=>!s.especial&&s.cant>0);
+  const e=document.getElementById('out-prod-sel');
+  if(!e)return;
+  e.innerHTML='<option value="">— Seleccione producto —</option>'+
+    stock.map(s=>`<option value="${s.nombre}">${s.nombre} (${s.cant.toFixed(2)} ${s.uni})</option>`).join('');
+}
+function showOutProdInfo(nom){
+  const e=document.getElementById('out-prod-info');
+  if(!nom){e.style.display='none';return;}
+  const s=getStock().find(x=>x.nombre===nom);
+  if(!s){e.style.display='none';return;}
+  const col=s.cant<=0?'var(--red)':s.cant<=s.min?'var(--orange)':'var(--green)';
+  e.style.display='block';
+  e.innerHTML=`<div style="background:rgba(27,140,255,.07);border:1px solid rgba(27,140,255,.2);border-radius:var(--rs);padding:10px;font-size:12px;">
+    <span style="color:var(--text2);">Stock disponible: </span><strong style="color:${col};font-size:16px;">${s.cant.toFixed(2)} ${s.uni}</strong>
+    ${s.cat?`<span style="color:var(--muted);margin-left:8px;">| ${s.cat}</span>`:''}
+  </div>`;
+}
+
+function updateEspSel(){
+  const a=DB.especiales.filter(p=>p.activo);
+  const e=document.getElementById('esp-sel-prod');
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre}</option>`).join('');
+  updateSolSel();
+}
+function updateSolSel(){
+  const a=DB.solvente.filter(s=>s.activo);
+  const max=DB.config.maxCubEst;
+  const e=document.getElementById('sol-sel');
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(s=>`<option value="${s.id}">[${s.cod}] ${(s.tipo||'').toUpperCase()} (${s.cubUsadas||0}/${max} cub.)</option>`).join('');
+}
+function updateTraLotSel(){
+  const a=DB.trapos.filter(t=>t.mov==='ENTRADA'&&(t.pctUsado||0)<100);
+  const e=document.getElementById('tra-sel-lot');
+  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(t=>`<option value="${t.id}">[${t.id.slice(-6)}] ${t.tipo} (${(t.pctUsado||0).toFixed(0)}% usado)</option>`).join('');
+}
+function updateLavSolSel(){
+  const a=DB.solvente.filter(s=>s.activo);
+  const e=document.getElementById('lav-sol-sel');
+  if(e)e.innerHTML='<option value="">— Opcional —</option>'+a.map(s=>`<option value="${s.id}">[${s.cod}] ${(s.tipo||'').toUpperCase()}</option>`).join('');
+}
 
 function showEspInfo(id){
   const p=DB.especiales.find(x=>x.id===id&&x.activo);
@@ -927,12 +928,9 @@ function showEspInfo(id){
     <div style="font-size:11px;color:var(--text2);">Tipo: ${p.tipo||'—'} | Resp: ${p.resp||'—'}</div>
     <div style="font-size:11px;margin-top:4px;">Cubetas: <strong style="color:var(--accent)">${p.cubUsadas||0}</strong> / ${max}</div>
     <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div></div>`;
-  if(pct>=90){
-    w.style.display='flex';
-    document.getElementById('esp-warn-txt').textContent=pct>=100?'Límite alcanzado — se moverá a pasivo al guardar':'Cerca del límite ('+pct.toFixed(0)+'%)';
-  } else w.style.display='none';
+  if(pct>=90){w.style.display='flex';document.getElementById('esp-warn-txt').textContent=pct>=100?'Límite alcanzado — pasará al historial':'Cerca del límite ('+pct.toFixed(0)+'%)';}
+  else w.style.display='none';
 }
-
 function showSolInfo(id){
   const s=DB.solvente.find(x=>x.id===id&&x.activo);
   const el=document.getElementById('sol-info');
@@ -943,13 +941,12 @@ function showSolInfo(id){
   const cls=pct>=90?'low':pct>=70?'warn':'ok';
   const tc=s.tipo==='thinner'?'var(--accent)':'var(--accent2)';
   el.innerHTML=`<div style="background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);border-radius:var(--rs);padding:12px;margin-bottom:10px;">
-    <div style="font-size:12px;color:${tc};font-weight:700;">${s.tipo.toUpperCase()} — ${s.cod}</div>
+    <div style="font-size:12px;color:${tc};font-weight:700;">${(s.tipo||'').toUpperCase()} — ${s.cod}</div>
     <div style="font-size:11px;color:var(--text2);">Cubetas: <strong style="color:var(--accent)">${s.cubUsadas||0}</strong> / ${max} | Lavados: ${s.lavTotal||0}</div>
     <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div></div>`;
-  if(pct>=90){w.style.display='flex';w.textContent=pct>=100?'⚠ Límite alcanzado — registre y marque terminado':'⚠ Cerca del límite ('+pct.toFixed(0)+'%)';}
+  if(pct>=90){w.style.display='flex';w.textContent=pct>=100?'⚠ Límite — registre y marque terminado':'⚠ Cerca del límite ('+pct.toFixed(0)+'%)';}
   else w.style.display='none';
 }
-
 function showTraInfo(id){
   const t=DB.trapos.find(x=>x.id===id);
   const el=document.getElementById('tra-lot-info');
@@ -958,52 +955,13 @@ function showTraInfo(id){
   const cls=pct>=90?'low':pct>=70?'warn':'ok';
   el.innerHTML=`<div style="background:rgba(255,152,0,.07);border:1px solid rgba(255,152,0,.2);border-radius:var(--rs);padding:12px;margin-bottom:8px;">
     <div style="font-size:12px;color:var(--orange);font-weight:700;">${t.tipo} — ID: ${t.id.slice(-6)}</div>
-    <div style="font-size:11px;color:var(--text2);">${t.cant} ${t.uni} | Entrada: ${fmt(t.fecha)}</div>
+    <div style="font-size:11px;color:var(--text2);">${t.cant} ${t.uni} | ${fmt(t.fecha)}</div>
     <div style="font-size:11px;margin-top:4px;">Usado: <strong style="color:var(--orange)">${pct.toFixed(1)}%</strong></div>
     <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
     ${pct>=100?'<div style="font-size:11px;color:var(--red);margin-top:4px;">🔴 Lote agotado</div>':''}</div>`;
 }
 
-/* ══════════════════════════════════════════
-   LISTAS
-══════════════════════════════════════════ */
-function updateLists(){
-  const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];
-  gs2dl('dl-cat',cats);
-  const prods=[...new Set(DB.inventario.filter(r=>r.mov==='ENTRADA'&&!r.especial).map(r=>r.nombre))];
-  gs2dl('dl-prod',prods);
-  const ct=[...new Set(DB.cubetas.map(r=>r.tipo))];
-  ['dl-cub-t','dl-cub-t2','dl-cub-t3'].forEach(id=>gs2dl(id,ct));
-  ['ri-cat'].forEach(id=>{
-    const e=document.getElementById(id);if(!e)return;
-    const cur=e.value;
-    e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');
-    e.value=cur;
-  });
-}
-function gs2dl(id,arr){const e=document.getElementById(id);if(e)e.innerHTML=arr.map(a=>`<option value="${a}">`).join('');}
-function updateRepCats(){const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];const e=document.getElementById('ri-cat');if(e)e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');}
-function updateEspSel(){
-  const a=DB.especiales.filter(p=>p.activo);
-  const e=document.getElementById('esp-sel-prod');
-  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre}</option>`).join('');
-  updateSolSel();
-}
-function updateSolSel(){
-  const a=DB.solvente.filter(s=>s.activo);
-  const e=document.getElementById('sol-sel');
-  const max=DB.config.maxCubEst;
-  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(s=>`<option value="${s.id}">[${s.cod}] ${s.tipo.toUpperCase()} (${s.cubUsadas||0}/${max} cub.)</option>`).join('');
-}
-function updateTraLotSel(){
-  const a=DB.trapos.filter(t=>t.mov==='ENTRADA'&&(t.pctUsado||0)<100);
-  const e=document.getElementById('tra-sel-lot');
-  if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(t=>`<option value="${t.id}">[${t.id.slice(-6)}] ${t.tipo} (${(t.pctUsado||0).toFixed(0)}% usado)</option>`).join('');
-}
-
-/* ══════════════════════════════════════════
-   INVENTARIO GENERAL
-══════════════════════════════════════════ */
+/* ══════════ INVENTARIO GENERAL ══════════ */
 function addMovInv(mov){
   if(mov==='in'){
     const nom=gv('in-nom').trim(),cat=gv('in-cat').trim(),cant=n('in-cant'),uni=gv('in-uni'),
@@ -1014,9 +972,10 @@ function addMovInv(mov){
       const cod=gv('in-spec-cod').trim(),resp=gv('in-spec-resp').trim(),
             maxCub=n('in-spec-max'),tipo=gv('in-spec-tipo').trim(),obs=gv('in-spec-obs').trim();
       if(!cod){showToast('Código de auditoría requerido','er');return;}
-      DB.especiales.push({id:uid(),nombre:nom,cat,cant,uni,fecha,codAudit:cod,resp,maxCub,tipo,obs,
+      const eid=uid();
+      DB.especiales.push({id:eid,nombre:nom,cat,cant,uni,fecha,codAudit:cod,resp,maxCub,tipo,obs,
         activo:true,cubUsadas:0,movimientos:[{fecha,tipo:'ENTRADA',cant,nota:'Entrada inicial. '+obs}]});
-      DB.inventario.push({id:uid(),nombre:nom,cat,cant,uni,fecha,min,prov,nota:'ESPECIAL:'+cod,mov:'ENTRADA',especial:true});
+      DB.inventario.push({id:uid(),nombre:nom,cat,cant,uni,fecha,min,prov,nota:'ESPECIAL:'+cod,mov:'ENTRADA',especial:true,espId:eid});
       gs('in-spec-cod','');gs('in-spec-resp','');gs('in-spec-max','');gs('in-spec-tipo','');gs('in-spec-obs','');
       document.getElementById('in-spec').checked=false;
       document.getElementById('spec-fields').style.display='none';
@@ -1024,45 +983,50 @@ function addMovInv(mov){
       DB.inventario.push({id:uid(),nombre:nom,cat,cant,uni,fecha,min,prov,nota,mov:'ENTRADA',especial:false});
     }
     ['in-nom','in-cat','in-cant','in-min','in-prov','in-nota'].forEach(id=>gs(id,''));
-    updateLists();showToast('✓ Entrada registrada','ok');renderInvStock();changed();
+    updateLists();updateOutProdSel();showToast('✓ Entrada registrada','ok');renderInvStock();changed();
   } else {
-    const nom=gv('out-nom').trim(),cant=n('out-cant'),fecha=gv('out-fecha'),mot=gv('out-mot'),nota=gv('out-nota').trim();
-    if(!nom||!cant||!fecha){showToast('Complete los campos requeridos','er');return;}
+    const nom=gv('out-prod-sel'),cant=n('out-cant'),fecha=gv('out-fecha'),mot=gv('out-mot'),nota=gv('out-nota').trim();
+    if(!nom||!cant||!fecha){showToast('Seleccione producto y cantidad','er');return;}
     const esEsp=DB.especiales.find(p=>p.nombre.toLowerCase()===nom.toLowerCase()&&p.activo);
-    if(esEsp){showToast('⚠ Es producto especial — use sección Especiales','wa');return;}
-    const prev=DB.inventario.filter(r=>r.nombre.toLowerCase()===nom.toLowerCase()&&r.mov==='ENTRADA');
+    if(esEsp){showToast('⚠ Producto especial — use sección Especiales','wa');return;}
+    const prev=DB.inventario.filter(r=>r.nombre===nom&&r.mov==='ENTRADA');
     const uni=prev.length?prev[prev.length-1].uni:'unidades';
     DB.inventario.push({id:uid(),nombre:nom,cat:prev.length?prev[0].cat:'',cant,uni,fecha,mot,nota,mov:'SALIDA',especial:false});
-    ['out-nom','out-cant','out-nota'].forEach(id=>gs(id,''));
-    showToast('✓ Salida registrada','ok');renderInvStock();renderInvHist();changed();
+    gs('out-cant','');gs('out-nota','');gs('out-prod-sel','');
+    document.getElementById('out-prod-info').style.display='none';
+    showToast('✓ Salida registrada','ok');renderInvStock();renderInvHist();updateOutProdSel();changed();
   }
 }
 
 function getStock(){
   const s={};
-  DB.inventario.filter(r=>!r.especial).forEach(r=>{
-    const k=r.nombre.toLowerCase();
-    if(!s[k])s[k]={nombre:r.nombre,cat:r.cat||'',cant:0,uni:r.uni||'unid',min:r.min||0};
+  DB.inventario.forEach(r=>{
+    const k=r.nombre;
+    if(!s[k])s[k]={nombre:r.nombre,cat:r.cat||'',cant:0,uni:r.uni||'unid',min:r.min||0,especial:r.especial||false};
     s[k].cant+=r.mov==='ENTRADA'?r.cant:-r.cant;
     if(r.min)s[k].min=r.min;if(r.uni)s[k].uni=r.uni;if(r.cat)s[k].cat=r.cat;
+    if(r.especial)s[k].especial=true;
   });
   return Object.values(s).sort((a,b)=>a.nombre.localeCompare(b.nombre));
 }
 
 function renderInvStock(){
-  const q=(gv('f-inv-q')||'').toLowerCase(), cf=gv('f-inv-cat');
+  const q=(gv('f-inv-q')||'').toLowerCase(),cf=gv('f-inv-cat');
   const stock=getStock().filter(s=>(!q||s.nombre.toLowerCase().includes(q)||s.cat.toLowerCase().includes(q))&&(!cf||s.cat===cf));
-  const el=document.getElementById('inv-stock');
-  if(!stock.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-box-open"></i><p>Sin productos. Registre una entrada.</p></div>';return;}
+  const el=document.getElementById('inv-stock-content');
+  if(!stock.length){el.innerHTML='<div style="text-align:center;padding:36px;color:var(--muted);"><i class="fa-solid fa-box-open" style="font-size:44px;display:block;margin-bottom:10px;opacity:.35;"></i><p>Sin productos. Registre una entrada.</p></div>';return;}
   el.innerHTML=stock.map(s=>{
     const pct=s.min>0?Math.min(100,s.cant/s.min*100):100;
     const cls=s.min>0?(s.cant<=s.min*.3?'low':s.cant<=s.min?'warn':'ok'):'ok';
-    const col=cls==='low'?'var(--red)':cls==='warn'?'var(--orange)':'var(--green)';
+    const col=cls==='low'?'var(--red)':cls==='warn'?'var(--orange)':s.especial?'var(--purple)':'var(--green)';
     return`<div class="card" style="padding:14px;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        <div style="width:38px;height:38px;background:rgba(27,140,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">${catIco(s.cat)}</div>
+        <div style="width:38px;height:38px;background:${s.especial?'rgba(186,104,200,.12)':'rgba(27,140,255,.1)'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;">${s.especial?'<i class="fa-solid fa-star" style="color:var(--purple);"></i>':catIco(s.cat)}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.nombre}</div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-weight:600;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.nombre}</span>
+            ${s.especial?'<span class="badge b-pu" style="flex-shrink:0;">ESPECIAL</span>':''}
+          </div>
           <div style="font-size:11px;color:var(--text2);">${s.cat||'Sin categoría'}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
@@ -1071,20 +1035,52 @@ function renderInvStock(){
         </div>
       </div>
       ${s.min>0?`<div class="pbar-bg" style="margin-top:8px;"><div class="pbar ${cls}" style="width:${pct}%"></div></div><div style="font-size:10px;color:var(--text2);margin-top:2px;">Mín: ${s.min} ${s.uni}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:10px;">
+        <button class="btn xs primary" onclick="openEditProd('${s.nombre}')"><i class="fa-solid fa-pen"></i> Editar</button>
+        ${!s.especial?`<button class="btn xs danger" onclick="delProd('${s.nombre}')"><i class="fa-solid fa-trash"></i> Eliminar</button>`:''}
+      </div>
     </div>`;
   }).join('');
 }
 
+function openEditProd(nombre){
+  const s=getStock().find(x=>x.nombre===nombre);
+  if(!s)return;
+  gs('edit-id',nombre);gs('edit-nom',s.nombre);gs('edit-cat',s.cat);
+  gs('edit-uni',s.uni);gs('edit-min',s.min);gs('edit-prov','');gs('edit-nota-e','');
+  document.getElementById('mbg-edit').classList.add('on');
+}
+function saveEdit(){
+  const oldNom=gv('edit-id'),newNom=gv('edit-nom').trim(),cat=gv('edit-cat').trim(),
+        uni=gv('edit-uni'),min=n('edit-min'),prov=gv('edit-prov').trim(),nota=gv('edit-nota-e').trim();
+  if(!newNom){showToast('Nombre requerido','er');return;}
+  DB.inventario.filter(r=>r.nombre===oldNom).forEach(r=>{
+    r.nombre=newNom;if(cat)r.cat=cat;if(uni)r.uni=uni;if(min)r.min=min;
+    if(prov)r.prov=prov;if(nota)r.nota=nota;
+  });
+  // update especiales if matches
+  DB.especiales.filter(p=>p.nombre===oldNom).forEach(p=>{p.nombre=newNom;if(cat)p.cat=cat;});
+  closeEdit();updateLists();updateOutProdSel();renderInvStock();showToast('✓ Producto actualizado','ok');changed();
+}
+function delProd(nombre){
+  openMod('Eliminar Producto','¿Eliminar TODOS los registros de "'+nombre+'"? Esta acción no se puede deshacer.',()=>{
+    DB.inventario=DB.inventario.filter(r=>r.nombre!==nombre);
+    updateLists();updateOutProdSel();renderInvStock();showToast('🗑 Producto eliminado','in');changed();
+  });
+}
+
 function renderInvHist(){
   const d1=gv('fh-d1'),d2=gv('fh-d2');
-  const rows=DB.inventario.filter(r=>!r.especial&&inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const rows=DB.inventario.filter(r=>inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
   document.getElementById('tb-inv-hist').innerHTML=rows.length?rows.map(r=>`
-    <tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.nombre}</td>
+    <tr><td>${fmt(r.fecha)}</td>
+    <td style="font-weight:600">${r.nombre}${r.especial?'<span class="badge b-pu" style="margin-left:4px;">ESP</span>':''}</td>
     <td>${r.cant} ${r.uni}</td>
     <td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
     <td style="font-size:11px;">${r.mot||r.nota||'—'}</td>
-    <td><button class="dbtn" onclick="delRec('inventario','${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(6);
+    <td><button class="dbtn" onclick="delInvRec('${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(6);
 }
+function delInvRec(id){openMod('Eliminar movimiento','¿Eliminar este movimiento?',()=>{DB.inventario=DB.inventario.filter(r=>r.id!==id);renderInvHist();renderInvStock();showToast('🗑 Eliminado','in');changed();});}
 function catIco(cat){
   const c=(cat||'').toLowerCase();
   if(c.includes('pintura')||c.includes('color'))return'<i class="fa-solid fa-palette" style="color:var(--accent);"></i>';
@@ -1093,9 +1089,7 @@ function catIco(cat){
   return'<i class="fa-solid fa-box" style="color:var(--accent2);"></i>';
 }
 
-/* ══════════════════════════════════════════
-   PRODUCTOS ESPECIALES
-══════════════════════════════════════════ */
+/* ══════════ PRODUCTOS ESPECIALES ══════════ */
 function addEspSalida(){
   const prodId=gv('esp-sel-prod'),fecha=gv('esp-fecha');
   const cubetas=n('esp-cubetas'),estanones=n('esp-estanones'),color=gv('esp-color').trim();
@@ -1104,25 +1098,32 @@ function addEspSalida(){
   if(!prodId||!fecha){showToast('Seleccione producto y fecha','er');return;}
   const prod=DB.especiales.find(p=>p.id===prodId&&p.activo);
   if(!prod){showToast('Producto no encontrado','er');return;}
+  // Actualizar cubetas usadas del especial
   const max=prod.maxCub||DB.config.maxEsp;
   prod.cubUsadas=(prod.cubUsadas||0)+cubetas;
   prod.movimientos.push({fecha,tipo:'SALIDA',cubetas,estanones,color,lavados,lavador,revisor,tipoEnv,nota,cubetasTotal:prod.cubUsadas});
-  if(max>0&&prod.cubUsadas>=max){
-    prod.activo=false;prod.fechaFin=fecha;prod.motivoFin='Límite máximo alcanzado automáticamente';
-    showToast('⚠ Producto alcanzó el límite — pasado al historial','wa');
+  // DESCONTAR DEL INVENTARIO GENERAL automaticamente
+  const cantSale=estanones>0?estanones:cubetas;
+  if(cantSale>0){
+    const prev=DB.inventario.filter(r=>r.nombre===prod.nombre&&r.mov==='ENTRADA');
+    const uni=prev.length?prev[prev.length-1].uni:(prod.uni||'unidades');
+    DB.inventario.push({id:uid(),nombre:prod.nombre,cat:prod.cat||'',cant:cantSale,uni,fecha,
+      mot:'Salida especial',
+      nota:'Est.pintados:'+estanones+' Cub.usadas:'+cubetas+' Color:'+color+' Lav:'+lavados+' '+nota,
+      mov:'SALIDA',especial:true,espId:prod.id});
   }
+  if(max>0&&prod.cubUsadas>=max){prod.activo=false;prod.fechaFin=fecha;prod.motivoFin='Limite alcanzado automaticamente';}
   ['esp-cubetas','esp-estanones','esp-color','esp-lavados','esp-lavador','esp-revisor','esp-tipo-env','esp-nota-s'].forEach(id=>gs(id,''));
-  gs('esp-sel-prod','');document.getElementById('esp-info-prod').innerHTML='';
-  document.getElementById('esp-limite-warn').style.display='none';
-  updateEspSel();showToast('✓ Salida especial registrada','ok');
-  renderEspLista();changed();
+  gs('esp-sel-prod','');document.getElementById('esp-info-prod').innerHTML='';document.getElementById('esp-limite-warn').style.display='none';
+  updateEspSel();updateOutProdSel();showToast('Salida especial registrada — inventario actualizado','ok');
+  renderEspLista();renderInvStock();changed();
 }
 
 function terminarEspManual(id){
-  openMod('Marcar como Terminado','¿Confirma? El producto pasará al inventario pasivo. Puede reactivarse.',()=>{
+  openMod('Marcar como Terminado','¿Confirma? El producto pasará al inventario pasivo.',()=>{
     const p=DB.especiales.find(x=>x.id===id);
     if(p){p.activo=false;p.fechaFin=today();p.motivoFin='Marcado manualmente';}
-    updateEspSel();renderEspLista();renderEspPasivo();showToast('✓ Producto finalizado','ok');changed();
+    updateEspSel();renderEspLista();renderEspPasivo();showToast('✓ Finalizado','ok');changed();
   });
 }
 function reactivarEsp(id){
@@ -1134,12 +1135,15 @@ function reactivarEsp(id){
 function renderEspLista(){
   const a=DB.especiales.filter(p=>p.activo);
   const el=document.getElementById('esp-lista');
-  if(!a.length){el.innerHTML='<div class="empty"><i class="fa-solid fa-star"></i><p>Sin especiales activos. Regístrelos en Inventario → Entrada marcando "Especial".</p></div>';return;}
+  // Calcular stock de inventario para cada especial
+  if(!a.length){el.innerHTML='<div style="text-align:center;padding:36px;color:var(--muted);"><i class="fa-solid fa-star" style="font-size:44px;display:block;margin-bottom:10px;opacity:.35;"></i><p>Sin especiales activos. Regístrelos en Inventario → Entrada marcando "Especial".</p></div>';return;}
   el.innerHTML=a.map(p=>{
     const max=p.maxCub||DB.config.maxEsp;
     const pct=max>0?Math.min(100,(p.cubUsadas||0)/max*100):0;
     const cls=pct>=90?'low':pct>=70?'warn':'ok';
     const last=p.movimientos.filter(m=>m.tipo==='SALIDA').slice(-1)[0];
+    // Stock en inventario
+    const invStock=getStockEsp(p.nombre);
     return`<div class="est-card act-est">
       <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;">
         <div style="flex:1;">
@@ -1149,9 +1153,14 @@ function renderEspLista(){
         </div>
         <span class="badge b-bl pulsing"><i class="fa-solid fa-circle"></i> ACTIVO</span>
       </div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">Cubetas: <strong style="color:var(--accent)">${p.cubUsadas||0}</strong> / ${max}</div>
+      <!-- STOCK EN INVENTARIO -->
+      <div style="background:rgba(27,140,255,.07);border:1px solid rgba(27,140,255,.15);border-radius:6px;padding:10px;margin-bottom:10px;">
+        <div style="font-size:10px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">Stock en Inventario</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:${invStock>0?'var(--green)':'var(--red)'};">${invStock.toFixed(2)} <span style="font-size:14px;color:var(--text2);">${p.uni||'unid'}</span></div>
+      </div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">Cubetas usadas: <strong style="color:var(--accent)">${p.cubUsadas||0}</strong> / ${max}</div>
       <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
-      ${last?`<div style="font-size:11px;color:var(--text2);margin-top:6px;">Último: ${fmt(last.fecha)} — ${last.cubetas||0} cub. | ${last.estanones||0} est. | Color: ${last.color||'—'} | Lav: ${last.lavados||0}</div>`:''}
+      ${last?`<div style="font-size:11px;color:var(--text2);margin-top:6px;">Último: ${fmt(last.fecha)} — ${last.cubetas||0} cub. | ${last.estanones||0} est. | Color: ${last.color||'—'}</div>`:''}
       <div style="margin-top:10px;display:flex;gap:6px;">
         <button class="btn danger sm" style="margin-top:0;flex:1;font-size:12px;padding:8px;" onclick="terminarEspManual('${p.id}')"><i class="fa-solid fa-flag-checkered"></i> Marcar Terminado</button>
         <button class="ebtn" onclick="verMovEsp('${p.id}')"><i class="fa-solid fa-list"></i></button>
@@ -1159,20 +1168,25 @@ function renderEspLista(){
     </div>`;
   }).join('');
 }
+function getStockEsp(nombre){
+  return DB.inventario.filter(r=>r.nombre===nombre).reduce((s,r)=>s+(r.mov==='ENTRADA'?r.cant:-r.cant),0);
+}
 
 function renderEspPasivo(){
   const p=DB.especiales.filter(x=>!x.activo);
   const el=document.getElementById('esp-pasivo-list');
-  if(!p.length){el.innerHTML='<div class="empty" style="padding:20px;"><i class="fa-solid fa-archive"></i><p>Sin historial</p></div>';return;}
+  if(!p.length){el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);"><i class="fa-solid fa-archive"></i><p>Sin historial</p></div>';return;}
   el.innerHTML=p.map(x=>{
     const max=x.maxCub||DB.config.maxEsp;
+    const invStock=getStockEsp(x.nombre);
     return`<div class="est-card done-est">
       <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">
         <div style="flex:1;">
           <div style="font-weight:700;color:#fff;">${x.nombre}</div>
           <div style="font-size:11px;color:var(--purple);">${x.codAudit} | ${x.tipo||'—'}</div>
           <div style="font-size:11px;color:var(--text2);">Entrada: ${fmt(x.fecha)} | Fin: ${fmt(x.fechaFin)}</div>
-          <div style="font-size:11px;color:var(--text2);">Cubetas: ${x.cubUsadas||0}/${max} | ${x.motivoFin||''}</div>
+          <div style="font-size:11px;color:var(--text2);">Cubetas: ${x.cubUsadas||0}/${max} | Stock inv: ${invStock.toFixed(1)} ${x.uni||''}</div>
+          <div style="font-size:11px;color:var(--muted);">${x.motivoFin||''}</div>
         </div>
         <span class="badge b-or">TERMINADO</span>
       </div>
@@ -1193,23 +1207,19 @@ function verMovEsp(id){
     <td>${m.color||'—'}</td><td>${m.lavados||'—'}</td>
     <td>${m.lavador||'—'}</td><td>${m.revisor||'—'}</td></tr>`).join('');
   openMod('Movimientos: '+p.nombre,
-    `<table style="width:100%;border-collapse:collapse;font-size:12px;min-width:400px;">
-    <thead><tr><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;letter-spacing:1px;text-align:left;">Fecha</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Tipo</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Cub.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Est.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Color</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Lav.</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Lavador</th><th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">Revisor</th></tr></thead>
-    <tbody>${rows||emptyR(8)}</tbody></table>`,
-    ()=>{},true);
+    `<div style="overflow-x:auto;"><table style="min-width:400px;width:100%;border-collapse:collapse;font-size:12px;">
+    <thead><tr>${['Fecha','Tipo','Cub.','Est.','Color','Lav.','Lavador','Revisor'].map(h=>`<th style="padding:6px;background:#060e1c;color:var(--text2);font-size:9px;text-align:left;">${h}</th>`).join('')}</tr></thead>
+    <tbody>${rows||emptyR(8)}</tbody></table></div>`,()=>{},true);
   document.getElementById('m-ok').style.display='none';
 }
 
-/* ══════════════════════════════════════════
-   CUBETAS
-══════════════════════════════════════════ */
+/* ══════════ CUBETAS ══════════ */
 function addCubeta(mov){
   if(mov==='in'){
     const tipo=gv('cub-tipo').trim(),cant=n('cub-cant'),fecha=gv('cub-fin'),prov=gv('cub-prov').trim();
     if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
     DB.cubetas.push({id:uid(),tipo,cant,fecha,mov:'ENTRADA',prov});
-    gs('cub-tipo','');gs('cub-cant','');gs('cub-prov','');
-    updateLists();
+    gs('cub-tipo','');gs('cub-cant','');gs('cub-prov','');updateLists();
   } else {
     const tipo=gv('cub-tipo-o').trim(),cant=n('cub-cant-o'),fecha=gv('cub-fout'),nota=gv('cub-nota-o').trim();
     if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
@@ -1231,59 +1241,56 @@ function renderCubetas(){
   s2('cub-stk',(ti-to).toFixed(1));s2('cub-tot',to.toFixed(1));
 }
 
-/* ══════════════════════════════════════════
-   SOLVENTE
-══════════════════════════════════════════ */
+/* ══════════ SOLVENTE ══════════ */
 function addSolvente(mov){
   if(mov==='in'){
     const tipo=gv('sol-tipo'),cod=gv('sol-cod').trim(),cant=n('sol-cant'),fecha=gv('sol-fin'),nota=gv('sol-nota').trim();
     if(!cod||!cant||!fecha){showToast('Campos requeridos','er');return;}
-    for(let i=0;i<cant;i++){
-      DB.solvente.push({id:uid(),tipo,cod:cant>1?cod+'-'+(i+1):cod,fecha,nota,activo:true,cubUsadas:0,lavTotal:0,movimientos:[]});
-    }
-    gs('sol-cod','');gs('sol-cant','');gs('sol-nota','');
-    updateSolSel();showToast('✓ '+cant+' estañón(es) registrado(s)','ok');
+    for(let i=0;i<cant;i++) DB.solvente.push({id:uid(),tipo,cod:cant>1?cod+'-'+(i+1):cod,fecha,nota,activo:true,cubUsadas:0,lavTotal:0,movimientos:[]});
+    gs('sol-cod','');gs('sol-cant','');gs('sol-nota','');updateSolSel();updateLavSolSel();
+    showToast('✓ '+cant+' estañón(es) registrado(s)','ok');
   } else {
     const solId=gv('sol-sel'),fecha=gv('sol-fout');
     const cubOut=n('sol-cub-out'),estPin=n('sol-est-pin'),color=gv('sol-color').trim();
-    const lavados=n('sol-lavados'),lavador=gv('sol-lavador').trim(),revisor=gv('sol-revisor').trim();
-    const tipoEnv=gv('sol-tipo-env').trim(),nota=gv('sol-nota-o').trim();
+    const lavados=n('sol-lavados-s'),lavador=gv('sol-lavador-s').trim(),revisor=gv('sol-revisor-s').trim();
+    const tipoEnv=gv('sol-tipo-env-s').trim(),entregadoA=gv('sol-entregado-a').trim(),nota=gv('sol-nota-o').trim();
     if(!solId||!fecha){showToast('Seleccione estañón y fecha','er');return;}
     const sol=DB.solvente.find(s=>s.id===solId&&s.activo);
     if(!sol){showToast('Estañón no encontrado','er');return;}
     sol.cubUsadas=(sol.cubUsadas||0)+cubOut;
     sol.lavTotal=(sol.lavTotal||0)+lavados;
-    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,nota,cubTotal:sol.cubUsadas});
+    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,entregadoA,nota,cubTotal:sol.cubUsadas});
     const max=DB.config.maxCubEst;
-    if(max>0&&sol.cubUsadas>=max){sol.activo=false;sol.fechaFin=fecha;sol.motivoFin='Límite máximo alcanzado';}
-    ['sol-cub-out','sol-est-pin','sol-color','sol-lavados','sol-lavador','sol-revisor','sol-tipo-env','sol-nota-o'].forEach(id=>gs(id,''));
-    gs('sol-sel','');document.getElementById('sol-info').innerHTML='';
-    document.getElementById('sol-lim-warn').style.display='none';
-    updateSolSel();showToast('✓ Gasto registrado','ok');
+    if(max>0&&sol.cubUsadas>=max){sol.activo=false;sol.fechaFin=fecha;sol.motivoFin='Limite maximo alcanzado';}
+    ['sol-cub-out','sol-est-pin','sol-color','sol-lavados-s','sol-lavador-s','sol-revisor-s','sol-tipo-env-s','sol-entregado-a','sol-nota-o'].forEach(id=>gs(id,''));
+    gs('sol-sel','');document.getElementById('sol-info').innerHTML='';document.getElementById('sol-lim-warn').style.display='none';
+    updateSolSel();showToast('Gasto de solvente registrado','ok');
   }
   renderSolvente();renderSolActivos();changed();
 }
-
 function terminarEst(){
-  const solId=gv('sol-sel');
-  if(!solId){showToast('Seleccione un estañón','er');return;}
-  openMod('Marcar Terminado','¿Este estañón ha concluido? Pasará al historial pasivo. Puede reactivarse.',()=>{
+  const solId=gv('sol-sel');if(!solId){showToast('Seleccione un estañón','er');return;}
+  openMod('Marcar Terminado','¿Este estañón ha concluido? Pasará al historial.',()=>{
     const s=DB.solvente.find(x=>x.id===solId&&x.activo);
     if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado manualmente';}
     gs('sol-sel','');document.getElementById('sol-info').innerHTML='';
-    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Estañón finalizado','ok');changed();
+    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
   });
 }
 function reactivarSol(id){
-  const s=DB.solvente.find(x=>x.id===id);
-  if(s){s.activo=true;s.fechaFin=null;s.motivoFin=null;}
+  const s=DB.solvente.find(x=>x.id===id);if(s){s.activo=true;s.fechaFin=null;s.motivoFin=null;}
   updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Reactivado','ok');changed();
 }
-
+function termEstById(id){
+  openMod('Marcar Terminado','¿Confirmar?',()=>{
+    const s=DB.solvente.find(x=>x.id===id);if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado desde lista activos';}
+    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
+  });
+}
 function renderSolActivos(){
   const a=DB.solvente.filter(s=>s.activo);
   const el=document.getElementById('sol-activos');if(!el)return;
-  if(!a.length){el.innerHTML='<div class="empty" style="padding:16px;"><i class="fa-solid fa-oil-can"></i><p>Sin estañones activos</p></div>';return;}
+  if(!a.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);"><i class="fa-solid fa-oil-can"></i><p>Sin estañones activos</p></div>';return;}
   const max=DB.config.maxCubEst;
   el.innerHTML=a.map(s=>{
     const pct=max>0?Math.min(100,(s.cubUsadas||0)/max*100):0;
@@ -1300,24 +1307,15 @@ function renderSolActivos(){
       ${pct>=100?`<button class="btn danger sm" style="margin-top:8px;font-size:11px;padding:6px;" onclick="termEstById('${s.id}')"><i class="fa-solid fa-flag-checkered"></i> Marcar terminado</button>`:''}
     </div>`;
   }).join('');
-  // Historial pasivo compacto
   const p=DB.solvente.filter(s=>!s.activo);
   if(p.length) el.innerHTML+=`<div style="margin-top:12px;"><div class="slbl"><i class="fa-solid fa-archive" style="color:var(--muted);"></i> Terminados</div>`+
     p.map(s=>`<div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg2);border:1px solid var(--muted);border-radius:var(--rs);margin-bottom:6px;opacity:.65;">
       <span style="font-size:10px;font-weight:700;color:var(--muted);">${(s.tipo||'').toUpperCase()}</span>
       <span style="font-size:13px;font-weight:600;color:var(--text2);">${s.cod}</span>
-      <span style="font-size:11px;color:var(--muted);margin-left:auto;">${s.cubUsadas||0} cub. | Fin: ${fmt(s.fechaFin)}</span>
+      <span style="font-size:11px;color:var(--muted);margin-left:auto;">Fin: ${fmt(s.fechaFin)}</span>
       <button class="ebtn" style="width:28px;height:28px;font-size:11px;" onclick="reactivarSol('${s.id}')"><i class="fa-solid fa-rotate-left"></i></button>
     </div>`).join('')+'</div>';
 }
-function termEstById(id){
-  openMod('Marcar Terminado','¿Confirmar?',()=>{
-    const s=DB.solvente.find(x=>x.id===id);
-    if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado desde lista activos';}
-    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
-  });
-}
-
 function renderSolvente(){
   const d1=gv('fsol-d1'),d2=gv('fsol-d2');
   const allMov=[];
@@ -1327,47 +1325,40 @@ function renderSolvente(){
     <tr><td>${fmt(m.fecha)}</td>
     <td><strong style="color:${m.tipo==='thinner'?'var(--accent)':'var(--accent2)'}">${m.cod}</strong></td>
     <td>${m.tipo||'—'}</td><td>${m.cubOut||'—'}</td><td>${m.estPin||'—'}</td>
-    <td>${m.lavados||'—'}</td><td style="font-size:11px;">${m.lavador||'—'}</td>
+    <td>${m.color||'—'}</td><td>${m.lavados||'—'}</td>
+    <td style="font-size:11px;">${m.lavador||'—'}</td>
     <td style="font-size:11px;">${m.revisor||'—'}</td>
-    <td></td></tr>`).join(''):emptyR(9);
+    <td style="font-size:11px;">${m.entregadoA||'—'}</td>
+    <td style="font-size:11px;">${m.tipoEnv||'—'}</td></tr>`).join(''):emptyR(11);
   const tc=DB.solvente.reduce((s,r)=>s+(r.cubUsadas||0),0);
   const tl=DB.solvente.reduce((s,r)=>s+(r.lavTotal||0),0);
-  s2('sol-stk',DB.solvente.filter(s=>s.activo).length);
-  s2('sol-cub-t',tc.toFixed(1));s2('sol-lav-t',tl.toFixed(1));
+  s2('sol-stk',DB.solvente.filter(s=>s.activo).length);s2('sol-cub-t',tc.toFixed(1));s2('sol-lav-t',tl.toFixed(1));
 }
 
-/* ══════════════════════════════════════════
-   TRAPOS
-══════════════════════════════════════════ */
+/* ══════════ TRAPOS ══════════ */
 function addTrapo(mov){
   if(mov==='in'){
     const tipo=gv('tra-tipo').trim(),cant=n('tra-cant'),uni=gv('tra-uni'),fecha=gv('tra-fin');
     if(!tipo||!cant||!fecha){showToast('Campos requeridos','er');return;}
     DB.trapos.push({id:uid(),tipo,cant,uni,fecha,mov:'ENTRADA',pctUsado:0,salidas:[]});
-    gs('tra-tipo','');gs('tra-cant','');
-    updateTraLotSel();showToast('✓ Lote registrado','ok');
+    gs('tra-tipo','');gs('tra-cant','');updateTraLotSel();showToast('✓ Lote registrado','ok');
   } else {
     const lotId=gv('tra-sel-lot'),pct=n('tra-pct'),fecha=gv('tra-fout'),nota=gv('tra-nota-o').trim();
     if(!lotId||!pct||!fecha){showToast('Campos requeridos','er');return;}
-    const lot=DB.trapos.find(t=>t.id===lotId);
-    if(!lot){showToast('Lote no encontrado','er');return;}
+    const lot=DB.trapos.find(t=>t.id===lotId);if(!lot){showToast('Lote no encontrado','er');return;}
     lot.pctUsado=Math.min(100,(lot.pctUsado||0)+pct);
     lot.salidas.push({fecha,pct,nota,pctAcum:lot.pctUsado});
-    gs('tra-pct','');gs('tra-nota-o','');gs('tra-sel-lot','');
-    document.getElementById('tra-lot-info').innerHTML='';
-    updateTraLotSel();
-    if(lot.pctUsado>=100) showToast('⚠ Lote agotado','wa');
-    else showToast('✓ Gasto de trapos registrado','ok');
+    gs('tra-pct','');gs('tra-nota-o','');gs('tra-sel-lot','');document.getElementById('tra-lot-info').innerHTML='';
+    updateTraLotSel();if(lot.pctUsado>=100)showToast('⚠ Lote agotado','wa');else showToast('✓ Gasto registrado','ok');
   }
   renderTraLotes();renderTraHist();changed();
 }
 function renderTraLotes(){
   const lotes=DB.trapos.filter(t=>t.mov==='ENTRADA');
   const el=document.getElementById('tra-lotes-list');if(!el)return;
-  if(!lotes.length){el.innerHTML='<div class="empty" style="padding:16px;"><i class="fa-solid fa-mitten"></i><p>Sin lotes</p></div>';return;}
+  if(!lotes.length){el.innerHTML='<div style="text-align:center;padding:16px;color:var(--muted);"><i class="fa-solid fa-mitten"></i><p>Sin lotes</p></div>';return;}
   el.innerHTML=lotes.map(t=>{
-    const pct=t.pctUsado||0;
-    const cls=pct>=90?'low':pct>=70?'warn':'ok';
+    const pct=t.pctUsado||0;const cls=pct>=90?'low':pct>=70?'warn':'ok';
     return`<div style="background:var(--bg2);border:1px solid ${pct>=100?'var(--muted)':pct>=90?'var(--red)':'var(--border)'};border-radius:var(--rs);padding:12px;margin-bottom:8px;${pct>=100?'opacity:.6':''}">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
         <div style="flex:1;"><div style="font-weight:600;color:#fff;">${t.tipo}</div>
@@ -1376,8 +1367,7 @@ function renderTraLotes(){
       </div>
       <div class="pbar-bg"><div class="pbar ${cls}" style="width:${pct}%"></div></div>
     </div>`;
-  }).join('');
-  updateTraLotSel();
+  }).join('');updateTraLotSel();
 }
 function renderTraHist(){
   const all=[];
@@ -1388,15 +1378,11 @@ function renderTraHist(){
   all.sort((a,b)=>b.fecha.localeCompare(a.fecha));
   document.getElementById('tb-tra').innerHTML=all.length?all.map(m=>`
     <tr><td>${fmt(m.fecha)}</td><td>${m.id}</td><td>${m.tipo}</td>
-    <td>${m.cant}</td><td>${m.uni}</td>
-    <td>${m.pct?m.pct+'%':'—'}</td>
-    <td><span class="badge ${m.mov==='ENTRADA'?'b-in':'b-out'}">${m.mov}</span></td>
-    <td></td></tr>`).join(''):emptyR(8);
+    <td>${m.cant}</td><td>${m.uni}</td><td>${m.pct?m.pct+'%':'—'}</td>
+    <td><span class="badge ${m.mov==='ENTRADA'?'b-in':'b-out'}">${m.mov}</span></td></tr>`).join(''):emptyR(7);
 }
 
-/* ══════════════════════════════════════════
-   TRABAJO DIARIO
-══════════════════════════════════════════ */
+/* ══════════ TRABAJO DIARIO ══════════ */
 function addTrabajo(){
   const fecha=gv('tr-fecha'),area=gv('tr-area').trim(),tipo=gv('tr-tipo').trim();
   const cub=n('tr-cub'),est=n('tr-est'),trab=n('tr-trab'),m2=n('tr-m2'),nota=gv('tr-nota').trim();
@@ -1418,23 +1404,51 @@ function renderTrabajo(){
   s2('tr-dias',dias);s2('tr-m2t',totM2.toFixed(1));
 }
 
-/* ══════════════════════════════════════════
-   DELETE
-══════════════════════════════════════════ */
+/* ══════════ LAVADOS ══════════ */
+function addLavado(){
+  const fecha=gv('lav-fecha'),cant=n('lav-cant'),tipoEnv=gv('lav-tipo-env').trim();
+  const solId=gv('lav-sol-sel'),lavador=gv('lav-lavador').trim(),revisor=gv('lav-revisor').trim();
+  const cubSol=n('lav-cub-sol'),horaI=gv('lav-hora-i'),horaF=gv('lav-hora-f'),obs=gv('lav-obs').trim();
+  if(!fecha||!cant||!tipoEnv||!lavador){showToast('Fecha, cantidad, tipo de envase y lavador son requeridos','er');return;}
+  // obtener nombre del solvente si seleccionó
+  let solCod='';
+  if(solId){const s=DB.solvente.find(x=>x.id===solId);if(s){solCod=s.cod;s.lavTotal=(s.lavTotal||0)+cant;}}
+  DB.lavados.push({id:uid(),fecha,cant,tipoEnv,solId,solCod,lavador,revisor,cubSol,horaI,horaF,obs});
+  ['lav-cant','lav-tipo-env','lav-lavador','lav-revisor','lav-cub-sol','lav-hora-i','lav-hora-f','lav-obs'].forEach(id=>gs(id,''));
+  gs('lav-sol-sel','');
+  showToast('✓ Lavado registrado','ok');renderLavados();renderSolvente();renderSolActivos();changed();
+}
+function renderLavados(){
+  const d1=gv('flav-d1'),d2=gv('flav-d2');
+  const rows=DB.lavados.filter(r=>inR(r.fecha,d1,d2)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  document.getElementById('tb-lav').innerHTML=rows.length?rows.map(r=>`
+    <tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.tipoEnv}</td>
+    <td style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--accent2);">${r.cant}</td>
+    <td style="font-size:11px;color:var(--accent2);">${r.solCod||'—'}</td>
+    <td>${r.cubSol||'—'}</td>
+    <td style="font-size:11px;">${r.lavador||'—'}</td>
+    <td style="font-size:11px;">${r.revisor||'—'}</td>
+    <td style="font-size:11px;">${r.horaI&&r.horaF?r.horaI+' - '+r.horaF:r.horaI||'—'}</td>
+    <td><button class="dbtn" onclick="delRec('lavados','${r.id}')"><i class="fa-solid fa-trash"></i></button></td></tr>`).join(''):emptyR(9);
+  const totalN=rows.reduce((s,r)=>s+r.cant,0);
+  const totalDias=new Set(rows.map(r=>r.fecha)).size;
+  const totalCub=rows.reduce((s,r)=>s+r.cubSol,0);
+  s2('lav-total-n',totalN);s2('lav-total-dias',totalDias);s2('lav-total-cub',totalCub.toFixed(1));
+}
+
+/* ══════════ DELETE ══════════ */
 function delRec(table,id){
-  openMod('Eliminar registro','¿Eliminar? No se puede deshacer.',()=>{
+  openMod('Eliminar','¿Eliminar este registro?',()=>{
     DB[table]=DB[table].filter(r=>r.id!==id);
-    renderDash();updateLists();
-    if(table==='inventario')renderInvStock();
+    renderDash();
     if(table==='cubetas')renderCubetas();
     if(table==='trabajo')renderTrabajo();
+    if(table==='lavados')renderLavados();
     showToast('🗑 Eliminado','in');changed();
   });
 }
 
-/* ══════════════════════════════════════════
-   DASHBOARD
-══════════════════════════════════════════ */
+/* ══════════ DASHBOARD ══════════ */
 function renderDash(){
   const stock=getStock();
   const lowStock=stock.filter(s=>s.min>0&&s.cant<=s.min).length;
@@ -1445,16 +1459,14 @@ function renderDash(){
   document.getElementById('d-stats').innerHTML=`
     <div class="sc bl"><i class="fa-solid fa-warehouse"></i><div class="sv">${stock.length}</div><div class="sl">Productos</div></div>
     <div class="sc ${lowStock>0?'rd':'gn'}"><i class="fa-solid fa-${lowStock>0?'triangle-exclamation':'circle-check'}"></i><div class="sv">${lowStock}</div><div class="sl">Stock Bajo</div></div>
-    <div class="sc cy"><i class="fa-solid fa-star"></i><div class="sv">${espAct}</div><div class="sl">Especiales Activos</div></div>
-    <div class="sc or"><i class="fa-solid fa-oil-can"></i><div class="sv">${solAct}</div><div class="sl">Estañones Activos</div></div>
+    <div class="sc pu"><i class="fa-solid fa-star"></i><div class="sv">${espAct}</div><div class="sl">Especiales</div></div>
+    <div class="sc or"><i class="fa-solid fa-oil-can"></i><div class="sv">${solAct}</div><div class="sl">Estañones Act.</div></div>
     <div class="sc gn"><i class="fa-solid fa-bucket"></i><div class="sv">${cubStk.toFixed(0)}</div><div class="sl">Stock Cubetas</div></div>
     <div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv">${dias}</div><div class="sl">Días Pintados</div></div>`;
-
-  // Alertas
   const max=DB.config.maxCubEst;
   const alerts=[
     ...stock.filter(s=>s.min>0&&s.cant<=s.min).map(s=>({col:'var(--red)',ico:'fa-triangle-exclamation',txt:`Stock bajo: ${s.nombre} (${s.cant.toFixed(2)} ${s.uni})`})),
-    ...DB.solvente.filter(s=>s.activo&&max>0&&(s.cubUsadas||0)>=max*.9).map(s=>({col:'var(--orange)',ico:'fa-oil-can',txt:`Estañón ${s.cod} cerca del límite (${s.cubUsadas||0}/${max} cub.)`})),
+    ...DB.solvente.filter(s=>s.activo&&max>0&&(s.cubUsadas||0)>=max*.9).map(s=>({col:'var(--orange)',ico:'fa-oil-can',txt:`Estañón ${s.cod} cerca del límite (${s.cubUsadas||0}/${max})`})),
     ...DB.especiales.filter(p=>p.activo&&(p.maxCub||DB.config.maxEsp)>0&&(p.cubUsadas||0)>=(p.maxCub||DB.config.maxEsp)*.9).map(p=>({col:'var(--purple)',ico:'fa-star',txt:`Especial "${p.nombre}" cerca del límite`})),
     ...DB.trapos.filter(t=>t.mov==='ENTRADA'&&(t.pctUsado||0)>=90).map(t=>({col:'var(--orange)',ico:'fa-mitten',txt:`Trapos "${t.tipo}" al ${(t.pctUsado||0).toFixed(0)}%`}))
   ];
@@ -1462,32 +1474,26 @@ function renderDash(){
     `<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);">
       <i class="fa-solid ${a.ico}" style="color:${a.col};font-size:16px;flex-shrink:0;"></i>
       <span style="font-size:13px;">${a.txt}</span></div>`).join(''):
-    '<div class="empty" style="padding:16px;"><i class="fa-solid fa-check-circle" style="color:var(--green);"></i><p>Sin alertas — todo en orden</p></div>';
-
-  // Recientes
+    '<div style="text-align:center;padding:16px;color:var(--muted);"><i class="fa-solid fa-check-circle" style="color:var(--green);"></i><p>Sin alertas — todo en orden</p></div>';
   const rec=[
     ...DB.inventario.slice(-4).map(r=>({fecha:r.fecha,txt:r.nombre,mov:r.mov})),
     ...DB.solvente.flatMap(s=>s.movimientos.slice(-1).map(m=>({fecha:m.fecha,txt:'Solvente '+s.cod,mov:'GASTO'}))),
-    ...DB.cubetas.slice(-3).map(r=>({fecha:r.fecha,txt:'Cubeta '+r.tipo,mov:r.mov}))
+    ...DB.cubetas.slice(-3).map(r=>({fecha:r.fecha,txt:'Cubeta '+r.tipo,mov:r.mov})),
+    ...DB.lavados.slice(-2).map(r=>({fecha:r.fecha,txt:'Lavado '+r.cant+' '+r.tipoEnv,mov:'ENTRADA'}))
   ].sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,8);
   document.getElementById('d-recent').innerHTML=rec.length?rec.map(r=>
     `<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);">
       <span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}" style="min-width:62px;justify-content:center;">${r.mov}</span>
       <span style="flex:1;font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.txt}</span>
       <span style="font-size:11px;color:var(--text2);flex-shrink:0;">${fmt(r.fecha)}</span></div>`).join(''):
-    '<div class="empty" style="padding:16px;"><i class="fa-solid fa-inbox"></i><p>Sin movimientos</p></div>';
+    '<div style="text-align:center;padding:16px;color:var(--muted);"><i class="fa-solid fa-inbox"></i><p>Sin movimientos</p></div>';
   buildChartWeek();
 }
-
 function buildChartWeek(){
   const ctx=document.getElementById('ch-week');
   if(chWeek){chWeek.destroy();chWeek=null;}
   const days=[],labels=[];
-  for(let i=6;i>=0;i--){
-    const d=new Date();d.setDate(d.getDate()-i);
-    const k=d.toISOString().split('T')[0];
-    days.push(k);labels.push(d.toLocaleDateString('es-CR',{weekday:'short'}));
-  }
+  for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];days.push(k);labels.push(d.toLocaleDateString('es-CR',{weekday:'short'}));}
   const inD=days.map(d=>DB.inventario.filter(r=>r.fecha===d&&r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0));
   const outD=days.map(d=>DB.inventario.filter(r=>r.fecha===d&&r.mov==='SALIDA').reduce((s,r)=>s+r.cant,0));
   chWeek=new Chart(ctx,{type:'bar',data:{labels,datasets:[
@@ -1497,12 +1503,188 @@ function buildChartWeek(){
     scales:{x:{ticks:{color:'#6a9ac0'},grid:{color:'#0a1828'}},y:{ticks:{color:'#6a9ac0'},grid:{color:'#0a1828'}}}}});
 }
 
-/* ══════════════════════════════════════════
-   REPORTES
-══════════════════════════════════════════ */
+/* ══════════ INFORME DIARIO WHATSAPP ══════════ */
+let informeTexto='';
+function genInformeDiario(){
+  const fecha=gv('rd-fecha')||today();
+  const semD1=gv('rd-sem-d1'),semD2=gv('rd-sem-d2');
+  const inclEsp=document.getElementById('rd-incl-esp').checked;
+  const espSel=gv('rd-esp-sel');
+  const inclSol=document.getElementById('rd-incl-sol').checked;
+  const solSel=gv('rd-sol-sel');
+
+  // ── DATOS DEL DÍA ──
+  const trabHoy=DB.trabajo.filter(r=>r.fecha===fecha);
+  const cubGastoHoy=DB.cubetas.filter(r=>r.mov==='GASTO'&&r.fecha===fecha).reduce((s,r)=>s+r.cant,0);
+  // Cubetas usadas desde especiales ese día
+  const cubEspHoy=DB.especiales.reduce((s,p)=>s+p.movimientos.filter(m=>m.fecha===fecha&&m.tipo==='SALIDA').reduce((ss,m)=>ss+(m.cubetas||0),0),0);
+  const totalCubHoy=cubGastoHoy+cubEspHoy+trabHoy.reduce((s,r)=>s+r.cub,0);
+  // Estañones pintados ese día (de especiales + trabajo + solvente)
+  const espHoyMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>m.fecha===fecha&&m.tipo==='SALIDA'));
+  const solHoyMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>m.fecha===fecha).forEach(m=>solHoyMov.push({...m,cod:s.cod,tipo:s.tipo})));
+  const totalEstHoy=espHoyMov.reduce((s,m)=>s+(m.estanones||0),0)+trabHoy.reduce((s,r)=>s+r.est,0)+solHoyMov.reduce((s,m)=>s+(m.estPin||0),0);
+  // Lavados ese día
+  const lavHoy=DB.lavados.filter(r=>r.fecha===fecha);
+  const totalLavHoy=lavHoy.reduce((s,r)=>s+r.cant,0)+espHoyMov.reduce((s,m)=>s+(m.lavados||0),0)+solHoyMov.reduce((s,m)=>s+(m.lavados||0),0);
+  // Colores ese día
+  const colHoy=[...new Set([...espHoyMov.map(m=>m.color),...trabHoy.map(r=>r.tipo),...solHoyMov.map(m=>m.color)].filter(Boolean))].join(', ')||'No especificado';
+  // Áreas ese día
+  const areasHoy=trabHoy.map(r=>r.area).join(', ')||'—';
+  // Estañones de solvente activos con % gastado
+  const solActivos=DB.solvente.filter(s=>s.activo);
+  const max=DB.config.maxCubEst;
+  // Stock cubetas
+  const cubStk=DB.cubetas.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0)-DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+
+  // ── DATOS DE SEMANA ──
+  const trabSem=DB.trabajo.filter(r=>inR(r.fecha,semD1,semD2));
+  const cubSemGasto=DB.cubetas.filter(r=>r.mov==='GASTO'&&inR(r.fecha,semD1,semD2)).reduce((s,r)=>s+r.cant,0);
+  const cubEspSem=DB.especiales.reduce((s,p)=>s+p.movimientos.filter(m=>inR(m.fecha,semD1,semD2)&&m.tipo==='SALIDA').reduce((ss,m)=>ss+(m.cubetas||0),0),0);
+  const totalCubSem=cubSemGasto+cubEspSem+trabSem.reduce((s,r)=>s+r.cub,0);
+  const espSemMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>inR(m.fecha,semD1,semD2)&&m.tipo==='SALIDA'));
+  const solSemMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>inR(m.fecha,semD1,semD2)).forEach(m=>solSemMov.push({...m,cod:s.cod})));
+  const totalEstSem=espSemMov.reduce((s,m)=>s+(m.estanones||0),0)+trabSem.reduce((s,r)=>s+r.est,0)+solSemMov.reduce((s,m)=>s+(m.estPin||0),0);
+  const lavSem=DB.lavados.filter(r=>inR(r.fecha,semD1,semD2));
+  const totalLavSem=lavSem.reduce((s,r)=>s+r.cant,0)+espSemMov.reduce((s,m)=>s+(m.lavados||0),0)+solSemMov.reduce((s,m)=>s+(m.lavados||0),0);
+
+  const fechaStr=fechaLarga(fecha).toUpperCase();
+  const semStr=semD1&&semD2?`DE ${diasES[new Date(semD1+'T12:00').getDay()].toUpperCase()} ${fmt(semD1)} AL ${diasES[new Date(semD2+'T12:00').getDay()].toUpperCase()} ${fmt(semD2)}`:'SEMANA ACTUAL';
+
+  // ── CONSTRUIR INFORME ──
+  let txt='';
+  txt+=`🏭 INFORME DIARIO — REI\n`;
+  txt+=`━━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt+=`📅 ${fechaStr}\n`;
+  txt+=`━━━━━━━━━━━━━━━━━━━━━━\n\n`;
+
+  txt+=`🎨 PINTURA DEL DÍA\n`;
+  txt+=`• Cubetas gastadas hoy: ${totalCubHoy.toFixed(1)}\n`;
+  txt+=`• Estañones pintados: ${totalEstHoy}\n`;
+  txt+=`• Color(es): ${colHoy}\n`;
+  if(areasHoy!=='—') txt+=`• Área(s): ${areasHoy}\n`;
+  if(trabHoy.reduce((s,r)=>s+r.trab,0)>0) txt+=`• Trabajadores: ${trabHoy.reduce((s,r)=>s+r.trab,0)}\n`;
+  const m2hoy=trabHoy.reduce((s,r)=>s+r.m2,0);
+  if(m2hoy>0) txt+=`• Metros² pintados: ${m2hoy.toFixed(1)} m²\n`;
+
+  txt+=`\n🧼 LAVADOS DEL DÍA\n`;
+  txt+=`• Total estañones lavados: ${totalLavHoy}\n`;
+  // detalle lavadores
+  lavHoy.forEach(r=>{txt+=`  ↳ ${r.cant} ${r.tipoEnv} — Lavador: ${r.lavador||'—'} | Rev: ${r.revisor||'—'}\n`;});
+  // lavados de especiales
+  espHoyMov.filter(m=>(m.lavados||0)>0).forEach(m=>{txt+=`  ↳ ${m.lavados} lavados — Lavador: ${m.lavador||'—'} | Rev: ${m.revisor||'—'}\n`;});
+  // lavados de solvente
+  solHoyMov.filter(m=>(m.lavados||0)>0).forEach(m=>{txt+=`  ↳ ${m.lavados} lavados ${m.tipoEnv?' ('+m.tipoEnv+')':''} — Lavador: ${m.lavador||'—'} | Rev: ${m.revisor||'—'}\n`;});
+  if(totalLavHoy===0) txt+=`  Sin lavados registrados hoy\n`;
+
+  txt+=`\n🛢️ SOLVENTE ACTIVO\n`;
+  if(solActivos.length){
+    solActivos.forEach(s=>{
+      const pct=max>0?((s.cubUsadas||0)/max*100):0;
+      const barras=Math.round(pct/10);const bvacio=10-barras;
+      const barra='█'.repeat(barras)+'░'.repeat(bvacio);
+      txt+=`• [${s.cod}] ${s.tipo.toUpperCase()} — ${s.cubUsadas||0}/${max} cub. [${barra}] ${pct.toFixed(0)}% gastado\n`;
+    });
+  } else txt+=`  Sin estañones activos\n`;
+
+  txt+=`\n🪣 CUBETAS DISPONIBLES: ${cubStk.toFixed(1)}\n`;
+
+  txt+=`\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt+=`📊 CONSUMO DE SEMANA\n`;
+  txt+=`${semStr}\n`;
+  txt+=`━━━━━━━━━━━━━━━━━━━━━━\n`;
+  txt+=`• Cubetas gastadas: ${totalCubSem.toFixed(1)}\n`;
+  txt+=`• Estañones pintados: ${totalEstSem}\n`;
+  txt+=`• Estañones lavados: ${totalLavSem}\n`;
+  if(totalCubSem>0&&totalEstSem>0) txt+=`• Promedio pintados/cubeta: ${(totalEstSem/totalCubSem).toFixed(1)}\n`;
+
+  // ── REPORTE ESPECIAL OPCIONAL ──
+  if(inclEsp&&espSel){
+    const p=DB.especiales.find(x=>x.id===espSel);
+    if(p){
+      const pmax=p.maxCub||DB.config.maxEsp;
+      const ppct=pmax>0?((p.cubUsadas||0)/pmax*100):0;
+      txt+=`\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+      txt+=`⭐ REPORTE ESPECIAL: ${p.nombre}\n`;
+      txt+=`Código: ${p.codAudit} | Tipo: ${p.tipo||'—'}\n`;
+      txt+=`Responsable: ${p.resp||'—'}\n`;
+      txt+=`Cubetas: ${p.cubUsadas||0}/${pmax} (${ppct.toFixed(0)}% gastado)\n`;
+      const movsSel=p.movimientos.filter(m=>m.tipo==='SALIDA'&&inR(m.fecha,semD1,semD2));
+      if(movsSel.length){
+        txt+=`Movimientos período:\n`;
+        movsSel.forEach(m=>{
+          txt+=`  ${fmt(m.fecha)}: ${m.cubetas||0} cub. | ${m.estanones||0} est. | color: ${m.color||'—'} | lav: ${m.lavados||0} (${m.lavador||'—'}) rev: ${m.revisor||'—'}\n`;
+        });
+      }
+    }
+  }
+
+  // ── REPORTE ESTAÑÓN SOLVENTE OPCIONAL ──
+  if(inclSol&&solSel){
+    const s=DB.solvente.find(x=>x.id===solSel);
+    if(s){
+      const smax=DB.config.maxCubEst;
+      const spct=smax>0?((s.cubUsadas||0)/smax*100):0;
+      txt+=`\n━━━━━━━━━━━━━━━━━━━━━━\n`;
+      txt+=`🛢️ REPORTE ESTAÑÓN: [${s.cod}] ${(s.tipo||'').toUpperCase()}\n`;
+      txt+=`Estado: ${s.activo?'ACTIVO':'TERMINADO'}\n`;
+      txt+=`Cubetas usadas: ${s.cubUsadas||0}/${smax} (${spct.toFixed(0)}% gastado)\n`;
+      txt+=`Total lavados: ${s.lavTotal||0}\n`;
+      const movsSol=s.movimientos.filter(m=>inR(m.fecha,semD1,semD2));
+      if(movsSol.length){
+        txt+=`Detalle período:\n`;
+        movsSol.forEach(m=>{
+          txt+=`  ${fmt(m.fecha)}: ${m.cubOut||0} cub. usadas | ${m.estPin||0} pintados`;
+          if(m.lavados) txt+=` | ${m.lavados} lavados`;
+          if(m.lavador) txt+=` | Lavador: ${m.lavador}`;
+          if(m.revisor) txt+=` | Rev: ${m.revisor}`;
+          if(m.entregadoA) txt+=` | Para: ${m.entregadoA}`;
+          txt+='\n';
+        });
+      }
+    }
+  }
+
+  txt+=`\n📌 Generado por Sistema REI\n`;
+  informeTexto=txt;
+  document.getElementById('informe-txt').textContent=informeTexto;
+  document.getElementById('rep-diario-out').style.display='block';
+  showToast('Informe generado','ok');
+}
+function updateInformeSelects(){
+  const espAct=DB.especiales;
+  const eSel=document.getElementById('rd-esp-sel');
+  if(eSel) eSel.innerHTML='<option value="">— Seleccione —</option>'+
+    espAct.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre} ${p.activo?'(ACTIVO)':'(TERMINADO)'}</option>`).join('');
+  const solAll=DB.solvente;
+  const sSel=document.getElementById('rd-sol-sel');
+  if(sSel) sSel.innerHTML='<option value="">— Seleccione —</option>'+
+    solAll.map(s=>`<option value="${s.id}">[${s.cod}] ${(s.tipo||'').toUpperCase()} ${s.activo?'(ACTIVO)':'(TERMINADO)'}</option>`).join('');
+}
+function copiarInforme(){
+  navigator.clipboard.writeText(informeTexto).then(()=>showToast('✓ Copiado al portapapeles','ok')).catch(()=>{
+    // fallback
+    const t=document.createElement('textarea');t.value=informeTexto;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);
+    showToast('✓ Copiado','ok');
+  });
+}
+function compartirWhatsApp(){
+  const url='https://wa.me/?text='+encodeURIComponent(informeTexto);
+  window.open(url,'_blank');
+}
+function compartirSMS(){
+  const url='sms:?body='+encodeURIComponent(informeTexto);
+  window.location.href=url;
+}
+
+/* ══════════ REPORTES ══════════ */
+function updateRepCats(){
+  const cats=[...new Set(DB.inventario.map(r=>r.cat).filter(Boolean))];
+  const e=document.getElementById('ri-cat');
+  if(e)e.innerHTML='<option value="">Todas</option>'+cats.map(c=>`<option>${c}</option>`).join('');
+}
 function genRepInv(){
   const d1=gv('ri-d1'),d2=gv('ri-d2'),cf=gv('ri-cat');
-  const rows=DB.inventario.filter(r=>!r.especial&&inR(r.fecha,d1,d2)&&(!cf||r.cat===cf)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const rows=DB.inventario.filter(r=>inR(r.fecha,d1,d2)&&(!cf||r.cat===cf)).sort((a,b)=>b.fecha.localeCompare(a.fecha));
   const stock=getStock();
   const ti=rows.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
   const to=rows.filter(r=>r.mov==='SALIDA').reduce((s,r)=>s+r.cant,0);
@@ -1514,51 +1696,41 @@ function genRepInv(){
       <div class="kpi"><div class="kn" style="color:var(--orange)">${stock.filter(s=>s.min>0&&s.cant<=s.min).length}</div><div class="ks">Bajo stock</div></div>
     </div>
     <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-warehouse"></i></div><h3>Stock Actual</h3></div>
-    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Stock</th><th>Unidad</th><th>Estado</th></tr></thead><tbody>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Stock</th><th>Unidad</th><th>Tipo</th><th>Estado</th></tr></thead><tbody>
     ${stock.map(s=>`<tr><td style="font-weight:600">${s.nombre}</td><td>${s.cat||'—'}</td>
     <td style="color:${s.min>0&&s.cant<=s.min?'var(--red)':'var(--green)'};font-weight:700">${s.cant.toFixed(2)}</td>
-    <td>${s.uni}</td><td><span class="badge ${s.min>0&&s.cant<=s.min?'b-out':'b-in'}">${s.min>0&&s.cant<=s.min?'BAJO':'OK'}</span></td></tr>`).join('')}
+    <td>${s.uni}</td><td>${s.especial?'<span class="badge b-pu">ESPECIAL</span>':'Normal'}</td>
+    <td><span class="badge ${s.min>0&&s.cant<=s.min?'b-out':'b-in'}">${s.min>0&&s.cant<=s.min?'BAJO':'OK'}</span></td></tr>`).join('')}
     </tbody></table></div></div>
-    <div class="card"><div class="ch"><div class="ci gn"><i class="fa-solid fa-list"></i></div><h3>Movimientos</h3></div>
-    <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cat.</th><th>Cant.</th><th>Tipo</th><th>Motivo</th></tr></thead><tbody>
+    <div class="card"><div class="ch"><div class="ci gn"><i class="fa-solid fa-list"></i></div><h3>Movimientos del período</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Tipo</th><th>Motivo/Nota</th></tr></thead><tbody>
     ${rows.length?rows.map(r=>`<tr><td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.nombre}</td>
-    <td>${r.cat||'—'}</td><td>${r.cant} ${r.uni}</td>
-    <td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
-    <td style="font-size:11px;">${r.mot||r.nota||'—'}</td></tr>`).join(''):'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Sin datos</td></tr>'}
+    <td>${r.cant} ${r.uni}</td><td><span class="badge ${r.mov==='ENTRADA'?'b-in':'b-out'}">${r.mov}</span></td>
+    <td style="font-size:11px;">${r.mot||r.nota||'—'}</td></tr>`).join(''):'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Sin datos</td></tr>'}
     </tbody></table></div></div>`;
 }
 
 function genRepGastos(){
   const d1=gv('rg-d1'),d2=gv('rg-d2');
   const sal=DB.inventario.filter(r=>r.mov==='SALIDA'&&!r.especial&&inR(r.fecha,d1,d2));
-  const byP={};sal.forEach(r=>{
-    if(!byP[r.nombre])byP[r.nombre]={nombre:r.nombre,cat:r.cat,cant:0,uni:r.uni};
-    byP[r.nombre].cant+=r.cant;
-  });
+  const byP={};sal.forEach(r=>{if(!byP[r.nombre])byP[r.nombre]={nombre:r.nombre,cat:r.cat,cant:0,uni:r.uni};byP[r.nombre].cant+=r.cant;});
   const byM={};sal.forEach(r=>{const m=r.mot||'Sin motivo';byM[m]=(byM[m]||0)+1;});
   const cubXdia={};DB.cubetas.filter(r=>r.mov==='GASTO'&&inR(r.fecha,d1,d2)).forEach(r=>{cubXdia[r.fecha]=(cubXdia[r.fecha]||0)+r.cant;});
   const sorted=Object.values(byP).sort((a,b)=>b.cant-a.cant);
   document.getElementById('rep-gastos-out').innerHTML=`
-    <div class="kpi-row">
-      <div class="kpi"><div class="kn" style="color:var(--red)">${sal.length}</div><div class="ks">Salidas</div></div>
-      <div class="kpi"><div class="kn" style="color:var(--orange)">${sorted.length}</div><div class="ks">Productos usados</div></div>
-    </div>
+    <div class="kpi-row"><div class="kpi"><div class="kn" style="color:var(--red)">${sal.length}</div><div class="ks">Salidas</div></div>
+    <div class="kpi"><div class="kn" style="color:var(--orange)">${sorted.length}</div><div class="ks">Productos usados</div></div></div>
     <div class="card"><div class="ch"><div class="ci rd"><i class="fa-solid fa-fire"></i></div><h3>Gastos por Producto</h3></div>
-    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Cantidad Usada</th><th>Unidad</th></tr></thead><tbody>
+    <div class="tw"><table><thead><tr><th>Producto</th><th>Cat.</th><th>Cant. Usada</th><th>Unidad</th></tr></thead><tbody>
     ${sorted.map(s=>`<tr><td style="font-weight:600">${s.nombre}</td><td>${s.cat||'—'}</td>
     <td style="color:var(--red);font-weight:700">${s.cant.toFixed(2)}</td><td>${s.uni}</td></tr>`).join('')}
-    </tbody></table></div></div>
-    <div class="card"><div class="ch"><div class="ci or"><i class="fa-solid fa-tags"></i></div><h3>Por Motivo</h3></div>
-    <div class="tw"><table><thead><tr><th>Motivo</th><th>Veces</th></tr></thead><tbody>
-    ${Object.entries(byM).sort((a,b)=>b[1]-a[1]).map(([m,c])=>`<tr><td>${m}</td><td><span class="badge b-or">${c}</span></td></tr>`).join('')}
     </tbody></table></div></div>
     <div class="card"><div class="ch"><div class="ci cy"><i class="fa-solid fa-bucket"></i></div><h3>Cubetas Gastadas por Día</h3></div>
     <div class="tw"><table><thead><tr><th>Fecha</th><th>Cubetas</th><th>Est. pintados aprox.</th><th>Est. lavados aprox.</th></tr></thead><tbody>
     ${Object.entries(cubXdia).sort((a,b)=>b[0].localeCompare(a[0])).map(([f,c])=>`<tr>
       <td>${fmt(f)}</td><td style="color:var(--accent);font-weight:700">${c}</td>
       <td>${DB.config.estPorCub>0?(c*DB.config.estPorCub).toFixed(0):'-'}</td>
-      <td>${DB.config.lavPorCub>0?(c*DB.config.lavPorCub).toFixed(0):'-'}</td>
-    </tr>`).join('')}
+      <td>${DB.config.lavPorCub>0?(c*DB.config.lavPorCub).toFixed(0):'-'}</td></tr>`).join('')}
     </tbody></table></div></div>`;
 }
 
@@ -1566,11 +1738,12 @@ function genRepPin(){
   const d1=gv('rp-d1'),d2=gv('rp-d2');
   const cub=DB.cubetas.filter(r=>inR(r.fecha,d1,d2));
   const trab=DB.trabajo.filter(r=>inR(r.fecha,d1,d2));
+  const lavs=DB.lavados.filter(r=>inR(r.fecha,d1,d2));
   const solMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>inR(m.fecha,d1,d2)).forEach(m=>solMov.push({...m,cod:s.cod,tipo:s.tipo})));
   const cubIn=cub.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0);
   const cubOut=cub.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
-  const tLav=solMov.reduce((s,m)=>s+(m.lavados||0),0);
-  const tPin=solMov.reduce((s,m)=>s+(m.estPin||0),0);
+  const tLav=lavs.reduce((s,r)=>s+r.cant,0)+solMov.reduce((s,m)=>s+(m.lavados||0),0);
+  const tPin=trab.reduce((s,r)=>s+r.est,0)+solMov.reduce((s,m)=>s+(m.estPin||0),0);
   const dias=new Set(trab.map(r=>r.fecha)).size;
   const m2=trab.reduce((s,r)=>s+r.m2,0);
   document.getElementById('rep-pin-out').innerHTML=`
@@ -1582,18 +1755,14 @@ function genRepPin(){
       <div class="sc cy"><i class="fa-solid fa-paint-roller"></i><div class="sv">${tPin}</div><div class="sl">Est. Pintados</div></div>
       <div class="sc bl"><i class="fa-solid fa-calendar-check"></i><div class="sv">${dias}</div><div class="sl">Días Pintados</div></div>
     </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="kn">${m2.toFixed(1)}</div><div class="ks">m² Pintados</div></div>
-      <div class="kpi"><div class="kn" style="color:var(--accent)">${trab.reduce((s,r)=>s+r.cub,0).toFixed(1)}</div><div class="ks">Cubetas en Trabajo</div></div>
-    </div>
-    <div class="card"><div class="ch"><div class="ci cy"><i class="fa-solid fa-oil-can"></i></div><h3>Detalle Solvente por Día</h3></div>
-    <div class="tw"><table><thead><tr><th>Fecha</th><th>Cód.</th><th>Tipo</th><th>Cub.Usadas</th><th>Est.Pin.</th><th>Lavados</th><th>Lavador</th><th>Revisor</th><th>Envase</th></tr></thead><tbody>
-    ${solMov.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(m=>`<tr>
-      <td>${fmt(m.fecha)}</td>
-      <td style="font-weight:700;color:${m.tipo==='thinner'?'var(--accent)':'var(--accent2)'}">${m.cod}</td>
-      <td>${m.tipo||'—'}</td><td>${m.cubOut||'—'}</td><td>${m.estPin||'—'}</td>
-      <td>${m.lavados||'—'}</td><td>${m.lavador||'—'}</td><td>${m.revisor||'—'}</td>
-      <td style="font-size:11px;">${m.tipoEnv||'—'}</td></tr>`).join('')}
+    <div class="kpi-row"><div class="kpi"><div class="kn">${m2.toFixed(1)}</div><div class="ks">m² Pintados</div></div>
+    <div class="kpi"><div class="kn" style="color:var(--accent)">${trab.reduce((s,r)=>s+r.cub,0).toFixed(1)}</div><div class="ks">Cubetas en Trabajo</div></div></div>
+    <div class="card"><div class="ch"><div class="ci cy"><i class="fa-solid fa-soap"></i></div><h3>Registro de Lavados</h3></div>
+    <div class="tw"><table><thead><tr><th>Fecha</th><th>Envase</th><th>Cant.</th><th>Solvente</th><th>Lavador</th><th>Revisor</th></tr></thead><tbody>
+    ${lavs.sort((a,b)=>b.fecha.localeCompare(a.fecha)).map(r=>`<tr>
+      <td>${fmt(r.fecha)}</td><td style="font-weight:600">${r.tipoEnv}</td>
+      <td style="color:var(--accent2);font-weight:700">${r.cant}</td>
+      <td>${r.solCod||'—'}</td><td>${r.lavador||'—'}</td><td>${r.revisor||'—'}</td></tr>`).join('')||emptyR(6)}
     </tbody></table></div></div>
     <div class="card"><div class="ch"><div class="ci bl"><i class="fa-solid fa-calendar-week"></i></div><h3>Trabajo Diario</h3></div>
     <div class="tw"><table><thead><tr><th>Fecha</th><th>Área</th><th>Tipo</th><th>Cub.</th><th>Est.</th><th>m²</th><th>Trab.</th></tr></thead><tbody>
@@ -1610,11 +1779,12 @@ function genRepEsp(){
     const max=p.maxCub||DB.config.maxEsp;
     const pct=max>0?Math.min(100,(p.cubUsadas||0)/max*100):0;
     const movF=p.movimientos.filter(m=>m.tipo==='SALIDA'&&inR(m.fecha,d1,d2));
+    const invStk=getStockEsp(p.nombre);
     return`<div class="card">
       <div class="ch"><div class="ci ${p.activo?'pu':'or'}"><i class="fa-solid fa-star"></i></div>
       <h3>${p.nombre} <span style="font-size:12px;color:var(--text2);">[${p.codAudit}]</span></h3>
       <span class="badge ${p.activo?'b-bl':'b-or'}" style="margin-left:auto;">${p.activo?'ACTIVO':'TERMINADO'}</span></div>
-      <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">Tipo: ${p.tipo||'—'} | Resp: ${p.resp||'—'} | Cubetas: ${p.cubUsadas||0}/${max}</div>
+      <div style="font-size:12px;color:var(--text2);margin-bottom:4px;">Tipo: ${p.tipo||'—'} | Resp: ${p.resp||'—'} | Cub: ${p.cubUsadas||0}/${max} | Stock inv: <strong style="color:var(--green)">${invStk.toFixed(1)} ${p.uni||''}</strong></div>
       <div class="pbar-bg"><div class="pbar ${pct>=90?'low':pct>=70?'warn':'ok'}" style="width:${pct}%"></div></div>
       <div class="tw" style="margin-top:10px;">
       <table><thead><tr><th>Fecha</th><th>Cub.</th><th>Est.</th><th>Color</th><th>Lav.</th><th>Lavador</th><th>Revisado Por</th><th>Envase</th></tr></thead><tbody>
@@ -1625,63 +1795,32 @@ function genRepEsp(){
         <td>${m.tipoEnv||'—'}</td></tr>`).join(''):emptyR(8)}
       </tbody></table></div>
     </div>`;
-  }).join('')||'<div class="empty"><i class="fa-solid fa-star"></i><p>Sin productos especiales</p></div>';
+  }).join('')||'<div style="text-align:center;padding:36px;color:var(--muted);"><i class="fa-solid fa-star" style="font-size:44px;opacity:.3;display:block;margin-bottom:10px;"></i><p>Sin productos especiales</p></div>';
 }
 
-/* ══════════════════════════════════════════
-   CONFIGURACIÓN
-══════════════════════════════════════════ */
-function loadCfg(){
-  gs('cfg-est-por-cub',DB.config.estPorCub||'');
-  gs('cfg-lav-por-cub',DB.config.lavPorCub||'');
-  gs('cfg-max-cub-est',DB.config.maxCubEst||'');
-  gs('cfg-max-esp',DB.config.maxEsp||'');
-}
-function saveCfg(){
-  DB.config.estPorCub=n('cfg-est-por-cub');
-  DB.config.lavPorCub=n('cfg-lav-por-cub');
-  DB.config.maxCubEst=n('cfg-max-cub-est');
-  DB.config.maxEsp=n('cfg-max-esp');
-  saveData(true);renderCfgPromedios();updateSolSel();
-}
+/* ══════════ CONFIGURACIÓN ══════════ */
+function loadCfg(){gs('cfg-est-por-cub',DB.config.estPorCub||'');gs('cfg-lav-por-cub',DB.config.lavPorCub||'');gs('cfg-max-cub-est',DB.config.maxCubEst||'');gs('cfg-max-esp',DB.config.maxEsp||'');}
+function saveCfg(){DB.config.estPorCub=n('cfg-est-por-cub');DB.config.lavPorCub=n('cfg-lav-por-cub');DB.config.maxCubEst=n('cfg-max-cub-est');DB.config.maxEsp=n('cfg-max-esp');saveData(true);renderCfgPromedios();updateSolSel();}
 function renderCfgPromedios(){
   const tCubG=DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
   const tEstPin=DB.solvente.reduce((s,sol)=>s+sol.movimientos.reduce((ss,m)=>ss+(m.estPin||0),0),0);
-  const tLav=DB.solvente.reduce((s,sol)=>s+(sol.lavTotal||0),0);
+  const tLav=DB.lavados.reduce((s,r)=>s+r.cant,0)+DB.solvente.reduce((s,sol)=>s+(sol.lavTotal||0),0);
   const tDias=new Set(DB.trabajo.map(r=>r.fecha)).size;
-  const avgCubDia=tDias>0?(tCubG/tDias).toFixed(2):'—';
-  const avgEst=tCubG>0?(tEstPin/tCubG).toFixed(2):'—';
-  const avgLav=tCubG>0?(tLav/tCubG).toFixed(2):'—';
   document.getElementById('cfg-promedios').innerHTML=`
     <div class="sg c3">
-      <div class="sc bl"><i class="fa-solid fa-bucket"></i><div class="sv">${avgCubDia}</div><div class="sl">Cub./Día (real)</div></div>
-      <div class="sc or"><i class="fa-solid fa-paint-roller"></i><div class="sv">${avgEst}</div><div class="sl">Est.Pin/Cub (real)</div></div>
-      <div class="sc cy"><i class="fa-solid fa-soap"></i><div class="sv">${avgLav}</div><div class="sl">Lav/Cub (real)</div></div>
+      <div class="sc bl"><i class="fa-solid fa-bucket"></i><div class="sv">${tDias>0?(tCubG/tDias).toFixed(2):'—'}</div><div class="sl">Cub./Día (real)</div></div>
+      <div class="sc or"><i class="fa-solid fa-paint-roller"></i><div class="sv">${tCubG>0?(tEstPin/tCubG).toFixed(2):'—'}</div><div class="sl">Est.Pin/Cub (real)</div></div>
+      <div class="sc cy"><i class="fa-solid fa-soap"></i><div class="sv">${tCubG>0?(tLav/tCubG).toFixed(2):'—'}</div><div class="sl">Lav/Cub (real)</div></div>
     </div>
     <div style="font-size:12px;color:var(--text2);padding:6px 0;">Basado en ${tDias} días, ${tCubG.toFixed(0)} cubetas, ${tEstPin} pintados, ${tLav} lavados.</div>`;
 }
-function renderUsers(){
-  document.getElementById('tb-users').innerHTML=DB.users.map(u=>`
-    <tr><td style="font-weight:600">${u.user}</td>
-    <td>${u.user!=='JEFFRY'?`<button class="dbtn" onclick="delUser('${u.user}')"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');
-}
-function addUser(){
-  const u=gv('new-user').trim(),p=gv('new-pass').trim();
-  if(!u||!p){showToast('Campos requeridos','er');return;}
-  if(DB.users.find(x=>x.user===u)){showToast('Usuario ya existe','wa');return;}
-  DB.users.push({user:u,pass:p});gs('new-user','');gs('new-pass','');
-  renderUsers();showToast('✓ Usuario creado','ok');changed();
-}
-function delUser(u){
-  openMod('Eliminar usuario','¿Eliminar usuario '+u+'?',()=>{
-    DB.users=DB.users.filter(x=>x.user!==u);renderUsers();showToast('🗑 Eliminado','in');changed();
-  });
-}
+function renderUsers(){document.getElementById('tb-users').innerHTML=DB.users.map(u=>`<tr><td style="font-weight:600">${u.user}</td><td>${u.user!=='JEFFRY'?`<button class="dbtn" onclick="delUser('${u.user}')"><i class="fa-solid fa-trash"></i></button>`:''}</td></tr>`).join('');}
+function addUser(){const u=gv('new-user').trim(),p=gv('new-pass').trim();if(!u||!p){showToast('Campos requeridos','er');return;}if(DB.users.find(x=>x.user===u)){showToast('Usuario ya existe','wa');return;}DB.users.push({user:u,pass:p});gs('new-user','');gs('new-pass','');renderUsers();showToast('✓ Usuario creado','ok');changed();}
+function delUser(u){openMod('Eliminar usuario','¿Eliminar usuario '+u+'?',()=>{DB.users=DB.users.filter(x=>x.user!==u);renderUsers();showToast('🗑 Eliminado','in');changed();});}
 
-/* ══════════════════════════════════════════
-   INIT — carga automática al abrir
-══════════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', ()=>{ loadData(); });
+/* ══════════ INIT ══════════ */
+window.addEventListener('DOMContentLoaded',()=>loadData());
 </script>
 </body>
 </html>
+
