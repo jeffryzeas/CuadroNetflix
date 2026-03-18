@@ -383,23 +383,10 @@ canvas{max-height:180px;}
       <div class="ph"><h2><i class="fa-solid fa-star" style="color:var(--purple);"></i> Productos Especiales</h2><p>Auditoría, control de límites, inventario pasivo</p></div>
       <div class="stabs" id="stabs-esp">
         <div class="stab act" onclick="stab('esp','lista',this)"><i class="fa-solid fa-boxes-stacked"></i> Activos</div>
-        <div class="stab" onclick="stab('esp','salida',this)"><i class="fa-solid fa-right-from-bracket"></i> Salida Esp.</div>
         <div class="stab" onclick="stab('esp','pasivo',this)"><i class="fa-solid fa-archive"></i> Historial</div>
       </div>
       <div id="esp-lista"></div>
-      <div id="esp-salida" style="display:none;">
-        <div class="card">
-          <div class="ch"><div class="ci pu"><i class="fa-solid fa-star-half-stroke"></i></div><h3>Salida Especial del Día</h3></div>
-          <div class="spec-banner"><i class="fa-solid fa-circle-info"></i><div>Registra cubetas usadas, estañones pintados, lavados y responsables</div></div>
-          <div class="frow"><div class="fg"><label>Producto Especial *</label><select id="esp-sel-prod"><option value="">— Seleccione —</option></select></div><div class="fg"><label>Fecha *</label><input type="date" id="esp-fecha"></div></div>
-          <div id="esp-info-prod"></div>
-          <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="esp-cubetas" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Estañones Pintados</label><input type="number" id="esp-estanones" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="esp-color" placeholder="Ej: Azul"></div></div>
-          <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="esp-lavados" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="esp-lavador" placeholder="Nombre"></div><div class="fg"><label>Revisado Por</label><input type="text" id="esp-revisor" placeholder="Nombre"></div></div>
-          <div class="frow"><div class="fg"><label>Tipo de Envase Lavado</label><input type="text" id="esp-tipo-env" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Nota</label><input type="text" id="esp-nota-s" placeholder="Opcional"></div></div>
-          <div id="esp-limite-warn" style="display:none;" class="spec-banner"><i class="fa-solid fa-exclamation-triangle"></i><span id="esp-warn-txt"></span></div>
-          <button class="btn warn" onclick="addEspSalida()"><i class="fa-solid fa-paper-plane"></i> REGISTRAR SALIDA ESPECIAL</button>
-        </div>
-      </div>
+<!-- esp-salida removido: salida se hace desde solvente/cubetas -->
       <div id="esp-pasivo" style="display:none;">
         <div class="card">
           <div class="ch"><div class="ci or"><i class="fa-solid fa-box-archive"></i></div><h3>Inventario Pasivo / Historial</h3></div>
@@ -416,7 +403,6 @@ canvas{max-height:180px;}
         <div class="stab act" onclick="stab('pin','cubetas',this)"><i class="fa-solid fa-bucket"></i> Cubetas</div>
         <div class="stab" onclick="stab('pin','solvente',this)"><i class="fa-solid fa-oil-can"></i> Solvente</div>
         <div class="stab" onclick="stab('pin','trapos',this)"><i class="fa-solid fa-mitten"></i> Trapos</div>
-        <div class="stab" onclick="stab('pin','trabajo',this)"><i class="fa-solid fa-calendar-check"></i> Trabajo</div>
         <div class="stab" onclick="stab('pin','lavados',this)"><i class="fa-solid fa-soap"></i> Lavados</div>
       </div>
 
@@ -457,7 +443,8 @@ canvas{max-height:180px;}
           <div id="sol-info"></div>
           <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="sol-cub-out" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Est. Pintados</label><input type="number" id="sol-est-pin" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="sol-color" placeholder="Ej: Azul"></div></div>
           <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="sol-lavados-s" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="sol-lavador-s" placeholder="Nombre lavador"></div><div class="fg"><label>Revisado Por</label><input type="text" id="sol-revisor-s" placeholder="Nombre revisor"></div></div>
-          <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env-s" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Entregado A / Para</label><input type="text" id="sol-entregado-a" placeholder="A quién se entregó la cubeta"></div></div>
+          <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env-s" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Entregado A</label><input type="text" id="sol-entregado-a" placeholder="Persona que recibió"></div></div>
+          <div class="frow s1"><div class="fg"><label>Producto Especial que Recibió esta Cubeta</label><select id="sol-esp-dest"><option value="">— Opcional —</option></select><div class="hint">Si esta cubeta se usó en un producto especial, selecciónelo aquí</div></div></div>
           <div id="sol-lim-warn" style="display:none;" class="spec-banner" style="color:var(--orange);border-color:var(--orange);"></div>
           <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota-o" placeholder="Opcional"></div></div>
           <div style="display:flex;gap:8px;">
@@ -526,7 +513,8 @@ canvas{max-height:180px;}
         <div class="card">
           <div class="ch"><div class="ci cy"><i class="fa-solid fa-plus-circle"></i></div><h3>Nuevo Registro de Lavado</h3></div>
           <div class="frow"><div class="fg"><label>Fecha *</label><input type="date" id="lav-fecha"></div><div class="fg"><label>Cantidad Lavados *</label><input type="number" id="lav-cant" min="1" placeholder="0"></div></div>
-          <div class="frow"><div class="fg"><label>Tipo de Envase Lavado *</label><input type="text" id="lav-tipo-env" placeholder="Ej: Estañón 55 gal, Barril..."></div><div class="fg"><label>Estañón de Solvente Usado</label><select id="lav-sol-sel"><option value="">— Opcional —</option></select></div></div>
+          <div class="frow s1"><div class="fg"><label>Tipo de Envase Lavado *</label><input type="text" id="lav-tipo-env" placeholder="Ej: Estañón 55 gal, Barril..."></div></div>
+          <input type="hidden" id="lav-sol-sel" value="">
           <div class="frow"><div class="fg"><label>Lavador *</label><input type="text" id="lav-lavador" placeholder="Nombre del lavador"></div><div class="fg"><label>Revisado Por *</label><input type="text" id="lav-revisor" placeholder="Nombre del revisor"></div></div>
           <div class="frow s3"><div class="fg"><label>Cubetas Solvente Usadas</label><input type="number" id="lav-cub-sol" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Hora Inicio</label><input type="time" id="lav-hora-i" placeholder="07:00"></div><div class="fg"><label>Hora Fin</label><input type="time" id="lav-hora-f" placeholder="17:00"></div></div>
           <div class="frow s1"><div class="fg"><label>Observación</label><textarea id="lav-obs" placeholder="Condición de los envases, incidentes, notas..."></textarea></div></div>
@@ -691,7 +679,7 @@ canvas{max-height:180px;}
 
 <script>
 /* ══════════ CONFIG API ══════════ */
-const BIN_ID  = "69ba09e1b7ec241ddc7a88a2";
+const BIN_ID  = "69b75daeb7ec241ddc70738f";
 const API_KEY = "$2a$10$I0ZO4Bj9GLbni1OuUiSTOOIVQIOhqIFalk/YUDcy2/q3Sb2MQTkK.";
 const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
@@ -707,8 +695,15 @@ let currentUser=null, chWeek=null, lastSaved=null, saveTimer=null;
 async function loadData(forceToast=false){
   setSyncState('syncing');
   setStatus('Conectando con base de datos...');
+  // Timeout de 8 segundos — si no responde igual muestra el login
+  const controller=new AbortController();
+  const timeoutId=setTimeout(()=>controller.abort(),8000);
   try{
-    const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
+    const res=await fetch(BIN_URL+'/latest',{
+      signal:controller.signal,
+      headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}
+    });
+    clearTimeout(timeoutId);
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
     const loaded=data.record||data;
@@ -719,10 +714,13 @@ async function loadData(forceToast=false){
     if(forceToast) showToast('✓ Datos actualizados','ok');
     hideLoading(); showLogin();
   } catch(err){
+    clearTimeout(timeoutId);
     setSyncState('error');
-    setStatus('⚠ Error: '+err.message);
+    const msg=err.name==='AbortError'?'Tiempo agotado — verifique internet y claves':'Error: '+err.message;
+    setStatus('⚠ '+msg);
     hideLoading(); showLogin();
-    showToast('⚠ Sin conexión con servidor','wa');
+    if(forceToast) showToast('⚠ '+msg,'wa');
+    else showToast('⚠ Sin conexión — revise BIN_ID y API_KEY','wa');
   }
 }
 async function saveData(forceToast=false){
@@ -776,13 +774,13 @@ function showPg(name){
   if(name==='dash') renderDash();
   if(name==='inv'){renderInvStock();updateLists();updateOutProdSel();}
   if(name==='esp'){renderEspLista();renderEspPasivo();updateEspSel();}
-  if(name==='pin'){renderCubetas();renderSolvente();renderSolActivos();renderTraLotes();renderTrabajo();renderLavados();updateLavSolSel();}
+  if(name==='pin'){renderCubetas();renderSolvente();renderSolActivos();renderTraLotes();renderLavados();updateEspSel();}
   if(name==='rep'){updateRepCats();updateInformeSelects();}
   if(name==='cfg'){loadCfg();renderCfgPromedios();renderUsers();updateSyncPanel();}
 }
 function stab(pg,name,el){
-  const map={inv:['stock','entrada','salida','hist'],esp:['lista','salida','pasivo'],
-    pin:['cubetas','solvente','trapos','trabajo','lavados'],rep:['inv','gastos','pin','esp','diario']};
+  const map={inv:['stock','entrada','salida','hist'],esp:['lista','pasivo'],
+    pin:['cubetas','solvente','trapos','lavados'],rep:['inv','gastos','pin','esp','diario']};
   (map[pg]||[]).forEach(id=>{
     const t=document.getElementById(pg+'-'+id)||document.getElementById('rep-'+id)||
              document.getElementById('pin-'+id)||document.getElementById('esp-'+id)||document.getElementById('inv-'+id);
@@ -801,7 +799,7 @@ function stab(pg,name,el){
   if(pg==='pin'&&name==='cubetas') renderCubetas();
   if(pg==='pin'&&name==='solvente'){renderSolvente();renderSolActivos();}
   if(pg==='pin'&&name==='trapos'){renderTraLotes();renderTraHist();}
-  if(pg==='pin'&&name==='trabajo') renderTrabajo();
+  // trabajo tab removido
   if(pg==='pin'&&name==='lavados'){renderLavados();updateLavSolSel();}
   if(pg==='rep'&&name==='diario'){gs('rd-fecha',today());setWeekRange();updateInformeSelects();}
 }
@@ -811,7 +809,11 @@ const gv=id=>{const e=document.getElementById(id);return e?e.value:'';};
 const gs=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
 const s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const today=()=>new Date().toISOString().split('T')[0];
+function today(){
+  // Costa Rica es UTC-6 siempre (no tiene horario de verano)
+  const cr=new Date(new Date().getTime()-6*60*60*1000);
+  return cr.toISOString().split('T')[0];
+}
 const fmt=d=>{if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;};
 const inR=(d,d1,d2)=>(!d1||d>=d1)&&(!d2||d<=d2);
 const n=id=>{const e=document.getElementById(id);return e?parseFloat(e.value)||0:0;};
@@ -824,7 +826,8 @@ function fechaLarga(d){if(!d)return'';const dt=new Date(d+'T12:00:00');return di
 function setDates(){
   const t=today();
   ['in-fecha','out-fecha','cub-fin','cub-fout','sol-fin','sol-fout','tra-fin','tra-fout','tr-fecha','esp-fecha','lav-fecha'].forEach(id=>gs(id,t));
-  document.getElementById('d-date').textContent=new Date().toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
+  const _crNow=new Date(new Date().getTime()-6*60*60*1000);
+  document.getElementById('d-date').textContent=_crNow.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+_crNow.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
 }
 function setWeekRange(){
   const d=new Date();
@@ -894,8 +897,12 @@ function showOutProdInfo(nom){
 
 function updateEspSel(){
   const a=DB.especiales.filter(p=>p.activo);
+  // esp-sel-prod (puede no existir si se quitó el form)
   const e=document.getElementById('esp-sel-prod');
   if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre}</option>`).join('');
+  // sol-esp-dest en form de solvente
+  const e2=document.getElementById('sol-esp-dest');
+  if(e2)e2.innerHTML='<option value="">— Opcional —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre} (${p.cubUsadas||0}/${p.maxCub||DB.config.maxEsp} cub.)</option>`).join('');
   updateSolSel();
 }
 function updateSolSel(){
@@ -1037,7 +1044,7 @@ function renderInvStock(){
       ${s.min>0?`<div class="pbar-bg" style="margin-top:8px;"><div class="pbar ${cls}" style="width:${pct}%"></div></div><div style="font-size:10px;color:var(--text2);margin-top:2px;">Mín: ${s.min} ${s.uni}</div>`:''}
       <div style="display:flex;gap:6px;margin-top:10px;">
         <button class="btn xs primary" onclick="openEditProd('${s.nombre}')"><i class="fa-solid fa-pen"></i> Editar</button>
-        ${!s.especial?`<button class="btn xs danger" onclick="delProd('${s.nombre}')"><i class="fa-solid fa-trash"></i> Eliminar</button>`:''}
+        <button class="btn xs danger" onclick="delProd('${s.nombre}')"><i class="fa-solid fa-trash"></i> Eliminar</button>
       </div>
     </div>`;
   }).join('');
@@ -1063,9 +1070,15 @@ function saveEdit(){
   closeEdit();updateLists();updateOutProdSel();renderInvStock();showToast('✓ Producto actualizado','ok');changed();
 }
 function delProd(nombre){
-  openMod('Eliminar Producto','¿Eliminar TODOS los registros de "'+nombre+'"? Esta acción no se puede deshacer.',()=>{
+  const esEsp=DB.especiales.some(p=>p.nombre===nombre);
+  const msg=esEsp?
+    'ATENCIÓN: Este es un producto ESPECIAL. Se eliminarán todos sus registros de inventario y su historial de auditoría. ¿Confirmar?':
+    '¿Eliminar TODOS los registros de "'+nombre+'"? Esta acción no se puede deshacer.';
+  openMod('Eliminar Producto',msg,()=>{
     DB.inventario=DB.inventario.filter(r=>r.nombre!==nombre);
-    updateLists();updateOutProdSel();renderInvStock();showToast('🗑 Producto eliminado','in');changed();
+    if(esEsp) DB.especiales=DB.especiales.filter(p=>p.nombre!==nombre);
+    updateLists();updateOutProdSel();updateEspSel();renderInvStock();renderEspLista();
+    showToast('Producto eliminado completamente','in');changed();
   });
 }
 
@@ -1259,10 +1272,23 @@ function addSolvente(mov){
     if(!sol){showToast('Estañón no encontrado','er');return;}
     sol.cubUsadas=(sol.cubUsadas||0)+cubOut;
     sol.lavTotal=(sol.lavTotal||0)+lavados;
-    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,entregadoA,nota,cubTotal:sol.cubUsadas});
+    const espDestId=gv('sol-esp-dest');
+    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,entregadoA,espDestId,nota,cubTotal:sol.cubUsadas});
+    // Si se indicó un producto especial destino, registrar cubetas en ese especial también
+    if(espDestId&&cubOut>0){
+      const espDest=DB.especiales.find(p=>p.id===espDestId&&p.activo);
+      if(espDest){
+        espDest.cubUsadas=(espDest.cubUsadas||0)+cubOut;
+        espDest.movimientos.push({fecha,tipo:'SALIDA',cubetas:cubOut,estanones:estPin,color,
+          lavados,lavador,revisor,tipoEnv,nota:'Desde solvente ['+sol.cod+']. '+nota,
+          cubetasTotal:espDest.cubUsadas});
+        const maxEsp=espDest.maxCub||DB.config.maxEsp;
+        if(maxEsp>0&&espDest.cubUsadas>=maxEsp){espDest.activo=false;espDest.fechaFin=fecha;espDest.motivoFin='Limite alcanzado';}
+      }
+    }
     const max=DB.config.maxCubEst;
     if(max>0&&sol.cubUsadas>=max){sol.activo=false;sol.fechaFin=fecha;sol.motivoFin='Limite maximo alcanzado';}
-    ['sol-cub-out','sol-est-pin','sol-color','sol-lavados-s','sol-lavador-s','sol-revisor-s','sol-tipo-env-s','sol-entregado-a','sol-nota-o'].forEach(id=>gs(id,''));
+    ['sol-cub-out','sol-est-pin','sol-color','sol-lavados-s','sol-lavador-s','sol-revisor-s','sol-tipo-env-s','sol-entregado-a','sol-esp-dest','sol-nota-o'].forEach(id=>gs(id,''));
     gs('sol-sel','');document.getElementById('sol-info').innerHTML='';document.getElementById('sol-lim-warn').style.display='none';
     updateSolSel();showToast('Gasto de solvente registrado','ok');
   }
@@ -1819,7 +1845,16 @@ function addUser(){const u=gv('new-user').trim(),p=gv('new-pass').trim();if(!u||
 function delUser(u){openMod('Eliminar usuario','¿Eliminar usuario '+u+'?',()=>{DB.users=DB.users.filter(x=>x.user!==u);renderUsers();showToast('🗑 Eliminado','in');changed();});}
 
 /* ══════════ INIT ══════════ */
-window.addEventListener('DOMContentLoaded',()=>loadData());
+window.addEventListener('DOMContentLoaded',()=>{
+  loadData();
+  // Actualizar reloj CR cada 60 segundos
+  setInterval(()=>{
+    const _cr=new Date(new Date().getTime()-6*60*60*1000);
+    const el=document.getElementById('d-date');
+    if(el) el.textContent=_cr.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+_cr.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
+  },60000);
+});
 </script>
 </body>
 </html>
+
