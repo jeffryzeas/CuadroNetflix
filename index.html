@@ -386,7 +386,6 @@ canvas{max-height:180px;}
         <div class="stab" onclick="stab('esp','pasivo',this)"><i class="fa-solid fa-archive"></i> Historial</div>
       </div>
       <div id="esp-lista"></div>
-<!-- esp-salida removido: salida se hace desde solvente/cubetas -->
       <div id="esp-pasivo" style="display:none;">
         <div class="card">
           <div class="ch"><div class="ci or"><i class="fa-solid fa-box-archive"></i></div><h3>Inventario Pasivo / Historial</h3></div>
@@ -443,8 +442,8 @@ canvas{max-height:180px;}
           <div id="sol-info"></div>
           <div class="frow s3"><div class="fg"><label>Cubetas Usadas</label><input type="number" id="sol-cub-out" min="0" step="0.5" placeholder="0"></div><div class="fg"><label>Est. Pintados</label><input type="number" id="sol-est-pin" min="0" placeholder="0"></div><div class="fg"><label>Color Pintura</label><input type="text" id="sol-color" placeholder="Ej: Azul"></div></div>
           <div class="frow s3"><div class="fg"><label>Estañones Lavados</label><input type="number" id="sol-lavados-s" min="0" placeholder="0"></div><div class="fg"><label>Lavador</label><input type="text" id="sol-lavador-s" placeholder="Nombre lavador"></div><div class="fg"><label>Revisado Por</label><input type="text" id="sol-revisor-s" placeholder="Nombre revisor"></div></div>
-          <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env-s" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Entregado A</label><input type="text" id="sol-entregado-a" placeholder="Persona que recibió"></div></div>
-          <div class="frow s1"><div class="fg"><label>Producto Especial que Recibió esta Cubeta</label><select id="sol-esp-dest"><option value="">— Opcional —</option></select><div class="hint">Si esta cubeta se usó en un producto especial, selecciónelo aquí</div></div></div>
+          <div class="frow"><div class="fg"><label>Tipo Envase Lavado</label><input type="text" id="sol-tipo-env-s" placeholder="Ej: Estañón 55 gal"></div><div class="fg"><label>Entregado A / Para</label><input type="text" id="sol-entregado-a" placeholder="A quién se entregó la cubeta"></div></div>
+          <div class="frow s1"><div class="fg"><label>¿Cubeta para qué Producto Especial?</label><select id="sol-esp-dest"><option value="">— Opcional —</option></select><div class="hint">Si esta cubeta fue para un especial, selecciónelo</div></div></div>
           <div id="sol-lim-warn" style="display:none;" class="spec-banner" style="color:var(--orange);border-color:var(--orange);"></div>
           <div class="frow s1"><div class="fg"><label>Nota</label><input type="text" id="sol-nota-o" placeholder="Opcional"></div></div>
           <div style="display:flex;gap:8px;">
@@ -695,15 +694,8 @@ let currentUser=null, chWeek=null, lastSaved=null, saveTimer=null;
 async function loadData(forceToast=false){
   setSyncState('syncing');
   setStatus('Conectando con base de datos...');
-  // Timeout de 8 segundos — si no responde igual muestra el login
-  const controller=new AbortController();
-  const timeoutId=setTimeout(()=>controller.abort(),8000);
   try{
-    const res=await fetch(BIN_URL+'/latest',{
-      signal:controller.signal,
-      headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}
-    });
-    clearTimeout(timeoutId);
+    const res=await fetch(BIN_URL+'/latest',{headers:{'X-Master-Key':API_KEY,'X-Bin-Meta':'false'}});
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
     const loaded=data.record||data;
@@ -714,13 +706,10 @@ async function loadData(forceToast=false){
     if(forceToast) showToast('✓ Datos actualizados','ok');
     hideLoading(); showLogin();
   } catch(err){
-    clearTimeout(timeoutId);
     setSyncState('error');
-    const msg=err.name==='AbortError'?'Tiempo agotado — verifique internet y claves':'Error: '+err.message;
-    setStatus('⚠ '+msg);
+    setStatus('⚠ Error: '+err.message);
     hideLoading(); showLogin();
-    if(forceToast) showToast('⚠ '+msg,'wa');
-    else showToast('⚠ Sin conexión — revise BIN_ID y API_KEY','wa');
+    showToast('⚠ Sin conexión con servidor','wa');
   }
 }
 async function saveData(forceToast=false){
@@ -760,8 +749,8 @@ function doLogin(){
     document.getElementById('lermsg').textContent='Usuario o contraseña incorrectos';
   }
 }
-document.getElementById('lp').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-document.getElementById('lu').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+const _lp=document.getElementById('lp');if(_lp)_lp.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+const _lu=document.getElementById('lu');if(_lu)_lu.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 function doLogout(){saveData(false);currentUser=null;document.getElementById('app').classList.remove('on');document.getElementById('login').classList.add('on');gs('lu','');gs('lp','');document.getElementById('lerr').style.display='none';}
 
 /* ══════════ NAV ══════════ */
@@ -800,7 +789,7 @@ function stab(pg,name,el){
   if(pg==='pin'&&name==='solvente'){renderSolvente();renderSolActivos();}
   if(pg==='pin'&&name==='trapos'){renderTraLotes();renderTraHist();}
   // trabajo tab removido
-  if(pg==='pin'&&name==='lavados'){renderLavados();updateLavSolSel();}
+  if(pg==='pin'&&name==='lavados'){renderLavados();}
   if(pg==='rep'&&name==='diario'){gs('rd-fecha',today());setWeekRange();updateInformeSelects();}
 }
 
@@ -809,10 +798,18 @@ const gv=id=>{const e=document.getElementById(id);return e?e.value:'';};
 const gs=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v;};
 const s2=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+// Fecha en zona horaria de Costa Rica (UTC-6, sin cambio de horario)
 function today(){
+  const now=new Date();
   // Costa Rica es UTC-6 siempre (no tiene horario de verano)
-  const cr=new Date(new Date().getTime()-6*60*60*1000);
+  const cr=new Date(now.getTime()-6*60*60*1000);
   return cr.toISOString().split('T')[0];
+}
+function nowCR(){
+  // Retorna fecha y hora actual en CR
+  const now=new Date();
+  const cr=new Date(now.getTime()-6*60*60*1000);
+  return cr.toISOString().replace('T',' ').slice(0,16);
 }
 const fmt=d=>{if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;};
 const inR=(d,d1,d2)=>(!d1||d>=d1)&&(!d2||d<=d2);
@@ -826,8 +823,9 @@ function fechaLarga(d){if(!d)return'';const dt=new Date(d+'T12:00:00');return di
 function setDates(){
   const t=today();
   ['in-fecha','out-fecha','cub-fin','cub-fout','sol-fin','sol-fout','tra-fin','tra-fout','tr-fecha','esp-fecha','lav-fecha'].forEach(id=>gs(id,t));
-  const _crNow=new Date(new Date().getTime()-6*60*60*1000);
-  document.getElementById('d-date').textContent=_crNow.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+_crNow.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
+  // Mostrar fecha y hora de CR en el dashboard
+const nowCRDate=new Date(new Date().getTime()-6*60*60*1000);
+document.getElementById('d-date').textContent=nowCRDate.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+nowCRDate.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
 }
 function setWeekRange(){
   const d=new Date();
@@ -850,13 +848,13 @@ function closeMod(){document.getElementById('mbg').classList.remove('on');}
 function closeEdit(){document.getElementById('mbg-edit').classList.remove('on');}
 
 /* SPEC CHECKBOX */
-document.getElementById('in-spec').addEventListener('change',function(){
+const _in_spec=document.getElementById('in-spec');if(_in_spec)_in_spec.addEventListener('change',function(){
   document.getElementById('spec-fields').style.display=this.checked?'block':'none';
 });
-document.getElementById('esp-sel-prod').addEventListener('change',function(){showEspInfo(this.value);});
-document.getElementById('sol-sel').addEventListener('change',function(){showSolInfo(this.value);});
-document.getElementById('tra-sel-lot').addEventListener('change',function(){showTraInfo(this.value);});
-document.getElementById('out-prod-sel').addEventListener('change',function(){showOutProdInfo(this.value);});
+const _esp_sel=document.getElementById('esp-sel-prod');if(_esp_sel)_esp_sel.addEventListener('change',function(){showEspInfo(this.value);});
+const _sol_sel=document.getElementById('sol-sel');if(_sol_sel)_sol_sel.addEventListener('change',function(){showSolInfo(this.value);});
+const _tra_sel=document.getElementById('tra-sel-lot');if(_tra_sel)_tra_sel.addEventListener('change',function(){showTraInfo(this.value);});
+const _out_sel=document.getElementById('out-prod-sel');if(_out_sel)_out_sel.addEventListener('change',function(){showOutProdInfo(this.value);});
 
 /* ══════════ LISTAS ══════════ */
 function updateLists(){
@@ -897,10 +895,8 @@ function showOutProdInfo(nom){
 
 function updateEspSel(){
   const a=DB.especiales.filter(p=>p.activo);
-  // esp-sel-prod (puede no existir si se quitó el form)
   const e=document.getElementById('esp-sel-prod');
   if(e)e.innerHTML='<option value="">— Seleccione —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre}</option>`).join('');
-  // sol-esp-dest en form de solvente
   const e2=document.getElementById('sol-esp-dest');
   if(e2)e2.innerHTML='<option value="">— Opcional —</option>'+a.map(p=>`<option value="${p.id}">[${p.codAudit}] ${p.nombre} (${p.cubUsadas||0}/${p.maxCub||DB.config.maxEsp} cub.)</option>`).join('');
   updateSolSel();
@@ -1071,14 +1067,12 @@ function saveEdit(){
 }
 function delProd(nombre){
   const esEsp=DB.especiales.some(p=>p.nombre===nombre);
-  const msg=esEsp?
-    'ATENCIÓN: Este es un producto ESPECIAL. Se eliminarán todos sus registros de inventario y su historial de auditoría. ¿Confirmar?':
-    '¿Eliminar TODOS los registros de "'+nombre+'"? Esta acción no se puede deshacer.';
+  const msg=esEsp?'ATENCIÓN: Producto ESPECIAL — se borrará su historial de auditoría. ¿Confirmar?':'¿Eliminar TODOS los registros de "'+nombre+'"? No se puede deshacer.';
   openMod('Eliminar Producto',msg,()=>{
     DB.inventario=DB.inventario.filter(r=>r.nombre!==nombre);
     if(esEsp) DB.especiales=DB.especiales.filter(p=>p.nombre!==nombre);
     updateLists();updateOutProdSel();updateEspSel();renderInvStock();renderEspLista();
-    showToast('Producto eliminado completamente','in');changed();
+    showToast('Producto eliminado','in');changed();
   });
 }
 
@@ -1115,14 +1109,27 @@ function addEspSalida(){
   const max=prod.maxCub||DB.config.maxEsp;
   prod.cubUsadas=(prod.cubUsadas||0)+cubetas;
   prod.movimientos.push({fecha,tipo:'SALIDA',cubetas,estanones,color,lavados,lavador,revisor,tipoEnv,nota,cubetasTotal:prod.cubUsadas});
-  // DESCONTAR DEL INVENTARIO GENERAL automaticamente
-  const cantSale=estanones>0?estanones:cubetas;
-  if(cantSale>0){
+  // DESCONTAR DEL INVENTARIO GENERAL:
+  // Solo descuenta si se registran ESTAÑONES físicos que salieron (estanones > 0)
+  // Si solo se usan cubetas de solvente del estañón, el estañón físico NO sale del inventario
+  // El estañón sale del inventario cuando se marca TERMINADO
+  if(estanones>0){
     const prev=DB.inventario.filter(r=>r.nombre===prod.nombre&&r.mov==='ENTRADA');
     const uni=prev.length?prev[prev.length-1].uni:(prod.uni||'unidades');
-    DB.inventario.push({id:uid(),nombre:prod.nombre,cat:prod.cat||'',cant:cantSale,uni,fecha,
+    DB.inventario.push({id:uid(),nombre:prod.nombre,cat:prod.cat||'',cant:estanones,uni,fecha,
       mot:'Salida especial',
       nota:'Est.pintados:'+estanones+' Cub.usadas:'+cubetas+' Color:'+color+' Lav:'+lavados+' '+nota,
+      mov:'SALIDA',especial:true,espId:prod.id});
+  }
+  // Si el producto especial es de tipo CUBETA DE PINTURA (no estañón), descontar cubetas usadas
+  // Detectar por tipo o unidad: si la unidad es 'cubetas' o el tipo contiene 'cubeta'/'pintura'
+  const esCubetaPintura=(prod.uni||'').toLowerCase().includes('cubet')||(prod.tipo||'').toLowerCase().includes('cubet')||(prod.tipo||'').toLowerCase().includes('pintura');
+  if(esCubetaPintura&&cubetas>0&&estanones===0){
+    const prev2=DB.inventario.filter(r=>r.nombre===prod.nombre&&r.mov==='ENTRADA');
+    const uni2=prev2.length?prev2[prev2.length-1].uni:(prod.uni||'cubetas');
+    DB.inventario.push({id:uid(),nombre:prod.nombre,cat:prod.cat||'',cant:cubetas,uni:uni2,fecha,
+      mot:'Uso pintura especial',
+      nota:'Cub.usadas:'+cubetas+' Est.pintados:'+estanones+' Color:'+color,
       mov:'SALIDA',especial:true,espId:prod.id});
   }
   if(max>0&&prod.cubUsadas>=max){prod.activo=false;prod.fechaFin=fecha;prod.motivoFin='Limite alcanzado automaticamente';}
@@ -1272,35 +1279,54 @@ function addSolvente(mov){
     if(!sol){showToast('Estañón no encontrado','er');return;}
     sol.cubUsadas=(sol.cubUsadas||0)+cubOut;
     sol.lavTotal=(sol.lavTotal||0)+lavados;
-    const espDestId=gv('sol-esp-dest');
-    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,entregadoA,espDestId,nota,cubTotal:sol.cubUsadas});
-    // Si se indicó un producto especial destino, registrar cubetas en ese especial también
-    if(espDestId&&cubOut>0){
-      const espDest=DB.especiales.find(p=>p.id===espDestId&&p.activo);
-      if(espDest){
-        espDest.cubUsadas=(espDest.cubUsadas||0)+cubOut;
-        espDest.movimientos.push({fecha,tipo:'SALIDA',cubetas:cubOut,estanones:estPin,color,
-          lavados,lavador,revisor,tipoEnv,nota:'Desde solvente ['+sol.cod+']. '+nota,
-          cubetasTotal:espDest.cubUsadas});
-        const maxEsp=espDest.maxCub||DB.config.maxEsp;
-        if(maxEsp>0&&espDest.cubUsadas>=maxEsp){espDest.activo=false;espDest.fechaFin=fecha;espDest.motivoFin='Limite alcanzado';}
+    const _ed=gv('sol-esp-dest');
+    sol.movimientos.push({fecha,cubOut,estPin,color,lavados,lavador,revisor,tipoEnv,entregadoA,espDestId:_ed,nota,cubTotal:sol.cubUsadas});
+    // ── Descuento en inventario y especiales ──
+    if(_ed&&cubOut>0){
+      // Hay especial destino: actualizar cubUsadas del especial Y bajar del inventario
+      const _ep=DB.especiales.find(p=>p.id===_ed&&p.activo);
+      if(_ep){
+        _ep.cubUsadas=(_ep.cubUsadas||0)+cubOut;
+        _ep.movimientos.push({fecha,tipo:'SALIDA',cubetas:cubOut,estanones:estPin,color,
+          lavados,lavador,revisor,tipoEnv,nota:'Solvente ['+sol.cod+']. '+nota,
+          cubetasTotal:_ep.cubUsadas});
+        const _mx=_ep.maxCub||DB.config.maxEsp;
+        if(_mx>0&&_ep.cubUsadas>=_mx){_ep.activo=false;_ep.fechaFin=fecha;_ep.motivoFin='Limite alcanzado';}
+        // Bajar del inventario general del producto especial
+        const _prevEsp=DB.inventario.filter(r=>r.nombre===_ep.nombre&&r.mov==='ENTRADA');
+        const _uniEsp=_prevEsp.length?_prevEsp[_prevEsp.length-1].uni:(_ep.uni||'cubetas');
+        DB.inventario.push({id:uid(),nombre:_ep.nombre,cat:_ep.cat||'',cant:cubOut,uni:_uniEsp,
+          fecha,mot:'Gasto solvente',
+          nota:'Solvente ['+sol.cod+'] — '+cubOut+' cub. usadas. Color:'+color+'. Lavados:'+lavados,
+          mov:'SALIDA',especial:true,espId:_ep.id});
       }
     }
     const max=DB.config.maxCubEst;
     if(max>0&&sol.cubUsadas>=max){sol.activo=false;sol.fechaFin=fecha;sol.motivoFin='Limite maximo alcanzado';}
     ['sol-cub-out','sol-est-pin','sol-color','sol-lavados-s','sol-lavador-s','sol-revisor-s','sol-tipo-env-s','sol-entregado-a','sol-esp-dest','sol-nota-o'].forEach(id=>gs(id,''));
     gs('sol-sel','');document.getElementById('sol-info').innerHTML='';document.getElementById('sol-lim-warn').style.display='none';
-    updateSolSel();showToast('Gasto de solvente registrado','ok');
+    updateSolSel();updateOutProdSel();renderInvStock();showToast('Gasto de solvente registrado','ok');
   }
   renderSolvente();renderSolActivos();changed();
 }
 function terminarEst(){
   const solId=gv('sol-sel');if(!solId){showToast('Seleccione un estañón','er');return;}
-  openMod('Marcar Terminado','¿Este estañón ha concluido? Pasará al historial.',()=>{
+  openMod('Marcar Terminado','¿Este estañón ha concluido? Pasará al historial. El stock del inventario se actualizará.',()=>{
     const s=DB.solvente.find(x=>x.id===solId&&x.activo);
-    if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado manualmente';}
+    if(s){
+      s.activo=false;s.fechaFin=today();s.motivoFin='Marcado manualmente';
+      // Descontar 1 estañón del inventario cuando se termina físicamente
+      const invRows=DB.inventario.filter(r=>r.especial&&r.nombre&&r.nombre.toLowerCase().includes(s.tipo||''));
+      // Buscar si hay un producto especial que sea este estañón por código
+      const espMatch=DB.especiales.find(p=>p.id&&(p.codAudit===s.cod||(p.tipo||'').toLowerCase().includes('solvente')||(p.tipo||'').toLowerCase().includes('thinner')||(p.tipo||'').toLowerCase().includes('varsol')));
+      if(espMatch){
+        DB.inventario.push({id:uid(),nombre:espMatch.nombre,cat:espMatch.cat||'',cant:1,uni:espMatch.uni||'unidades',
+          fecha:today(),mot:'Estañón terminado',nota:'Estañón ['+s.cod+'] marcado terminado. Cubetas usadas: '+(s.cubUsadas||0),
+          mov:'SALIDA',especial:true,espId:espMatch.id});
+      }
+    }
     gs('sol-sel','');document.getElementById('sol-info').innerHTML='';
-    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
+    updateSolSel();renderSolvente();renderSolActivos();renderInvStock();showToast('Estañón finalizado — inventario actualizado','ok');changed();
   });
 }
 function reactivarSol(id){
@@ -1308,9 +1334,18 @@ function reactivarSol(id){
   updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Reactivado','ok');changed();
 }
 function termEstById(id){
-  openMod('Marcar Terminado','¿Confirmar?',()=>{
-    const s=DB.solvente.find(x=>x.id===id);if(s){s.activo=false;s.fechaFin=today();s.motivoFin='Marcado desde lista activos';}
-    updateSolSel();renderSolvente();renderSolActivos();showToast('✓ Finalizado','ok');changed();
+  openMod('Marcar Terminado','¿Confirmar? El stock del inventario se actualizará.',()=>{
+    const s=DB.solvente.find(x=>x.id===id);
+    if(s){
+      s.activo=false;s.fechaFin=today();s.motivoFin='Marcado desde lista activos';
+      const espMatch=DB.especiales.find(p=>p.id&&(p.codAudit===s.cod||(p.tipo||'').toLowerCase().includes('solvente')||(p.tipo||'').toLowerCase().includes('thinner')||(p.tipo||'').toLowerCase().includes('varsol')));
+      if(espMatch){
+        DB.inventario.push({id:uid(),nombre:espMatch.nombre,cat:espMatch.cat||'',cant:1,uni:espMatch.uni||'unidades',
+          fecha:today(),mot:'Estañón terminado',nota:'Estañón ['+s.cod+'] terminado. Cub: '+(s.cubUsadas||0),
+          mov:'SALIDA',especial:true,espId:espMatch.id});
+      }
+    }
+    updateSolSel();renderSolvente();renderSolActivos();renderInvStock();showToast('Finalizado — inventario actualizado','ok');changed();
   });
 }
 function renderSolActivos(){
@@ -1539,39 +1574,45 @@ function genInformeDiario(){
   const inclSol=document.getElementById('rd-incl-sol').checked;
   const solSel=gv('rd-sol-sel');
 
-  // ── DATOS DEL DÍA ──
-  const trabHoy=DB.trabajo.filter(r=>r.fecha===fecha);
+  // ── DATOS DEL DÍA — fuente única: DB.inventario + DB.solvente + DB.lavados ──
+  // Cubetas de pintura gastadas hoy = salidas de inventario de tipo cubeta ese día
+  const invSalidasHoy=DB.inventario.filter(r=>r.mov==='SALIDA'&&r.fecha===fecha);
   const cubGastoHoy=DB.cubetas.filter(r=>r.mov==='GASTO'&&r.fecha===fecha).reduce((s,r)=>s+r.cant,0);
-  // Cubetas usadas desde especiales ese día
-  const cubEspHoy=DB.especiales.reduce((s,p)=>s+p.movimientos.filter(m=>m.fecha===fecha&&m.tipo==='SALIDA').reduce((ss,m)=>ss+(m.cubetas||0),0),0);
-  const totalCubHoy=cubGastoHoy+cubEspHoy+trabHoy.reduce((s,r)=>s+r.cub,0);
-  // Estañones pintados ese día (de especiales + trabajo + solvente)
-  const espHoyMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>m.fecha===fecha&&m.tipo==='SALIDA'));
+  const cubEspHoy=invSalidasHoy.filter(r=>r.especial).reduce((s,r)=>s+r.cant,0);
+  const totalCubHoy=cubGastoHoy+cubEspHoy;
+  // Solvente del día
   const solHoyMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>m.fecha===fecha).forEach(m=>solHoyMov.push({...m,cod:s.cod,tipo:s.tipo})));
-  const totalEstHoy=espHoyMov.reduce((s,m)=>s+(m.estanones||0),0)+trabHoy.reduce((s,r)=>s+r.est,0)+solHoyMov.reduce((s,m)=>s+(m.estPin||0),0);
-  // Lavados ese día
+  const cubSolHoy=solHoyMov.reduce((s,m)=>s+(m.cubOut||0),0);
+  // Estañones pintados hoy
+  const espHoyMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>m.fecha===fecha&&m.tipo==='SALIDA'));
+  const totalEstHoy=espHoyMov.reduce((s,m)=>s+(m.estanones||0),0)+solHoyMov.reduce((s,m)=>s+(m.estPin||0),0);
+  // Lavados hoy
   const lavHoy=DB.lavados.filter(r=>r.fecha===fecha);
-  const totalLavHoy=lavHoy.reduce((s,r)=>s+r.cant,0)+espHoyMov.reduce((s,m)=>s+(m.lavados||0),0)+solHoyMov.reduce((s,m)=>s+(m.lavados||0),0);
-  // Colores ese día
-  const colHoy=[...new Set([...espHoyMov.map(m=>m.color),...trabHoy.map(r=>r.tipo),...solHoyMov.map(m=>m.color)].filter(Boolean))].join(', ')||'No especificado';
-  // Áreas ese día
-  const areasHoy=trabHoy.map(r=>r.area).join(', ')||'—';
-  // Estañones de solvente activos con % gastado
+  const totalLavHoy=lavHoy.reduce((s,r)=>s+r.cant,0)+solHoyMov.reduce((s,m)=>s+(m.lavados||0),0)+espHoyMov.reduce((s,m)=>s+(m.lavados||0),0);
+  // Colores hoy
+  const colHoy=[...new Set([...espHoyMov.map(m=>m.color),...solHoyMov.map(m=>m.color)].filter(Boolean))].join(', ')||'No especificado';
+  // Stock actual cubetas (real desde DB.cubetas)
+  const cubStk=DB.cubetas.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0)-DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
+  // Stock actual inventario especiales
+  const stockEsp={}; DB.inventario.filter(r=>r.especial).forEach(r=>{
+    if(!stockEsp[r.nombre])stockEsp[r.nombre]={nombre:r.nombre,cant:0,uni:r.uni||'unid'};
+    stockEsp[r.nombre].cant+=r.mov==='ENTRADA'?r.cant:-r.cant;
+  });
+  // Solvente activos
   const solActivos=DB.solvente.filter(s=>s.activo);
   const max=DB.config.maxCubEst;
-  // Stock cubetas
-  const cubStk=DB.cubetas.filter(r=>r.mov==='ENTRADA').reduce((s,r)=>s+r.cant,0)-DB.cubetas.filter(r=>r.mov==='GASTO').reduce((s,r)=>s+r.cant,0);
 
   // ── DATOS DE SEMANA ──
-  const trabSem=DB.trabajo.filter(r=>inR(r.fecha,semD1,semD2));
+  const invSalidasSem=DB.inventario.filter(r=>r.mov==='SALIDA'&&r.especial&&inR(r.fecha,semD1,semD2));
   const cubSemGasto=DB.cubetas.filter(r=>r.mov==='GASTO'&&inR(r.fecha,semD1,semD2)).reduce((s,r)=>s+r.cant,0);
-  const cubEspSem=DB.especiales.reduce((s,p)=>s+p.movimientos.filter(m=>inR(m.fecha,semD1,semD2)&&m.tipo==='SALIDA').reduce((ss,m)=>ss+(m.cubetas||0),0),0);
-  const totalCubSem=cubSemGasto+cubEspSem+trabSem.reduce((s,r)=>s+r.cub,0);
-  const espSemMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>inR(m.fecha,semD1,semD2)&&m.tipo==='SALIDA'));
+  const cubEspSem=invSalidasSem.reduce((s,r)=>s+r.cant,0);
+  const totalCubSem=cubSemGasto+cubEspSem;
   const solSemMov=[];DB.solvente.forEach(s=>s.movimientos.filter(m=>inR(m.fecha,semD1,semD2)).forEach(m=>solSemMov.push({...m,cod:s.cod})));
-  const totalEstSem=espSemMov.reduce((s,m)=>s+(m.estanones||0),0)+trabSem.reduce((s,r)=>s+r.est,0)+solSemMov.reduce((s,m)=>s+(m.estPin||0),0);
+  const cubSolSem=solSemMov.reduce((s,m)=>s+(m.cubOut||0),0);
+  const espSemMov=DB.especiales.flatMap(p=>p.movimientos.filter(m=>inR(m.fecha,semD1,semD2)&&m.tipo==='SALIDA'));
+  const totalEstSem=espSemMov.reduce((s,m)=>s+(m.estanones||0),0)+solSemMov.reduce((s,m)=>s+(m.estPin||0),0);
   const lavSem=DB.lavados.filter(r=>inR(r.fecha,semD1,semD2));
-  const totalLavSem=lavSem.reduce((s,r)=>s+r.cant,0)+espSemMov.reduce((s,m)=>s+(m.lavados||0),0)+solSemMov.reduce((s,m)=>s+(m.lavados||0),0);
+  const totalLavSem=lavSem.reduce((s,r)=>s+r.cant,0)+solSemMov.reduce((s,m)=>s+(m.lavados||0),0)+espSemMov.reduce((s,m)=>s+(m.lavados||0),0);
 
   const fechaStr=fechaLarga(fecha).toUpperCase();
   const semStr=semD1&&semD2?`DE ${diasES[new Date(semD1+'T12:00').getDay()].toUpperCase()} ${fmt(semD1)} AL ${diasES[new Date(semD2+'T12:00').getDay()].toUpperCase()} ${fmt(semD2)}`:'SEMANA ACTUAL';
@@ -1612,13 +1653,20 @@ function genInformeDiario(){
     });
   } else txt+=`  Sin estañones activos\n`;
 
-  txt+=`\n🪣 CUBETAS DISPONIBLES: ${cubStk.toFixed(1)}\n`;
+  txt+=`\n🪣 CUBETAS DE PINTURA DISPONIBLES: ${cubStk.toFixed(1)}\n`;
+  const _espStockList=Object.values(stockEsp).filter(x=>x.cant>0);
+  if(_espStockList.length){
+    txt+=`\n📦 STOCK ESPECIALES EN INVENTARIO\n`;
+    _espStockList.forEach(x=>{txt+=`• ${x.nombre}: ${x.cant.toFixed(2)} ${x.uni}\n`;});
+  }
+  if(cubSolHoy>0) txt+=`• Cubetas de solvente usadas hoy: ${cubSolHoy.toFixed(1)}\n`;
 
   txt+=`\n━━━━━━━━━━━━━━━━━━━━━━\n`;
   txt+=`📊 CONSUMO DE SEMANA\n`;
   txt+=`${semStr}\n`;
   txt+=`━━━━━━━━━━━━━━━━━━━━━━\n`;
-  txt+=`• Cubetas gastadas: ${totalCubSem.toFixed(1)}\n`;
+  txt+=`• Cubetas de pintura gastadas: ${totalCubSem.toFixed(1)}\n`;
+  if(cubSolSem>0) txt+=`• Cubetas de solvente usadas: ${cubSolSem.toFixed(1)}\n`;
   txt+=`• Estañones pintados: ${totalEstSem}\n`;
   txt+=`• Estañones lavados: ${totalLavSem}\n`;
   if(totalCubSem>0&&totalEstSem>0) txt+=`• Promedio pintados/cubeta: ${(totalEstSem/totalCubSem).toFixed(1)}\n`;
@@ -1670,7 +1718,10 @@ function genInformeDiario(){
     }
   }
 
-  txt+=`\n📌 Generado por Sistema REI\n`;
+  // Hora generacion CR
+  const _genT=new Date(new Date().getTime()-6*60*60*1000);
+  const _genStr=_genT.toLocaleDateString('es-CR',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' '+_genT.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
+  txt+=`\n📌 REI — Generado el ${_genStr}\n`;
   informeTexto=txt;
   document.getElementById('informe-txt').textContent=informeTexto;
   document.getElementById('rep-diario-out').style.display='block';
@@ -1847,14 +1898,13 @@ function delUser(u){openMod('Eliminar usuario','¿Eliminar usuario '+u+'?',()=>{
 /* ══════════ INIT ══════════ */
 window.addEventListener('DOMContentLoaded',()=>{
   loadData();
-  // Actualizar reloj CR cada 60 segundos
+  // Actualizar reloj de CR cada 60 segundos
   setInterval(()=>{
-    const _cr=new Date(new Date().getTime()-6*60*60*1000);
+    const nowCRDate=new Date(new Date().getTime()-6*60*60*1000);
     const el=document.getElementById('d-date');
-    if(el) el.textContent=_cr.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+_cr.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
+    if(el) el.textContent=nowCRDate.toLocaleDateString('es-CR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase()+' — '+nowCRDate.toLocaleTimeString('es-CR',{hour:'2-digit',minute:'2-digit'});
   },60000);
 });
 </script>
 </body>
 </html>
-
